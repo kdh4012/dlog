@@ -1274,3 +1274,25 @@ th {
 .section-head > button {
   white-space: nowrap;
 }
+
+/* 자산 포트폴리오 제목 아래 현재 환율 */
+.rate-line {
+  margin: 4px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabs button {
+  white-space: nowrap;
+}
+
+/* 좁은 화면: 제목(+환율)과 버튼 묶음을 두 줄로 */
+@media (max-width: 640px) {
+  .section-head:has(.rate-line) {
+    flex-wrap: wrap;
+  }
+
+  .section-head:has(.rate-line) .head-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

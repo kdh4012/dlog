@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { assetApi } from '../api'
 import { ApiError } from '../api/client'
-import { ASSET_TYPES, CURRENCIES, type Asset, type AssetRequest, type AssetType, type Currency, type TypeWeight } from '../api/types'
+import { ASSET_TYPES, CURRENCIES, type Asset, type AssetRequest, type AssetType, type Currency, type ExchangeRate, type TypeWeight } from '../api/types'
 import AssetSyncPanel from '../components/AssetSyncPanel'
 import { ErrorMessage, Loading } from '../components/Status'
 import { formatDate, formatIn, formatMoney, formatNumber, formatRate, profitClass, type DisplayCurrency } from '../utils/format'
@@ -59,6 +59,26 @@ function TypeWeights({ items }: { items: TypeWeight[] }) {
         </li>
       ))}
     </ul>
+  )
+}
+
+/** 엔화는 관례대로 100엔 기준으로 표시 */
+const RATE_UNITS: [Exclude<Currency, 'KRW'>, number, string][] = [
+  ['USD', 1, 'USD'],
+  ['JPY', 100, 'JPY(100)'],
+  ['EUR', 1, 'EUR'],
+]
+
+/** 제목 아래 작은 현재 환율 표시. 예) 환율 USD 1,385.2원 · JPY(100) 921.3원 · 2026-10-10 ECB 기준 */
+function RateLine({ rate }: { rate: ExchangeRate }) {
+  const items = RATE_UNITS.filter(([c]) => rate.krwPerUnit[c]).map(
+    ([c, unit, label]) => `${label} ${formatNumber(Math.round(rate.krwPerUnit[c]! * unit * 100) / 100)}원`,
+  )
+  if (items.length === 0) return null
+  return (
+    <p className="rate-line muted small">
+      환율 {items.join(' · ')} <span className="rate-date">({rate.date} {rate.source} 기준)</span>
+    </p>
   )
 }
 
@@ -133,7 +153,10 @@ export default function AssetPage() {
   return (
     <>
       <div className="section-head">
-        <h1>자산 포트폴리오</h1>
+        <div>
+          <h1>자산 포트폴리오</h1>
+          {rate && <RateLine rate={rate} />}
+        </div>
         <div className="head-actions">
           {/* 환율이 없으면 환산할 수 없으므로 전환 버튼을 숨기고 통화별 원래 금액만 보여준다 */}
           {rate && (
@@ -173,11 +196,6 @@ export default function AssetPage() {
           <div className="muted small">
             매입 {display === 'KRW' ? formatMoney(total.costKrw, 'KRW') : formatMoney(total.costUsd, 'USD')}
           </div>
-          {rate?.krwPerUnit.USD && (
-            <div className="muted small">
-              환율 1 USD = {formatNumber(rate.krwPerUnit.USD)}원 ({rate.source}, {rate.date} 기준)
-            </div>
-          )}
           <TypeWeights items={total.byType} />
         </div>
       )}
