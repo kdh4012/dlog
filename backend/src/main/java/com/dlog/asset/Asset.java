@@ -1,5 +1,6 @@
 package com.dlog.asset;
 
+import com.dlog.asset.sync.SyncedHolding;
 import com.dlog.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,6 +24,9 @@ import java.math.RoundingMode;
 @Table(name = "asset")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Asset extends BaseTimeEntity {
+
+    /** quantity / avg_price / current_price 컬럼의 소수 자릿수 */
+    private static final int SCALE = 8;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,7 +54,7 @@ public class Asset extends BaseTimeEntity {
     @Column(nullable = false, precision = 24, scale = 8)
     private BigDecimal avgPrice;
 
-    /** 현재가 (수동 입력) */
+    /** 현재가 (수동 입력 또는 동기화 시점 시세) */
     @Column(nullable = false, precision = 24, scale = 8)
     private BigDecimal currentPrice;
 
@@ -61,9 +65,13 @@ public class Asset extends BaseTimeEntity {
     @Column(length = 500)
     private String memo;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private AssetSource source;
+
     @Builder
     private Asset(AssetType assetType, String name, String ticker, String account, BigDecimal quantity,
-                  BigDecimal avgPrice, BigDecimal currentPrice, Currency currency, String memo) {
+                  BigDecimal avgPrice, BigDecimal currentPrice, Currency currency, String memo, AssetSource source) {
         this.assetType = assetType;
         this.name = name;
         this.ticker = ticker;
@@ -73,6 +81,31 @@ public class Asset extends BaseTimeEntity {
         this.currentPrice = currentPrice;
         this.currency = currency;
         this.memo = memo;
+        this.source = source == null ? AssetSource.MANUAL : source;
+    }
+
+    /** 외부 API 동기화 자산 생성 */
+    public static Asset synced(AssetSource source, SyncedHolding holding) {
+        Asset asset = Asset.builder().source(source).build();
+        asset.applySync(holding);
+        return asset;
+    }
+
+    /** 동기화 결과로 덮어쓴다. DB 컬럼 scale 에 맞춰 반올림 */
+    public void applySync(SyncedHolding h) {
+        this.assetType = h.assetType();
+        this.name = h.name();
+        this.ticker = h.ticker();
+        this.account = h.account();
+        this.quantity = h.quantity().setScale(SCALE, RoundingMode.HALF_UP);
+        this.avgPrice = h.avgPrice().setScale(SCALE, RoundingMode.HALF_UP);
+        this.currentPrice = h.currentPrice().setScale(SCALE, RoundingMode.HALF_UP);
+        this.currency = h.currency();
+    }
+
+    /** 동기화 키. {@link SyncedHolding#syncKey()} 와 같은 규칙 */
+    public String syncKey() {
+        return account + "|" + ticker;
     }
 
     public void update(AssetType assetType, String name, String ticker, String account, BigDecimal quantity,

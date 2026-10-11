@@ -1,5 +1,9 @@
 # 로컬 개발 전용 설정. 운영에서 사용 금지.
 spring:
+  config:
+    # 외부 API 키(UPBIT_ACCESS_KEY 등)를 저장소 밖 파일에서 읽는다. 없으면 무시
+    # 형식: KEY=VALUE 줄 단위 (README '자산 동기화' 참고)
+    import: optional:file:${user.home}/.dlog/secrets.properties
   datasource:
     # 파일 기반 H2 (PostgreSQL 호환 모드) - 재시작해도 데이터 유지
     # 저장 위치: <사용자 홈>/.dlog/dlog.mv.db  (초기화하려면 파일 삭제)
@@ -22,3 +26,5 @@ dlog:
     username: ${ADMIN_USERNAME:admin}
     # 비밀번호: dlog1234
     password-hash: ${ADMIN_PASSWORD_HASH:$2a$10$tCO36zFZcMjDQcCXFf7VI.43pA14A7tKk1/.xWDTcrEv09uFYQevG}
+    # 로그인 없이 관리자 화면(자산 포트폴리오 등)까지 모두 보이게 함. 로그인 흐름을 테스트하려면 false
+    auto-login: ${ADMIN_AUTO_LOGIN:true}

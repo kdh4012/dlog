@@ -1,7 +1,8 @@
 import { Link } from 'react-router'
 import { postApi, workLogApi } from '../api'
+import PostList from '../components/PostList'
 import { ErrorMessage, Loading } from '../components/Status'
-import { formatDate, formatYearMonth } from '../utils/format'
+import { formatYearMonth } from '../utils/format'
 import { useAsync } from '../utils/useAsync'
 
 export default function HomePage() {
@@ -11,45 +12,43 @@ export default function HomePage() {
   return (
     <>
       <section className="hero">
-        <h1>안녕하세요, 동현입니다.</h1>
-        <p className="muted">C++/MFC 공장 자동화와 Java/Spring 웹 개발을 하고 있습니다.</p>
+        <h1>
+          만들고, 고치고,
+          <br />
+          기록합니다.
+        </h1>
+        <p className="muted">현장 자동화부터 웹 서비스까지, 개발하며 배운 것들을 남기는 공간입니다.</p>
       </section>
 
-      <section>
+      <section className="section">
         <div className="section-head">
           <h2>최근 글</h2>
           <Link to="/posts">전체 보기 →</Link>
         </div>
         {posts.loading && <Loading />}
         {posts.error && <ErrorMessage error={posts.error} />}
-        <ul className="list">
-          {posts.data?.content.slice(0, 5).map((p) => (
-            <li key={p.id}>
-              <Link to={`/posts/${p.id}`}>{p.title}</Link>
-              <span className="muted">{formatDate(p.createdAt)}</span>
-            </li>
-          ))}
-          {posts.data?.content.length === 0 && <li className="muted">아직 작성한 글이 없습니다.</li>}
-        </ul>
+        {posts.data && <PostList posts={posts.data.content.slice(0, 5)} />}
+        {posts.data?.content.length === 0 && <p className="empty">아직 작성한 글이 없습니다.</p>}
       </section>
 
-      <section>
+      <section className="section">
         <div className="section-head">
           <h2>최근 작업</h2>
           <Link to="/work-logs">전체 보기 →</Link>
         </div>
         {workLogs.loading && <Loading />}
         {workLogs.error && <ErrorMessage error={workLogs.error} />}
-        <ul className="list">
+        <ul className="work-list">
           {workLogs.data?.slice(0, 3).map((w) => (
             <li key={w.id}>
-              <span>{w.title}</span>
+              <strong>{w.title}</strong>
               <span className="muted">
                 {formatYearMonth(w.startDate)} ~ {w.endDate ? formatYearMonth(w.endDate) : '진행 중'}
               </span>
             </li>
           ))}
         </ul>
+        {workLogs.data?.length === 0 && <p className="empty">작업 기록이 없습니다.</p>}
       </section>
     </>
   )

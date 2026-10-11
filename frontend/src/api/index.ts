@@ -7,6 +7,7 @@ import type {
   Post,
   PostRequest,
   PostSummary,
+  SyncStatus,
   WorkLog,
   WorkLogRequest,
 } from './types'
@@ -43,4 +44,6 @@ export const assetApi = {
   create: (body: AssetRequest) => http.post<Asset>('/assets', body),
   update: (id: number, body: AssetRequest) => http.put<Asset>(`/assets/${id}`, body),
   remove: (id: number) => http.delete(`/assets/${id}`),
+  syncStatuses: () => http.get<SyncStatus[]>('/assets/sync'),
+  sync: () => http.post<SyncStatus[]>('/assets/sync', {}),
 }

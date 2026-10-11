@@ -3,6 +3,8 @@ package com.dlog.asset;
 import com.dlog.asset.dto.AssetRequest;
 import com.dlog.asset.dto.AssetResponse;
 import com.dlog.asset.dto.AssetSummaryResponse;
+import com.dlog.asset.sync.AssetSyncService;
+import com.dlog.asset.sync.SyncStatusResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import java.util.List;
 public class AssetController {
 
     private final AssetService assetService;
+    private final AssetSyncService assetSyncService;
 
     @GetMapping
     public List<AssetResponse> getAll() {
@@ -34,6 +37,18 @@ public class AssetController {
     @GetMapping("/summary")
     public AssetSummaryResponse getSummary() {
         return assetService.getSummary();
+    }
+
+    /** 출처별(업비트·토스증권) 마지막 동기화 상태 */
+    @GetMapping("/sync")
+    public List<SyncStatusResponse> getSyncStatuses() {
+        return assetSyncService.getStatuses();
+    }
+
+    /** 키가 설정된 출처를 즉시 동기화. 외부 API 실패는 상태의 error 로 반환 */
+    @PostMapping("/sync")
+    public List<SyncStatusResponse> sync() {
+        return assetSyncService.syncAll();
     }
 
     @GetMapping("/{id}")

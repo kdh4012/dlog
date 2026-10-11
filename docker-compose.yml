@@ -31,6 +31,11 @@ services:
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET 필요}
       ADMIN_USERNAME: ${ADMIN_USERNAME:?ADMIN_USERNAME 필요}
       ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?ADMIN_PASSWORD_HASH 필요}
+      # 자산 동기화 (선택). 비어 있으면 해당 출처는 동기화하지 않음
+      UPBIT_ACCESS_KEY: ${UPBIT_ACCESS_KEY:-}
+      UPBIT_SECRET_KEY: ${UPBIT_SECRET_KEY:-}
+      TOSS_CLIENT_ID: ${TOSS_CLIENT_ID:-}
+      TOSS_CLIENT_SECRET: ${TOSS_CLIENT_SECRET:-}
     ports:
       - "8080:8080"
     restart: unless-stopped

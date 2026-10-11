@@ -14,8 +14,8 @@ const AuthContext = createContext<AuthState | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false)
-  // 저장된 토큰이 없으면 검증할 것이 없으므로 바로 ready
-  const [ready, setReady] = useState(() => !tokenStore.get())
+  // 서버가 관리자 여부를 판단하므로(로컬 자동 로그인 포함) 확인이 끝날 때까지 대기
+  const [ready, setReady] = useState(false)
 
   const logout = useCallback(() => {
     tokenStore.clear()
@@ -25,8 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     onUnauthorized(logout)
 
-    // 새로고침 시 저장된 토큰이 아직 유효한지 서버에 확인
-    if (!tokenStore.get()) return
+    // 저장된 토큰이 유효하거나 서버가 로컬 자동 로그인(dlog.admin.auto-login) 중이면 관리자
     authApi
       .me()
       .then(() => setIsAdmin(true))

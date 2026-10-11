@@ -1,8 +1,8 @@
 import { Link, useSearchParams } from 'react-router'
 import { postApi } from '../api'
 import { useAuth } from '../auth/AuthContext'
+import PostList from '../components/PostList'
 import { ErrorMessage, Loading } from '../components/Status'
-import { formatDate } from '../utils/format'
 import { useAsync } from '../utils/useAsync'
 
 export default function PostListPage() {
@@ -34,28 +34,8 @@ export default function PostListPage() {
       {loading && <Loading />}
       {error && <ErrorMessage error={error} />}
 
-      <ul className="cards">
-        {data?.content.map((p) => (
-          <li key={p.id} className="card">
-            <Link to={`/posts/${p.id}`}>
-              <h3>
-                {!p.published && <span className="badge">비공개</span>}
-                {p.title}
-              </h3>
-              {p.summary && <p className="muted">{p.summary}</p>}
-            </Link>
-            <div className="meta">
-              {p.category && (
-                <Link to={`/posts?category=${encodeURIComponent(p.category)}`} className="tag">
-                  {p.category}
-                </Link>
-              )}
-              <span className="muted">{formatDate(p.createdAt)}</span>
-            </div>
-          </li>
-        ))}
-      </ul>
-      {data?.content.length === 0 && <p className="muted">글이 없습니다.</p>}
+      {data && <PostList posts={data.content} />}
+      {data?.content.length === 0 && <p className="empty">글이 없습니다.</p>}
 
       {data && data.totalPages > 1 && (
         <div className="pager">
