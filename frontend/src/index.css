@@ -4,7 +4,8 @@
   --muted: #6b7280;
   --border: #e5e7eb;
   --card: #f9fafb;
-  --accent: #2563eb;
+  --accent: #1e3a8a; /* 네이비 */
+  --accent-hover: #172554;
   --danger: #dc2626;
   --up: #dc2626; /* 국내 관례: 상승 빨강 */
   --down: #2563eb; /* 하락 파랑 */
@@ -12,22 +13,9 @@
   line-height: 1.6;
   color: var(--fg);
   background: var(--bg);
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0d1117;
-    --fg: #e6edf3;
-    --muted: #8b949e;
-    --border: #30363d;
-    --card: #161b22;
-    --accent: #4493f8;
-    --danger: #f85149;
-    --up: #f85149;
-    --down: #4493f8;
-  }
-}
 
 * {
   box-sizing: border-box;
@@ -88,7 +76,7 @@ h3 {
 }
 
 .nav a.active {
-  color: var(--fg);
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -160,12 +148,19 @@ button,
   text-decoration: none;
 }
 
+button:not(.link):not(:disabled):hover,
+.button:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-button.secondary {
+button.secondary,
+button.secondary:hover {
   background: transparent;
   color: var(--fg);
   border-color: var(--border);
@@ -377,6 +372,7 @@ textarea {
 
 input[type='checkbox'] {
   width: auto;
+  accent-color: var(--accent);
 }
 
 textarea {
@@ -400,15 +396,18 @@ textarea {
   gap: 4px;
 }
 
-.tabs button {
+.tabs button,
+.tabs button:hover {
   background: transparent;
   color: var(--muted);
   border-color: var(--border);
 }
 
-.tabs button.active {
-  color: var(--fg);
-  border-color: var(--fg);
+.tabs button.active,
+.tabs button.active:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
 }
 
 /* ---------- asset ---------- */
