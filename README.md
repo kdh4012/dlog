@@ -12,7 +12,7 @@
 
 - **Backend**: Java 21, Spring Boot 4, Spring Data JPA, Spring Security + JWT, Flyway
 - **Frontend**: React 19, TypeScript, Vite, React Router
-- **DB**: PostgreSQL 16
+- **DB**: PostgreSQL 16 (운영), H2 (로컬 개발)
 
 ## 구조
 
@@ -27,20 +27,24 @@ dlog/
 │   └── resources/db/migration   Flyway 스키마
 ├── frontend/           React SPA
 ├── Dockerfile          프론트 + 백엔드를 단일 jar 이미지로 빌드
-└── docker-compose.yml  PostgreSQL (+ 운영용 app)
+└── docker-compose.yml  운영용 PostgreSQL + app
 ```
 
 ## 로컬 개발
 
-```bash
-# 1. DB
-docker compose up -d db
+local 프로파일은 **H2 파일 DB**를 사용하므로 DB 설치 없이 바로 실행됩니다.
 
-# 2. Backend (http://localhost:8080, 프로파일 미지정 시 local 적용 → IntelliJ 에서 DlogApplication 바로 실행 가능)
+- 데이터 파일: `<사용자 홈>/.dlog/dlog.mv.db` (삭제하면 초기화)
+- H2 콘솔: http://localhost:8080/h2-console
+  - JDBC URL: `jdbc:h2:file:~/.dlog/dlog;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;AUTO_SERVER=TRUE`
+  - User: `sa` / Password: 없음
+
+```bash
+# 1. Backend (http://localhost:8080, 프로파일 미지정 시 local 적용 → IntelliJ 에서 DlogApplication 바로 실행 가능)
 cd backend
 ./gradlew bootRun          # Windows: gradlew.bat bootRun
 
-# 3. Frontend (http://localhost:5173, /api 는 8080 으로 프록시)
+# 2. Frontend (http://localhost:5173, /api 는 8080 으로 프록시)
 cd frontend
 npm install
 npm run dev

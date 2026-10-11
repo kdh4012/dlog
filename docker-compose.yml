@@ -1,4 +1,4 @@
-# 로컬 개발: docker compose up -d db
+# 로컬 개발은 H2 를 사용하므로 불필요. PostgreSQL 로 테스트할 때만: docker compose up -d db
 # 전체 실행: docker compose --profile app up -d --build  (.env 필요)
 services:
   db:

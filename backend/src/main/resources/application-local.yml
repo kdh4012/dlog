@@ -1,7 +1,17 @@
-# 로컬 개발 전용 기본값 (docker-compose 의 PostgreSQL 기준). 운영에서 사용 금지.
+# 로컬 개발 전용 설정. 운영에서 사용 금지.
 spring:
   datasource:
-    password: ${DB_PASSWORD:dlog}
+    # 파일 기반 H2 (PostgreSQL 호환 모드) - 재시작해도 데이터 유지
+    # 저장 위치: <사용자 홈>/.dlog/dlog.mv.db  (초기화하려면 파일 삭제)
+    # AUTO_SERVER=TRUE: 서버 실행 중에도 IntelliJ Database 탭 등에서 동시 접속 가능
+    url: jdbc:h2:file:${user.home}/.dlog/dlog;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;AUTO_SERVER=TRUE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true      # http://localhost:8080/h2-console (JDBC URL 은 위 url 그대로)
+      path: /h2-console
   jpa:
     show-sql: true
 
