@@ -10,6 +10,8 @@ import java.util.List;
  * 월 지출 요약.
  *
  * @param total          해당 월 합계
+ * @param fixedTotal     그중 고정지출 합계
+ * @param variableTotal  그중 변동지출 합계
  * @param previousTotal  전월 합계
  * @param changeRate     전월 대비 증감률(%). 전월 0 이면 null
  * @param budget         적용 예산 (해당 월 또는 이어받은 이전 달 예산). 없으면 null
@@ -21,6 +23,8 @@ import java.util.List;
 public record ExpenseSummaryResponse(
         YearMonth month,
         long total,
+        long fixedTotal,
+        long variableTotal,
         int count,
         long previousTotal,
         BigDecimal changeRate,

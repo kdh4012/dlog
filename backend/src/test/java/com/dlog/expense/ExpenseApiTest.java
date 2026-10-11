@@ -31,10 +31,14 @@ class ExpenseApiTest {
     @Autowired
     ExpenseBudgetRepository budgetRepository;
 
+    @Autowired
+    FixedExpenseRepository fixedExpenseRepository;
+
     @AfterEach
     void cleanUp() {
         expenseRepository.deleteAll();
         budgetRepository.deleteAll();
+        fixedExpenseRepository.deleteAll(); // 반영 기록(fixed_expense_run)은 FK CASCADE 로 함께 삭제
     }
 
     private void add(String date, long amount, String category) throws Exception {

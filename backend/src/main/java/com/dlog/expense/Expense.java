@@ -49,17 +49,33 @@ public class Expense extends BaseTimeEntity {
     @Column(length = 500)
     private String memo;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private ExpenseKind kind;
+
+    /** 고정지출에서 반영된 경우 원본 템플릿 id (템플릿 삭제 시 null) */
+    private Long fixedExpenseId;
+
     @Builder
     private Expense(LocalDate spentOn, long amount, ExpenseCategory category, PaymentMethod paymentMethod,
-                    String merchant, String memo) {
+                    String merchant, String memo, ExpenseKind kind, Long fixedExpenseId) {
         this.spentOn = spentOn;
         this.amount = amount;
         this.category = category;
         this.paymentMethod = paymentMethod;
         this.merchant = merchant;
         this.memo = memo;
+        this.kind = kind == null ? ExpenseKind.VARIABLE : kind;
+        this.fixedExpenseId = fixedExpenseId;
     }
 
+    /** 해당 월 고정지출 템플릿으로부터 반영 내역 생성 */
+    public static Expense fromFixed(FixedExpense f, java.time.YearMonth month) {
+        return new Expense(f.dateIn(month), f.getAmount(), f.getCategory(), f.getPaymentMethod(),
+                f.getName(), f.getMemo(), ExpenseKind.FIXED, f.getId());
+    }
+
+    /** 구분(고정/변동)과 원본 템플릿은 유지하고 내용만 수정 */
     public void update(LocalDate spentOn, long amount, ExpenseCategory category, PaymentMethod paymentMethod,
                        String merchant, String memo) {
         this.spentOn = spentOn;

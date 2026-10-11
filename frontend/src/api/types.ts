@@ -179,6 +179,8 @@ export const PAYMENT_METHODS = {
 } as const
 export type PaymentMethod = keyof typeof PAYMENT_METHODS
 
+export type ExpenseKind = 'FIXED' | 'VARIABLE'
+
 export interface Expense {
   id: number
   spentOn: string
@@ -187,6 +189,9 @@ export interface Expense {
   paymentMethod: PaymentMethod
   merchant: string | null
   memo: string | null
+  /** FIXED: 고정지출에서 매월 반영된 내역, VARIABLE: 직접 입력 */
+  kind: ExpenseKind
+  fixedExpenseId: number | null
 }
 
 export interface ExpenseRequest {
@@ -201,6 +206,8 @@ export interface ExpenseRequest {
 export interface ExpenseSummary {
   month: string
   total: number
+  fixedTotal: number
+  variableTotal: number
   count: number
   previousTotal: number
   changeRate: number | null
@@ -209,4 +216,29 @@ export interface ExpenseSummary {
   budgetUsedRate: number | null
   byCategory: { category: ExpenseCategory; amount: number; count: number; weight: number }[]
   trend: { month: string; total: number }[]
+}
+
+export interface FixedExpense {
+  id: number
+  name: string
+  amount: number
+  dayOfMonth: number
+  category: ExpenseCategory
+  paymentMethod: PaymentMethod
+  startMonth: string
+  endMonth: string | null
+  memo: string | null
+  /** 이번 달 이후에도 반영되는지 */
+  active: boolean
+}
+
+export interface FixedExpenseRequest {
+  name: string
+  amount: string
+  dayOfMonth: string
+  category: ExpenseCategory
+  paymentMethod: PaymentMethod
+  startMonth: string
+  endMonth: string
+  memo: string
 }

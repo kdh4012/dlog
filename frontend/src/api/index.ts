@@ -6,6 +6,8 @@ import type {
   Expense,
   ExpenseRequest,
   ExpenseSummary,
+  FixedExpense,
+  FixedExpenseRequest,
   PageResponse,
   Post,
   PostRequest,
@@ -59,4 +61,13 @@ export const expenseApi = {
   remove: (id: number) => http.delete(`/expenses/${id}`),
   /** amount 0 이면 해당 월 예산 삭제 (이전 달 예산을 이어서 사용) */
   setBudget: (month: string, amount: number) => http.put<void>('/expenses/budget', { month, amount }),
+}
+
+export const fixedExpenseApi = {
+  list: () => http.get<FixedExpense[]>('/fixed-expenses'),
+  /** 빈 종료 월은 null(계속)로 보낸다 */
+  create: (body: FixedExpenseRequest) => http.post<FixedExpense>('/fixed-expenses', { ...body, endMonth: body.endMonth || null }),
+  update: (id: number, body: FixedExpenseRequest) =>
+    http.put<FixedExpense>(`/fixed-expenses/${id}`, { ...body, endMonth: body.endMonth || null }),
+  remove: (id: number) => http.delete(`/fixed-expenses/${id}`),
 }

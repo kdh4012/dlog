@@ -1132,3 +1132,166 @@ th {
     display: table-row;
   }
 }
+
+/* ---------- 고정 / 변동 지출 ---------- */
+.view-tabs {
+  margin-top: 8px;
+}
+
+.kind-split {
+  margin-top: 14px;
+  max-width: 520px;
+  display: grid;
+  gap: 6px;
+}
+
+.kind-bar {
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #c7cff3; /* 변동 */
+}
+
+.kind-bar > .fixed {
+  display: block;
+  height: 100%;
+  background: var(--fg); /* 고정 */
+}
+
+.kind-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.85rem;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.dot.fixed {
+  background: var(--fg);
+}
+
+.dot.variable {
+  background: #c7cff3;
+}
+
+.list-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.list-head + .table-wrap {
+  margin-top: 12px;
+}
+
+.badge-fixed {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: var(--fg);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  vertical-align: 1px;
+}
+
+.fixed-panel {
+  margin-top: 16px;
+}
+
+.fixed-panel .section-head p {
+  margin: 4px 0 0;
+}
+
+.fixed-total {
+  margin-top: 12px;
+}
+
+.fixed-form {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.fixed-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+.fixed-list li {
+  display: grid;
+  grid-template-columns: 44px 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.fixed-list li.inactive {
+  opacity: 0.5;
+}
+
+.fixed-day {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.fixed-main {
+  display: grid;
+  min-width: 0;
+}
+
+.fixed-amount {
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .fixed-list li {
+    grid-template-columns: 40px 1fr auto;
+    grid-template-areas:
+      'day main amount'
+      'day main actions';
+  }
+
+  .fixed-day {
+    grid-area: day;
+  }
+
+  .fixed-main {
+    grid-area: main;
+  }
+
+  .fixed-amount {
+    grid-area: amount;
+  }
+
+  .fixed-list .actions {
+    grid-area: actions;
+    justify-self: end;
+    font-size: 0.8rem;
+  }
+}
+
+/* 가계부는 월별 내역 / 고정지출 화면을 오가도 본문 폭이 바뀌지 않도록 표 화면과 같은 폭을 쓴다 */
+.main:has(.view-tabs) {
+  max-width: 1200px;
+}
+
+.section-head > button {
+  white-space: nowrap;
+}

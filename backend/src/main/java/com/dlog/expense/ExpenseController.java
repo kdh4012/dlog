@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.YearMonth;
-import java.time.ZoneId;
 import java.util.List;
 
 /** 소비 지출 관리 API - SecurityConfig 에서 관리자 전용으로 제한 */
@@ -29,21 +28,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExpenseController {
 
-    /** month 미지정 시 기준이 되는 '이번 달'. 서버 시간대(UTC)와 무관하게 한국 기준 */
-    private static final ZoneId KST = ZoneId.of("Asia/Seoul");
-
     private final ExpenseService expenseService;
+    private final FixedExpenseService fixedExpenseService;
 
     @GetMapping
     public List<ExpenseResponse> getMonth(
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth month) {
-        return expenseService.getMonth(orThisMonth(month));
+        YearMonth m = orThisMonth(month);
+        // 조회 전에 그 달의 고정지출을 지출 내역으로 반영
+        fixedExpenseService.applyRange(m, m);
+        return expenseService.getMonth(m);
     }
 
     @GetMapping("/summary")
     public ExpenseSummaryResponse getSummary(
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") YearMonth month) {
-        return expenseService.getSummary(orThisMonth(month));
+        YearMonth m = orThisMonth(month);
+        // 요약의 월별 추이(최근 6개월)에도 고정지출이 들어가도록 함께 반영
+        fixedExpenseService.applyRange(m.minusMonths(ExpenseService.TREND_MONTHS - 1), m);
+        return expenseService.getSummary(m);
     }
 
     @PostMapping
@@ -70,6 +73,6 @@ public class ExpenseController {
     }
 
     private static YearMonth orThisMonth(YearMonth month) {
-        return month != null ? month : YearMonth.now(KST);
+        return month != null ? month : FixedExpenseService.thisMonth();
     }
 }

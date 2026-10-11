@@ -29,7 +29,7 @@ import java.util.Optional;
 public class ExpenseService {
 
     /** 요약의 월별 추이에 보여줄 개월 수 (해당 월 포함) */
-    private static final int TREND_MONTHS = 6;
+    static final int TREND_MONTHS = 6;
     private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
 
     private final ExpenseRepository expenseRepository;
@@ -47,6 +47,7 @@ public class ExpenseService {
         List<Expense> expenses = expenseRepository
                 .findAllBySpentOnGreaterThanEqualAndSpentOnLessThanOrderBySpentOnDescIdDesc(start(month), end(month));
         long total = expenses.stream().mapToLong(Expense::getAmount).sum();
+        long fixedTotal = expenses.stream().filter(e -> e.getKind() == ExpenseKind.FIXED).mapToLong(Expense::getAmount).sum();
         long previousTotal = sumOf(month.minusMonths(1));
 
         // 카테고리별 합계·건수 (금액 큰 순)
@@ -76,6 +77,8 @@ public class ExpenseService {
         return new ExpenseSummaryResponse(
                 month,
                 total,
+                fixedTotal,
+                total - fixedTotal,
                 expenses.size(),
                 previousTotal,
                 previousTotal == 0 ? null : percent(total - previousTotal, previousTotal),

@@ -7,45 +7,23 @@ import {
   PAYMENT_METHODS,
   type Expense,
   type ExpenseCategory,
+  type ExpenseKind,
   type ExpenseRequest,
   type ExpenseSummary,
   type PaymentMethod,
 } from '../api/types'
+import FixedExpensePanel from '../components/FixedExpensePanel'
 import { ErrorMessage, Loading } from '../components/Status'
-import { formatMoney, formatRate } from '../utils/format'
+import { formatRate } from '../utils/format'
+import { formatMonthLabel, isValidMonth, pad, shiftMonth, thisMonth, today, won } from '../utils/expense'
 import { useAsync } from '../utils/useAsync'
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
-
-const pad = (n: number) => String(n).padStart(2, '0')
-
-/** 브라우저(한국) 기준 오늘 yyyy-MM-dd. toISOString 은 UTC 라 자정 무렵 날짜가 밀리므로 쓰지 않는다 */
-const today = () => {
-  const d = new Date()
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-}
-
-/** yyyy-MM 에 delta 개월 더하기 */
-const shiftMonth = (month: string, delta: number) => {
-  const [y, m] = month.split('-').map(Number)
-  const d = new Date(y, m - 1 + delta, 1)
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`
-}
-
-const isValidMonth = (v: string | null): v is string => !!v && /^\d{4}-(0[1-9]|1[0-2])$/.test(v)
-
-const won = (v: number) => formatMoney(v, 'KRW')
 
 /** 2026-10-05 → 10.05 (일) */
 const formatDay = (iso: string) => {
   const [y, m, d] = iso.split('-').map(Number)
   return `${pad(m)}.${pad(d)} (${WEEKDAYS[new Date(y, m - 1, d).getDay()]})`
-}
-
-/** 2026-10 → 2026년 10월 */
-const formatMonthLabel = (month: string) => {
-  const [y, m] = month.split('-')
-  return `${y}년 ${Number(m)}월`
 }
 
 const emptyForm = (month: string): ExpenseRequest => ({
@@ -73,7 +51,8 @@ function SummaryCard({ summary, onBudgetSaved }: { summary: ExpenseSummary; onBu
   const [budgetInput, setBudgetInput] = useState('')
   const [error, setError] = useState('')
 
-  const { month, total, count, previousTotal, changeRate, budget, budgetMonth, budgetUsedRate } = summary
+  const { month, total, fixedTotal, variableTotal, count, previousTotal, changeRate, budget, budgetMonth, budgetUsedRate } = summary
+  const fixedWeight = total > 0 ? (fixedTotal / total) * 100 : 0
   const remaining = budget != null ? budget - total : null
   // 이전 달에서 이어받은 예산인지 (해당 월에 직접 설정한 값이 아님)
   const inherited = budgetMonth != null && budgetMonth !== month
@@ -105,6 +84,23 @@ function SummaryCard({ summary, onBudgetSaved }: { summary: ExpenseSummary; onBu
           // 지출은 늘면 나쁜 신호라 증가를 빨강(up), 감소를 파랑(down)으로 표시
           <span className={changeRate > 0 ? 'up' : changeRate < 0 ? 'down' : ''}> ({formatRate(changeRate)})</span>
         )}
+      </div>
+
+      {/* 고정 / 변동 비율 */}
+      <div className="kind-split">
+        <span className="kind-bar" aria-hidden="true">
+          <span className="fixed" style={{ width: `${fixedWeight}%` }} />
+        </span>
+        <div className="kind-legend">
+          <span>
+            <i className="dot fixed" />
+            고정 {won(fixedTotal)}
+          </span>
+          <span>
+            <i className="dot variable" />
+            변동 {won(variableTotal)}
+          </span>
+        </div>
       </div>
 
       <div className="budget">
@@ -215,7 +211,11 @@ function MonthlyTrend({
 
 export default function ExpensePage() {
   const [params, setParams] = useSearchParams()
-  const month = isValidMonth(params.get('month')) ? params.get('month')! : today().slice(0, 7)
+  const month = isValidMonth(params.get('month')) ? params.get('month')! : thisMonth()
+  // 화면: 월별 내역 / 고정지출 관리 (새로고침해도 유지되도록 쿼리에 둔다)
+  const view = params.get('view') === 'fixed' ? 'fixed' : 'monthly'
+  // 목록 필터: 전체 / 고정 / 변동
+  const [kindFilter, setKindFilter] = useState<ExpenseKind | 'ALL'>('ALL')
 
   const expenses = useAsync(() => expenseApi.list(month), [month])
   const summary = useAsync(() => expenseApi.summary(month), [month])
@@ -234,6 +234,18 @@ export default function ExpensePage() {
     setParams({ month: next })
     setEditing(null)
   }
+
+  const changeView = (next: 'monthly' | 'fixed') => {
+    setParams(next === 'fixed' ? { month, view: 'fixed' } : { month })
+    setEditing(null)
+  }
+
+  const visible = expenses.data?.filter((e) => kindFilter === 'ALL' || e.kind === kindFilter) ?? []
+  const KIND_FILTERS: [ExpenseKind | 'ALL', string][] = [
+    ['ALL', '전체'],
+    ['FIXED', '고정'],
+    ['VARIABLE', '변동'],
+  ]
 
   const openNew = () => {
     setForm(emptyForm(month))
@@ -278,143 +290,176 @@ export default function ExpensePage() {
     <>
       <div className="section-head">
         <h1 className="nowrap">가계부</h1>
-        <div className="head-actions">
-          <div className="month-nav" role="group" aria-label="월 이동">
-            <button type="button" className="secondary" onClick={() => goMonth(shiftMonth(month, -1))} aria-label="이전 달">
-              ‹
-            </button>
-            <strong>{formatMonthLabel(month)}</strong>
-            <button type="button" className="secondary" onClick={() => goMonth(shiftMonth(month, 1))} aria-label="다음 달">
-              ›
+        {/* 월 이동·지출 추가는 월별 내역 화면에서만 의미가 있다 */}
+        {view === 'monthly' && (
+          <div className="head-actions">
+            <div className="month-nav" role="group" aria-label="월 이동">
+              <button type="button" className="secondary" onClick={() => goMonth(shiftMonth(month, -1))} aria-label="이전 달">
+                ‹
+              </button>
+              <strong>{formatMonthLabel(month)}</strong>
+              <button type="button" className="secondary" onClick={() => goMonth(shiftMonth(month, 1))} aria-label="다음 달">
+                ›
+              </button>
+            </div>
+            <button type="button" onClick={openNew}>
+              지출 추가
             </button>
           </div>
-          <button type="button" onClick={openNew}>
-            지출 추가
-          </button>
-        </div>
+        )}
       </div>
 
-      {summary.error && <ErrorMessage error={summary.error} />}
-      {summary.data && <SummaryCard summary={summary.data} onBudgetSaved={summary.reload} />}
-
-      {editing !== null && (
-        <form className="form card expense-form" onSubmit={handleSubmit}>
-          <h2>{editing === 'new' ? '지출 추가' : '지출 수정'}</h2>
-          <div className="row">
-            <label>
-              날짜
-              <input type="date" value={form.spentOn} onChange={(e) => set('spentOn', e.target.value)} required />
-            </label>
-            <label>
-              금액 (원)
-              <input
-                type="number"
-                inputMode="numeric"
-                min="1"
-                step="1"
-                value={form.amount}
-                onChange={(e) => set('amount', e.target.value)}
-                autoFocus
-                required
-              />
-            </label>
-          </div>
-          <div className="row">
-            <label>
-              카테고리
-              <select value={form.category} onChange={(e) => set('category', e.target.value as ExpenseCategory)}>
-                {Object.entries(EXPENSE_CATEGORIES).map(([k, v]) => (
-                  <option key={k} value={k}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              결제 수단
-              <select value={form.paymentMethod} onChange={(e) => set('paymentMethod', e.target.value as PaymentMethod)}>
-                {Object.entries(PAYMENT_METHODS).map(([k, v]) => (
-                  <option key={k} value={k}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="row">
-            <label>
-              사용처
-              <input value={form.merchant} onChange={(e) => set('merchant', e.target.value)} maxLength={100} placeholder="예) 스타벅스" />
-            </label>
-            <label>
-              메모
-              <input value={form.memo} onChange={(e) => set('memo', e.target.value)} maxLength={500} />
-            </label>
-          </div>
-          {error && <p className="error pre">{error}</p>}
-          <div className="row end">
-            <button type="button" className="secondary" onClick={() => setEditing(null)}>
-              {editing === 'new' ? '닫기' : '취소'}
-            </button>
-            <button type="submit">저장</button>
-          </div>
-        </form>
-      )}
-
-      {summary.data && (
-        <div className="expense-charts">
-          <CategoryWeights items={summary.data.byCategory} />
-          <MonthlyTrend trend={summary.data.trend} current={month} onSelect={goMonth} />
-        </div>
-      )}
-
-      {expenses.loading && <Loading />}
-      {expenses.error && <ErrorMessage error={expenses.error} />}
-      <div className="table-wrap">
-        <table className="expense-table">
-          <thead>
-            <tr>
-              <th>날짜</th>
-              <th>카테고리</th>
-              <th>내용</th>
-              <th className="col-pay">결제</th>
-              <th className="num">금액</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {expenses.data?.map((e) => (
-              <tr key={e.id}>
-                <td className="nowrap col-date">{formatDay(e.spentOn)}</td>
-                <td className="nowrap col-cat">{EXPENSE_CATEGORIES[e.category]}</td>
-                <td className="col-content">
-                  <div>{e.merchant ?? <span className="muted">-</span>}</div>
-                  {e.memo && <div className="muted small">{e.memo}</div>}
-                  {/* 좁은 화면에서는 결제 칸을 숨기고 여기에 함께 표시 */}
-                  <div className="muted small pay-inline">{PAYMENT_METHODS[e.paymentMethod]}</div>
-                </td>
-                <td className="muted small nowrap col-pay">{PAYMENT_METHODS[e.paymentMethod]}</td>
-                <td className="num nowrap col-amount">{won(e.amount)}</td>
-                <td className="actions">
-                  <button type="button" className="link" onClick={() => openEdit(e)}>
-                    수정
-                  </button>
-                  <button type="button" className="link danger" onClick={() => handleDelete(e)}>
-                    삭제
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {expenses.data?.length === 0 && (
-              <tr>
-                <td colSpan={6} className="muted center">
-                  {formatMonthLabel(month)} 지출 내역이 없습니다.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div className="tabs view-tabs" role="tablist" aria-label="가계부 화면">
+        <button type="button" role="tab" aria-selected={view === 'monthly'} className={view === 'monthly' ? 'active' : ''} onClick={() => changeView('monthly')}>
+          월별 내역
+        </button>
+        <button type="button" role="tab" aria-selected={view === 'fixed'} className={view === 'fixed' ? 'active' : ''} onClick={() => changeView('fixed')}>
+          고정지출 관리
+        </button>
       </div>
+
+      {view === 'fixed' ? (
+        <FixedExpensePanel onChanged={reloadAll} />
+      ) : (
+        <>
+          {summary.error && <ErrorMessage error={summary.error} />}
+          {summary.data && <SummaryCard summary={summary.data} onBudgetSaved={summary.reload} />}
+
+          {editing !== null && (
+            <form className="form card expense-form" onSubmit={handleSubmit}>
+              <h2>{editing === 'new' ? '변동지출 추가' : '지출 수정'}</h2>
+              <div className="row">
+                <label>
+                  날짜
+                  <input type="date" value={form.spentOn} onChange={(e) => set('spentOn', e.target.value)} required />
+                </label>
+                <label>
+                  금액 (원)
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="1"
+                    step="1"
+                    value={form.amount}
+                    onChange={(e) => set('amount', e.target.value)}
+                    autoFocus
+                    required
+                  />
+                </label>
+              </div>
+              <div className="row">
+                <label>
+                  카테고리
+                  <select value={form.category} onChange={(e) => set('category', e.target.value as ExpenseCategory)}>
+                    {Object.entries(EXPENSE_CATEGORIES).map(([k, v]) => (
+                      <option key={k} value={k}>
+                        {v}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  결제 수단
+                  <select value={form.paymentMethod} onChange={(e) => set('paymentMethod', e.target.value as PaymentMethod)}>
+                    {Object.entries(PAYMENT_METHODS).map(([k, v]) => (
+                      <option key={k} value={k}>
+                        {v}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <div className="row">
+                <label>
+                  사용처
+                  <input value={form.merchant} onChange={(e) => set('merchant', e.target.value)} maxLength={100} placeholder="예) 스타벅스" />
+                </label>
+                <label>
+                  메모
+                  <input value={form.memo} onChange={(e) => set('memo', e.target.value)} maxLength={500} />
+                </label>
+              </div>
+              {error && <p className="error pre">{error}</p>}
+              <div className="row end">
+                <button type="button" className="secondary" onClick={() => setEditing(null)}>
+                  {editing === 'new' ? '닫기' : '취소'}
+                </button>
+                <button type="submit">저장</button>
+              </div>
+            </form>
+          )}
+
+          {summary.data && (
+            <div className="expense-charts">
+              <CategoryWeights items={summary.data.byCategory} />
+              <MonthlyTrend trend={summary.data.trend} current={month} onSelect={goMonth} />
+            </div>
+          )}
+
+          {expenses.loading && <Loading />}
+          {expenses.error && <ErrorMessage error={expenses.error} />}
+          <div className="list-head">
+            <div className="tabs" role="group" aria-label="지출 구분">
+              {KIND_FILTERS.map(([k, label]) => (
+                <button key={k} type="button" className={kindFilter === k ? 'active' : ''} aria-pressed={kindFilter === k} onClick={() => setKindFilter(k)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <span className="muted small">
+              {visible.length}건 · {won(visible.reduce((sum, e) => sum + e.amount, 0))}
+            </span>
+          </div>
+          <div className="table-wrap">
+            <table className="expense-table">
+              <thead>
+                <tr>
+                  <th>날짜</th>
+                  <th>카테고리</th>
+                  <th>내용</th>
+                  <th className="col-pay">결제</th>
+                  <th className="num">금액</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {visible.map((e) => (
+                  <tr key={e.id}>
+                    <td className="nowrap col-date">{formatDay(e.spentOn)}</td>
+                    <td className="nowrap col-cat">
+                      {e.kind === 'FIXED' && <span className="badge-fixed">고정</span>}
+                      {EXPENSE_CATEGORIES[e.category]}
+                    </td>
+                    <td className="col-content">
+                      <div>{e.merchant ?? <span className="muted">-</span>}</div>
+                      {e.memo && <div className="muted small">{e.memo}</div>}
+                      {/* 좁은 화면에서는 결제 칸을 숨기고 여기에 함께 표시 */}
+                      <div className="muted small pay-inline">{PAYMENT_METHODS[e.paymentMethod]}</div>
+                    </td>
+                    <td className="muted small nowrap col-pay">{PAYMENT_METHODS[e.paymentMethod]}</td>
+                    <td className="num nowrap col-amount">{won(e.amount)}</td>
+                    <td className="actions">
+                      <button type="button" className="link" onClick={() => openEdit(e)}>
+                        수정
+                      </button>
+                      <button type="button" className="link danger" onClick={() => handleDelete(e)}>
+                        삭제
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {expenses.data && visible.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="muted center">
+                      {formatMonthLabel(month)} {kindFilter === 'FIXED' ? '고정' : kindFilter === 'VARIABLE' ? '변동' : ''}지출 내역이 없습니다.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </>
   )
 }
