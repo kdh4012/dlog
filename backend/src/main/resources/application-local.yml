@@ -1,0 +1,14 @@
+# 로컬 개발 전용 기본값 (docker-compose 의 PostgreSQL 기준). 운영에서 사용 금지.
+spring:
+  datasource:
+    password: ${DB_PASSWORD:dlog}
+  jpa:
+    show-sql: true
+
+dlog:
+  jwt:
+    secret: ${JWT_SECRET:local-dev-secret-key-change-me-0123456789abcdef}
+  admin:
+    username: ${ADMIN_USERNAME:admin}
+    # 비밀번호: dlog1234
+    password-hash: ${ADMIN_PASSWORD_HASH:$2a$10$tCO36zFZcMjDQcCXFf7VI.43pA14A7tKk1/.xWDTcrEv09uFYQevG}

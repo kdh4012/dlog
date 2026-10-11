@@ -1,0 +1,39 @@
+# 로컬 개발: docker compose up -d db
+# 전체 실행: docker compose --profile app up -d --build  (.env 필요)
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: dlog
+      POSTGRES_USER: dlog
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-dlog}
+    ports:
+      - "5432:5432"
+    volumes:
+      - dlog-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dlog -d dlog"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  app:
+    profiles: ["app"]
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/dlog
+      DB_USERNAME: dlog
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD 필요}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET 필요}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:?ADMIN_USERNAME 필요}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?ADMIN_PASSWORD_HASH 필요}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  dlog-db:

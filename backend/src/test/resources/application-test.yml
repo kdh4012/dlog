@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:dlog;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+dlog:
+  jwt:
+    secret: test-secret-key-0123456789abcdef0123456789
+    expiration-minutes: 60
+  admin:
+    username: admin
+    # 비밀번호: dlog1234
+    password-hash: $2a$10$tCO36zFZcMjDQcCXFf7VI.43pA14A7tKk1/.xWDTcrEv09uFYQevG
