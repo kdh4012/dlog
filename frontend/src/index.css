@@ -918,3 +918,217 @@ th {
     gap: 4px;
   }
 }
+
+/* ---------- 가계부 ---------- */
+.card-title {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.month-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.month-nav button {
+  padding: 4px 12px;
+}
+
+.month-nav strong {
+  min-width: 96px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.budget {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 6px;
+  max-width: 520px;
+}
+
+.budget-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.9rem;
+}
+
+.budget-bar {
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.budget-bar.over > span {
+  background: var(--up);
+}
+
+.budget > button.link {
+  justify-self: start;
+  font-size: 0.85rem;
+}
+
+.budget-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.budget-form input {
+  flex: 1 1 200px;
+}
+
+/* 카테고리 비중 + 월별 추이 */
+.expense-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.weights.wide li {
+  grid-template-columns: 84px 1fr auto 48px;
+}
+
+.weights .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.trend {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+  height: 160px;
+}
+
+.trend-item,
+.trend-item:not(:disabled):hover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.trend-amount {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.trend-bar {
+  flex: 1;
+  width: 60%;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 4px;
+  background: #f0f0ec;
+  overflow: hidden;
+}
+
+.trend-bar > span {
+  display: block;
+  width: 100%;
+  background: #c7cff3;
+}
+
+.trend-item.active {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+.trend-item.active .trend-bar > span {
+  background: var(--accent);
+}
+
+.expense-form {
+  margin-top: 16px;
+}
+
+.expense-table .col-content {
+  min-width: 120px;
+  word-break: keep-all;
+}
+
+.expense-table .pay-inline {
+  display: none;
+}
+
+/* 좁은 화면: 표 대신 한 건씩 카드형 줄로 표시
+   [날짜]      [내용(사용처/메모/결제)]  [금액]
+   [카테고리]                         [수정 삭제] */
+@media (max-width: 640px) {
+  .expense-table thead,
+  .expense-table .col-pay {
+    display: none;
+  }
+
+  .expense-table .pay-inline {
+    display: block;
+  }
+
+  .expense-table tbody tr {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      'date content amount'
+      'cat content actions';
+    column-gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .expense-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .expense-table tbody td {
+    padding: 0;
+    border: none;
+  }
+
+  .expense-table .col-date {
+    grid-area: date;
+  }
+
+  .expense-table .col-cat {
+    grid-area: cat;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  .expense-table .col-content {
+    grid-area: content;
+    min-width: 0;
+  }
+
+  .expense-table .col-amount {
+    grid-area: amount;
+    font-weight: 600;
+  }
+
+  .expense-table .actions {
+    grid-area: actions;
+    justify-self: end;
+    font-size: 0.8rem;
+  }
+
+  /* 내역이 없을 때 안내 행은 그대로 한 칸 */
+  .expense-table tbody tr:has(td[colspan]) {
+    display: table-row;
+  }
+}

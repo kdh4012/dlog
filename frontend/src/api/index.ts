@@ -3,6 +3,9 @@ import type {
   Asset,
   AssetRequest,
   AssetSummary,
+  Expense,
+  ExpenseRequest,
+  ExpenseSummary,
   PageResponse,
   Post,
   PostRequest,
@@ -46,4 +49,14 @@ export const assetApi = {
   remove: (id: number) => http.delete(`/assets/${id}`),
   syncStatuses: () => http.get<SyncStatus[]>('/assets/sync'),
   sync: () => http.post<SyncStatus[]>('/assets/sync', {}),
+}
+
+export const expenseApi = {
+  list: (month: string) => http.get<Expense[]>(`/expenses?month=${month}`),
+  summary: (month: string) => http.get<ExpenseSummary>(`/expenses/summary?month=${month}`),
+  create: (body: ExpenseRequest) => http.post<Expense>('/expenses', body),
+  update: (id: number, body: ExpenseRequest) => http.put<Expense>(`/expenses/${id}`, body),
+  remove: (id: number) => http.delete(`/expenses/${id}`),
+  /** amount 0 이면 해당 월 예산 삭제 (이전 달 예산을 이어서 사용) */
+  setBudget: (month: string, amount: number) => http.put<void>('/expenses/budget', { month, amount }),
 }

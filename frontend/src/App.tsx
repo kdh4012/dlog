@@ -3,6 +3,7 @@ import { AuthProvider } from './auth/AuthContext'
 import Layout from './components/Layout'
 import RequireAdmin from './components/RequireAdmin'
 import AssetPage from './pages/AssetPage'
+import ExpensePage from './pages/ExpensePage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import NotFoundPage from './pages/NotFoundPage'
@@ -31,6 +32,7 @@ export default function App() {
               <Route path="work-logs/new" element={<WorkLogEditPage />} />
               <Route path="work-logs/:id/edit" element={<WorkLogEditPage />} />
               <Route path="assets" element={<AssetPage />} />
+              <Route path="expenses" element={<ExpensePage />} />
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />

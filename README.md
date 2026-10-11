@@ -7,6 +7,7 @@
 | 블로그 (마크다운) | 공개 글은 누구나, 비공개 글은 관리자만 |
 | 작업 기록 (프로젝트 이력 타임라인) | 누구나 조회, 수정은 관리자만 |
 | 자산 포트폴리오 (통화별 평가금액·수익률·유형별 비중, 원화·달러 환산 합계, 업비트·토스증권 자동 동기화) | **관리자만** |
+| 가계부 (월별 지출 입력, 카테고리별 비중, 전월 대비, 월 예산 사용률, 최근 6개월 추이) | **관리자만** |
 
 ## 기술 스택
 
@@ -23,6 +24,7 @@ dlog/
 │   ├── post/           블로그
 │   ├── worklog/        작업 기록
 │   ├── asset/          자산 포트폴리오
+│   ├── expense/        가계부 (지출, 월 예산)
 │   │   ├── sync/       업비트·토스증권 보유 자산 동기화 (upbit/, toss/)
 │   │   └── fx/         원화·달러 환산용 환율 (ECB, 1시간 캐시)
 │   ├── global/         보안, 예외 처리, 공통 엔티티, SPA 라우팅
@@ -220,3 +222,6 @@ cd frontend && npm run lint && npm run build
 | POST/PUT/DELETE | `/api/assets[/{id}]` (동기화 자산은 PUT/DELETE 시 409) | 관리자 |
 | GET | `/api/assets/sync` — 출처별 마지막 동기화 상태 | 관리자 |
 | POST | `/api/assets/sync` — 즉시 동기화 | 관리자 |
+| GET | `/api/expenses?month=yyyy-MM`, `/api/expenses/summary?month=yyyy-MM` | 관리자 |
+| POST/PUT/DELETE | `/api/expenses[/{id}]` | 관리자 |
+| PUT | `/api/expenses/budget` (`{"month":"yyyy-MM","amount":0}` 이면 해당 월 예산 삭제) | 관리자 |

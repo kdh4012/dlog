@@ -151,3 +151,62 @@ export interface TypeWeight {
   /** 비중(%) */
   weight: number
 }
+
+export const EXPENSE_CATEGORIES = {
+  FOOD: '식비',
+  CAFE: '카페·간식',
+  LIVING: '생활·마트',
+  TRANSPORT: '교통·차량',
+  HOUSING: '주거·관리비',
+  COMMUNICATION: '통신',
+  SUBSCRIPTION: '구독',
+  MEDICAL: '의료·건강',
+  SHOPPING: '쇼핑',
+  CULTURE: '문화·여가',
+  TRAVEL: '여행',
+  EDUCATION: '교육',
+  GIFT: '경조사·선물',
+  INSURANCE: '보험',
+  ETC: '기타',
+} as const
+export type ExpenseCategory = keyof typeof EXPENSE_CATEGORIES
+
+export const PAYMENT_METHODS = {
+  CARD: '카드',
+  CASH: '현금',
+  TRANSFER: '계좌이체',
+  ETC: '기타',
+} as const
+export type PaymentMethod = keyof typeof PAYMENT_METHODS
+
+export interface Expense {
+  id: number
+  spentOn: string
+  amount: number
+  category: ExpenseCategory
+  paymentMethod: PaymentMethod
+  merchant: string | null
+  memo: string | null
+}
+
+export interface ExpenseRequest {
+  spentOn: string
+  amount: string
+  category: ExpenseCategory
+  paymentMethod: PaymentMethod
+  merchant: string
+  memo: string
+}
+
+export interface ExpenseSummary {
+  month: string
+  total: number
+  count: number
+  previousTotal: number
+  changeRate: number | null
+  budget: number | null
+  budgetMonth: string | null
+  budgetUsedRate: number | null
+  byCategory: { category: ExpenseCategory; amount: number; count: number; weight: number }[]
+  trend: { month: string; total: number }[]
+}

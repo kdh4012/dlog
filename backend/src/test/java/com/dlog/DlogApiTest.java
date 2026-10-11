@@ -51,6 +51,12 @@ class DlogApiTest {
     }
 
     @Test
+    void 지출은_비로그인시_401() throws Exception {
+        mvc.perform(get("/api/expenses")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/expenses/summary")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void 게시글_작성은_비로그인시_401() throws Exception {
         mvc.perform(post("/api/posts")
                         .contentType(MediaType.APPLICATION_JSON)
