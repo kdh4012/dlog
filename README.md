@@ -36,7 +36,7 @@ dlog/
 # 1. DB
 docker compose up -d db
 
-# 2. Backend (http://localhost:8080, local 프로파일 자동 적용)
+# 2. Backend (http://localhost:8080, 프로파일 미지정 시 local 적용 → IntelliJ 에서 DlogApplication 바로 실행 가능)
 cd backend
 ./gradlew bootRun          # Windows: gradlew.bat bootRun
 

@@ -1,6 +1,9 @@
 spring:
   application:
     name: dlog
+  profiles:
+    # 프로파일 미지정 시(IDE 실행 등) local 로 동작. 운영(Docker)은 SPRING_PROFILES_ACTIVE=prod
+    default: local
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/dlog}
     username: ${DB_USERNAME:dlog}

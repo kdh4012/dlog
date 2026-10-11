@@ -49,11 +49,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-// 로컬 실행 시 local 프로파일 사용
-tasks.named('bootRun') {
-    systemProperty 'spring.profiles.active', System.getenv('SPRING_PROFILES_ACTIVE') ?: 'local'
-}
-
 // 관리자 비밀번호 BCrypt 해시 생성: ./gradlew -q hashPassword -Ppw=비밀번호
 tasks.register('hashPassword', JavaExec) {
     group = 'dlog'

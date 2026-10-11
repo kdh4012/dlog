@@ -22,5 +22,7 @@ WORKDIR /app
 RUN useradd --system --uid 1001 dlog
 COPY --from=backend /app/build/libs/*.jar app.jar
 USER dlog
+# local 기본값이 적용되지 않도록 운영 프로파일 지정 (환경 변수 누락 시 기동 실패)
+ENV SPRING_PROFILES_ACTIVE=prod
 EXPOSE 8080
 ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "app.jar"]
