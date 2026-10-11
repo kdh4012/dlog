@@ -1,0 +1,14 @@
+[Unit]
+Description=DLog backend
+After=network.target postgresql.service
+
+[Service]
+User=dlog
+EnvironmentFile=/etc/dlog.env
+# 1GB 서버를 복순 앱, PostgreSQL, nginx 와 나눠 쓰므로 힙을 작게 제한한다.
+ExecStart=/usr/bin/java -Xms64m -Xmx256m -XX:+UseSerialGC -jar /opt/dlog/dlog.jar
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

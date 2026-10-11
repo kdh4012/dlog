@@ -1,0 +1,76 @@
+# main 브랜치에 푸시되면 테스트 후 복순 서버에 DLog 를 배포한다. (Actions 화면에서 수동 실행도 가능)
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+# 배포가 겹치면 서버 파일을 동시에 덮어쓰게 되므로 한 번에 하나씩만 실행한다.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'   # 운영 서버와 같은 버전으로 테스트
+      - uses: gradle/actions/setup-gradle@v4
+      - name: 백엔드 테스트
+        working-directory: backend
+        run: ./gradlew test --console=plain
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: 프론트엔드 lint / 빌드
+        working-directory: frontend
+        run: npm ci && npm run lint && npm run build
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: 서버에 배포
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          # 관리자 비밀번호 BCrypt 해시 (최초 배포 시 필수). 이후엔 비워도 서버 값 유지
+          ADMIN_PASSWORD_HASH: ${{ secrets.ADMIN_PASSWORD_HASH }}
+          # 자산 동기화 키. 없으면 서버 설정을 건드리지 않는다.
+          UPBIT_ACCESS_KEY: ${{ secrets.UPBIT_ACCESS_KEY }}
+          UPBIT_SECRET_KEY: ${{ secrets.UPBIT_SECRET_KEY }}
+          TOSS_CLIENT_ID: ${{ secrets.TOSS_CLIENT_ID }}
+          TOSS_CLIENT_SECRET: ${{ secrets.TOSS_CLIENT_SECRET }}
+        run: |
+          if [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_SSH_KEY" ]; then
+            echo "::warning::DEPLOY_HOST / DEPLOY_SSH_KEY Secret 이 없어 배포를 건너뜁니다."
+            exit 0
+          fi
+          key="$RUNNER_TEMP/deploy_key"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$key"
+          chmod 600 "$key"
+          bash deploy/deploy.sh "$DEPLOY_HOST" "$key"
+          rm -f "$key"

@@ -77,7 +77,7 @@ class AssetSyncApiTest {
     @Test
     void 동기화_자산은_수정_삭제_불가() throws Exception {
         assetService.replaceSynced(AssetSource.UPBIT, List.of(btc("0.01")));
-        Long id = assetRepository.findAllBySource(AssetSource.UPBIT).getFirst().getId();
+        Long id = assetRepository.findAllBySource(AssetSource.UPBIT).get(0).getId();
 
         mvc.perform(put("/api/assets/" + id).contentType(MediaType.APPLICATION_JSON).content("""
                         {"assetType":"CRYPTO","name":"x","quantity":1,"avgPrice":1,"currentPrice":1,"currency":"KRW"}"""))

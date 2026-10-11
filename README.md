@@ -10,7 +10,7 @@
 
 ## 기술 스택
 
-- **Backend**: Java 21, Spring Boot 4, Spring Data JPA, Spring Security + JWT, Flyway
+- **Backend**: Java 17+ (17 바이트코드로 빌드, 개발은 JDK 21 가능), Spring Boot 4, Spring Data JPA, Spring Security + JWT, Flyway
 - **Frontend**: React 19, TypeScript, Vite, React Router
 - **DB**: PostgreSQL 16 (운영), H2 (로컬 개발)
 
@@ -28,6 +28,7 @@ dlog/
 │   ├── global/         보안, 예외 처리, 공통 엔티티, SPA 라우팅
 │   └── resources/db/migration   Flyway 스키마
 ├── frontend/           React SPA
+├── deploy/             복순 서버 동거 배포 (nginx, systemd, 배포 스크립트)
 ├── Dockerfile          프론트 + 백엔드를 단일 jar 이미지로 빌드
 └── docker-compose.yml  운영용 PostgreSQL + app
 ```
@@ -118,7 +119,7 @@ TOSS_CLIENT_ID=발급받은_client_id
 TOSS_CLIENT_SECRET=발급받은_client_secret
 ```
 
-운영(Docker)은 `.env` 의 같은 이름 변수로 넣습니다.
+운영 서버는 같은 이름의 GitHub Secret 으로 넣으면 배포 때 서버 `/etc/dlog.env` 로 옮겨집니다 (아래 '서버 배포'). Docker 로 띄울 때는 `.env` 의 같은 이름 변수로 넣습니다.
 
 ## 관리자 계정
 
@@ -127,6 +128,56 @@ TOSS_CLIENT_SECRET=발급받은_client_secret
 ```bash
 cd backend
 ./gradlew -q hashPassword -Ppw='내비밀번호'   # 출력된 BCrypt 해시를 ADMIN_PASSWORD_HASH 로 사용
+```
+
+## 서버 배포 (복순 서버에 함께 배포)
+
+복순 앱이 돌고 있는 VPS(Ubuntu, 1GB) 에 DLog 를 함께 올립니다. 복순 설정 파일은 건드리지 않고, **포트로 주소를 나눕니다.**
+
+| | 복순 | DLog |
+|---|---|---|
+| 접속 주소 | `https://<도메인>` (443) | `https://<도메인>:8443` |
+| 백엔드 (서버 내부 전용) | `127.0.0.1:8080` | `127.0.0.1:8081` |
+| DB (같은 PostgreSQL) | `boksoon` | `dlog` |
+| 서비스 / 설정 | `boksoon.service`, `/etc/boksoon.env` | `dlog.service`, `/etc/dlog.env` |
+| nginx | `sites-available/boksoon`, `conf.d/boksoon-https.conf` | `sites-available/dlog`, `snippets/dlog-app.conf` |
+
+- HTTPS 인증서는 복순이 쓰는 Let's Encrypt 인증서(`conf.d/boksoon-https.conf` 에서 경로를 읽음)를 8443 에서 재사용합니다. 인증서는 도메인 기준이라 포트가 달라도 그대로 쓸 수 있습니다.
+- 복순에 HTTPS 가 아직 없으면 `http://<서버IP>:8443` 로 열립니다(배포 로그에 경고). 복순 `deploy/enable-https.sh` 실행 후 다시 배포하면 HTTPS 로 바뀝니다.
+- 서버 Java 가 17 이라 DLog 도 17 바이트코드로 빌드합니다. 힙은 256MB 로 제한합니다.
+
+### 최초 1회 준비
+
+1. **GitHub Secrets 등록** (dlog 저장소 > Settings > Secrets and variables > Actions). Secret 은 저장소마다 따로라서 복순과 같은 값을 다시 넣어야 합니다.
+
+   | Secret | 값 |
+   |---|---|
+   | `DEPLOY_HOST` | 복순과 같은 서버 IP |
+   | `DEPLOY_SSH_KEY` | 복순과 같은 배포용 SSH 개인키 |
+   | `ADMIN_PASSWORD_HASH` | `./gradlew -q hashPassword -Ppw='비밀번호'` 출력값 (최초 배포 필수) |
+   | `UPBIT_ACCESS_KEY` 등 | 자산 동기화 키 (선택) |
+
+2. **방화벽**: 배포 스크립트가 서버 ufw 에서 8443 을 엽니다. Vultr 콘솔의 Firewall 그룹을 쓰고 있다면 거기서도 TCP 8443 을 허용해야 합니다.
+3. **업비트·토스 허용 IP** 에 서버 공인 IP 를 등록합니다.
+
+### 배포
+
+`main` 에 푸시하면 `.github/workflows/deploy.yml` 이 테스트(Java 17)·프론트 빌드 후 `deploy/deploy.sh` 로 배포합니다. `*.md` 만 바뀐 푸시는 배포하지 않으며, Actions 탭에서 수동 실행도 됩니다. `DEPLOY_HOST` Secret 이 없으면 배포 단계는 건너뜁니다.
+
+로컬(Git Bash) 에서 직접 배포할 수도 있습니다.
+
+```bash
+ADMIN_PASSWORD_HASH='$2a$10$...' ./deploy/deploy.sh <서버IP> <개인키 경로>
+```
+
+배포 스크립트는 매번 `deploy/setup.sh` 를 서버에서 실행합니다(여러 번 실행해도 안전). 처음 실행 시 `dlog` 시스템 계정, DB 계정·DB, `/etc/dlog.env`(DB 비밀번호와 JWT 키는 서버에서 랜덤 생성), systemd 서비스, nginx 설정을 만듭니다.
+
+### 서버에서 확인
+
+```bash
+systemctl status dlog
+journalctl -u dlog -n 100        # 기동 실패 시 원인 확인
+sudo cat /etc/dlog.env           # 설정값 (비밀값 포함, 외부 공유 금지)
 ```
 
 ## 운영 배포 (Docker)
