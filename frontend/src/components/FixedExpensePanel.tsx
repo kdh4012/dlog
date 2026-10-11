@@ -1,14 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { fixedExpenseApi } from '../api'
 import { ApiError } from '../api/client'
-import {
-  EXPENSE_CATEGORIES,
-  PAYMENT_METHODS,
-  type ExpenseCategory,
-  type FixedExpense,
-  type FixedExpenseRequest,
-  type PaymentMethod,
-} from '../api/types'
+import { EXPENSE_CATEGORIES, type ExpenseCategory, type FixedExpense, type FixedExpenseRequest } from '../api/types'
 import { formatMonthShort, thisMonth, won } from '../utils/expense'
 import { useAsync } from '../utils/useAsync'
 import { ErrorMessage, Loading } from './Status'
@@ -16,9 +9,7 @@ import { ErrorMessage, Loading } from './Status'
 const emptyForm = (): FixedExpenseRequest => ({
   name: '',
   amount: '',
-  dayOfMonth: '1',
   category: 'HOUSING',
-  paymentMethod: 'TRANSFER',
   startMonth: thisMonth(),
   endMonth: '',
   memo: '',
@@ -27,9 +18,7 @@ const emptyForm = (): FixedExpenseRequest => ({
 const toForm = (f: FixedExpense): FixedExpenseRequest => ({
   name: f.name,
   amount: String(f.amount),
-  dayOfMonth: String(f.dayOfMonth),
   category: f.category,
-  paymentMethod: f.paymentMethod,
   startMonth: f.startMonth,
   endMonth: f.endMonth ?? '',
   memo: f.memo ?? '',
@@ -39,7 +28,7 @@ const formatPeriod = (f: FixedExpense) =>
   `${formatMonthShort(f.startMonth)} ~ ${f.endMonth ? formatMonthShort(f.endMonth) : '계속'}`
 
 /**
- * 고정지출 관리. 등록해 두면 가계부에서 해당 월을 열 때 매월 결제일에 지출 내역으로 자동 반영된다.
+ * 고정지출 관리. 등록해 두면 가계부에서 해당 월을 열 때 매월 1일 날짜로 지출 내역에 자동 반영된다.
  * onChanged: 등록·수정·삭제 후 지출 목록/요약을 다시 불러오게 하는 콜백
  */
 export default function FixedExpensePanel({ onChanged }: { onChanged: () => void }) {
@@ -97,7 +86,7 @@ export default function FixedExpensePanel({ onChanged }: { onChanged: () => void
         <div>
           <h2 className="card-title">고정지출</h2>
           <p className="muted small">
-            매월 결제일에 지출 내역으로 자동 반영됩니다. 반영된 내역은 그 달 것만 따로 수정·삭제할 수 있습니다.
+            매월 1일 날짜로 지출 내역에 자동 반영됩니다. 반영된 내역은 그 달 것만 따로 수정·삭제할 수 있습니다.
           </p>
         </div>
         <button type="button" onClick={openNew}>
@@ -123,31 +112,9 @@ export default function FixedExpensePanel({ onChanged }: { onChanged: () => void
               <input type="number" inputMode="numeric" min="1" step="1" value={form.amount} onChange={(e) => set('amount', e.target.value)} required />
             </label>
             <label>
-              매월 결제일
-              <select value={form.dayOfMonth} onChange={(e) => set('dayOfMonth', e.target.value)}>
-                {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-                  <option key={d} value={d}>
-                    {d === 31 ? '말일' : `${d}일`}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="row">
-            <label>
               카테고리
               <select value={form.category} onChange={(e) => set('category', e.target.value as ExpenseCategory)}>
                 {Object.entries(EXPENSE_CATEGORIES).map(([k, v]) => (
-                  <option key={k} value={k}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              결제 수단
-              <select value={form.paymentMethod} onChange={(e) => set('paymentMethod', e.target.value as PaymentMethod)}>
-                {Object.entries(PAYMENT_METHODS).map(([k, v]) => (
                   <option key={k} value={k}>
                     {v}
                   </option>
@@ -191,11 +158,10 @@ export default function FixedExpensePanel({ onChanged }: { onChanged: () => void
         <ul className="fixed-list">
           {list.data.map((f) => (
             <li key={f.id} className={f.active ? '' : 'inactive'}>
-              <span className="fixed-day">{f.dayOfMonth === 31 ? '말일' : `${f.dayOfMonth}일`}</span>
               <span className="fixed-main">
                 <strong>{f.name}</strong>
                 <span className="muted small">
-                  {EXPENSE_CATEGORIES[f.category]} · {PAYMENT_METHODS[f.paymentMethod]} · {formatPeriod(f)}
+                  {EXPENSE_CATEGORIES[f.category]} · {formatPeriod(f)}
                   {!f.active && ' · 종료'}
                 </span>
               </span>

@@ -1234,7 +1234,7 @@ th {
 
 .fixed-list li {
   display: grid;
-  grid-template-columns: 44px 1fr auto auto;
+  grid-template-columns: 1fr auto auto;
   align-items: center;
   gap: 12px;
   padding: 12px 0;
@@ -1243,12 +1243,6 @@ th {
 
 .fixed-list li.inactive {
   opacity: 0.5;
-}
-
-.fixed-day {
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-variant-numeric: tabular-nums;
 }
 
 .fixed-main {
@@ -1262,14 +1256,10 @@ th {
 
 @media (max-width: 640px) {
   .fixed-list li {
-    grid-template-columns: 40px 1fr auto;
+    grid-template-columns: 1fr auto;
     grid-template-areas:
-      'day main amount'
-      'day main actions';
-  }
-
-  .fixed-day {
-    grid-area: day;
+      'main amount'
+      'main actions';
   }
 
   .fixed-main {

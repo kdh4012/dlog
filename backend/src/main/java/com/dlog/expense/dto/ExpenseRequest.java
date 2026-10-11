@@ -13,7 +13,7 @@ public record ExpenseRequest(
         @NotNull LocalDate spentOn,
         @NotNull @Positive @Max(1_000_000_000_000L) Long amount,
         @NotNull ExpenseCategory category,
-        @NotNull PaymentMethod paymentMethod,
+        PaymentMethod paymentMethod, // 선택 (고정지출 반영 내역은 비어 있을 수 있음)
         @Size(max = 100) String merchant,
         @Size(max = 500) String memo
 ) {

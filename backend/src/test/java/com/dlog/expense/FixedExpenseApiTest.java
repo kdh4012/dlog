@@ -44,23 +44,26 @@ class FixedExpenseApiTest {
     }
 
     /** 고정지출 등록 후 id 반환 */
-    private Integer createFixed(String name, long amount, int day, YearMonth start, YearMonth end) throws Exception {
+    private Integer createFixed(String name, long amount, YearMonth start, YearMonth end) throws Exception {
         String endJson = end == null ? "null" : "\"" + end + "\"";
-        String body = mvc.perform(post("/api/fixed-expenses").contentType(MediaType.APPLICATION_JSON).content("""
-                        {"name":"%s","amount":%d,"dayOfMonth":%d,"category":"HOUSING","paymentMethod":"TRANSFER",
-                         "startMonth":"%s","endMonth":%s}""".formatted(name, amount, day, start, endJson)))
+        String json = """
+                {"name":"%s","amount":%d,"category":"HOUSING","startMonth":"%s","endMonth":%s}"""
+                .formatted(name, amount, start, endJson);
+        String body = mvc.perform(post("/api/fixed-expenses").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         return JsonPath.read(body, "$.id");
     }
 
     @Test
-    void 등록하면_시작월부터_이번달까지_매월_반영되고_미래달은_만들지_않는다() throws Exception {
-        createFixed("월세", 500_000, 31, now.minusMonths(2), null);
+    void 등록하면_시작월부터_이번달까지_매월_1일로_반영되고_미래달은_만들지_않는다() throws Exception {
+        createFixed("월세", 500_000, now.minusMonths(2), null);
+        // 변동지출은 결제 수단 없이도 등록 가능
         mvc.perform(post("/api/expenses").contentType(MediaType.APPLICATION_JSON).content("""
-                        {"spentOn":"%s","amount":10000,"category":"FOOD","paymentMethod":"CARD"}""".formatted(now.atDay(1))))
+                        {"spentOn":"%s","amount":10000,"category":"FOOD"}""".formatted(now.atDay(2))))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.kind").value("VARIABLE"));
+                .andExpect(jsonPath("$.kind").value("VARIABLE"))
+                .andExpect(jsonPath("$.paymentMethod").value(nullValue()));
 
         // 요약 조회 시 최근 6개월 범위의 고정지출이 반영된다
         mvc.perform(get("/api/expenses/summary").param("month", now.toString()))
@@ -70,12 +73,13 @@ class FixedExpenseApiTest {
                 .andExpect(jsonPath("$.trend[3].total").value(500_000)) // 2달 전
                 .andExpect(jsonPath("$.trend[2].total").value(0));      // 시작 전 달
 
-        // 31일 결제는 짧은 달이면 말일로 반영
+        // 고정지출은 매월 1일, 결제 수단 없이 반영 (목록은 날짜 내림차순)
         mvc.perform(get("/api/expenses").param("month", now.toString()))
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].kind").value("FIXED"))
-                .andExpect(jsonPath("$[0].merchant").value("월세"))
-                .andExpect(jsonPath("$[0].spentOn").value(now.atEndOfMonth().toString()));
+                .andExpect(jsonPath("$[1].kind").value("FIXED"))
+                .andExpect(jsonPath("$[1].merchant").value("월세"))
+                .andExpect(jsonPath("$[1].spentOn").value(now.atDay(1).toString()))
+                .andExpect(jsonPath("$[1].paymentMethod").value(nullValue()));
 
         mvc.perform(get("/api/expenses").param("month", now.plusMonths(1).toString()))
                 .andExpect(jsonPath("$.length()").value(0));
@@ -87,7 +91,7 @@ class FixedExpenseApiTest {
 
     @Test
     void 반영된_내역은_그달만_수정되고_지우면_다시_생기지_않는다() throws Exception {
-        createFixed("관리비", 200_000, 10, now, null);
+        createFixed("관리비", 200_000, now, null);
         String list = mvc.perform(get("/api/expenses").param("month", now.toString()))
                 .andReturn().getResponse().getContentAsString();
         Integer expenseId = JsonPath.read(list, "$[0].id");
@@ -96,6 +100,7 @@ class FixedExpenseApiTest {
                         {"spentOn":"%s","amount":215000,"category":"HOUSING","paymentMethod":"TRANSFER","merchant":"관리비"}"""
                         .formatted(now.atDay(10))))
                 .andExpect(jsonPath("$.amount").value(215_000))
+                .andExpect(jsonPath("$.paymentMethod").value("TRANSFER"))
                 .andExpect(jsonPath("$.kind").value("FIXED"));
 
         mvc.perform(delete("/api/expenses/" + expenseId)).andExpect(status().isNoContent());
@@ -105,7 +110,7 @@ class FixedExpenseApiTest {
 
     @Test
     void 종료월이_지나면_반영하지_않고_비활성으로_표시() throws Exception {
-        createFixed("헬스장", 50_000, 1, now.minusMonths(3), now.minusMonths(1));
+        createFixed("헬스장", 50_000, now.minusMonths(3), now.minusMonths(1));
 
         mvc.perform(get("/api/expenses/summary").param("month", now.toString()))
                 .andExpect(jsonPath("$.fixedTotal").value(0))
@@ -117,7 +122,7 @@ class FixedExpenseApiTest {
 
     @Test
     void 템플릿을_지워도_지난_내역은_고정지출로_남는다() throws Exception {
-        Integer id = createFixed("보험", 80_000, 5, now, null);
+        Integer id = createFixed("보험", 80_000, now, null);
         mvc.perform(get("/api/expenses").param("month", now.toString()))
                 .andExpect(jsonPath("$[0].fixedExpenseId").value(id));
 
@@ -131,11 +136,10 @@ class FixedExpenseApiTest {
     @Test
     void 잘못된_입력은_400() throws Exception {
         mvc.perform(post("/api/fixed-expenses").contentType(MediaType.APPLICATION_JSON).content("""
-                        {"name":"x","amount":1000,"dayOfMonth":32,"category":"ETC","paymentMethod":"CARD","startMonth":"2026-10"}"""))
+                        {"name":"x","amount":0,"category":"ETC","startMonth":"2026-10"}"""))
                 .andExpect(status().isBadRequest());
         mvc.perform(post("/api/fixed-expenses").contentType(MediaType.APPLICATION_JSON).content("""
-                        {"name":"x","amount":1000,"dayOfMonth":1,"category":"ETC","paymentMethod":"CARD",
-                         "startMonth":"2026-10","endMonth":"2026-09"}"""))
+                        {"name":"x","amount":1000,"category":"ETC","startMonth":"2026-10","endMonth":"2026-09"}"""))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"));
         mvc.perform(get("/api/fixed-expenses")).andExpect(status().isOk());

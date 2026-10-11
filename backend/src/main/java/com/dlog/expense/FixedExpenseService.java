@@ -30,7 +30,7 @@ public class FixedExpenseService {
 
     public List<FixedExpenseResponse> getAll() {
         YearMonth now = thisMonth();
-        return fixedExpenseRepository.findAllByOrderByDayOfMonthAscIdAsc().stream()
+        return fixedExpenseRepository.findAllByOrderByIdAsc().stream()
                 .map(f -> FixedExpenseResponse.from(f, now))
                 .toList();
     }
@@ -64,9 +64,7 @@ public class FixedExpenseService {
         FixedExpense f = FixedExpense.builder()
                 .name(r.name().trim())
                 .amount(r.amount())
-                .dayOfMonth(r.dayOfMonth())
                 .category(r.category())
-                .paymentMethod(r.paymentMethod())
                 .startMonth(r.startMonth())
                 .endMonth(r.endMonth())
                 .memo(blankToNull(r.memo()))
@@ -78,7 +76,7 @@ public class FixedExpenseService {
     @Transactional
     public FixedExpenseResponse update(Long id, FixedExpenseRequest r) {
         FixedExpense f = findById(id);
-        f.update(r.name().trim(), r.amount(), r.dayOfMonth(), r.category(), r.paymentMethod(),
+        f.update(r.name().trim(), r.amount(), r.category(),
                 r.startMonth(), r.endMonth(), blankToNull(r.memo()));
         return FixedExpenseResponse.from(f, thisMonth());
     }

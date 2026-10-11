@@ -186,7 +186,8 @@ export interface Expense {
   spentOn: string
   amount: number
   category: ExpenseCategory
-  paymentMethod: PaymentMethod
+  /** 고정지출에서 반영된 내역은 비어 있을 수 있다 */
+  paymentMethod: PaymentMethod | null
   merchant: string | null
   memo: string | null
   /** FIXED: 고정지출에서 매월 반영된 내역, VARIABLE: 직접 입력 */
@@ -198,7 +199,8 @@ export interface ExpenseRequest {
   spentOn: string
   amount: string
   category: ExpenseCategory
-  paymentMethod: PaymentMethod
+  /** '' 이면 선택 안 함 (null 로 전송) */
+  paymentMethod: PaymentMethod | ''
   merchant: string
   memo: string
 }
@@ -222,9 +224,7 @@ export interface FixedExpense {
   id: number
   name: string
   amount: number
-  dayOfMonth: number
   category: ExpenseCategory
-  paymentMethod: PaymentMethod
   startMonth: string
   endMonth: string | null
   memo: string | null
@@ -235,9 +235,7 @@ export interface FixedExpense {
 export interface FixedExpenseRequest {
   name: string
   amount: string
-  dayOfMonth: string
   category: ExpenseCategory
-  paymentMethod: PaymentMethod
   startMonth: string
   endMonth: string
   memo: string

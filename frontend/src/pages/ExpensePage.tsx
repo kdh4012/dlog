@@ -40,7 +40,7 @@ const toForm = (e: Expense): ExpenseRequest => ({
   spentOn: e.spentOn,
   amount: String(e.amount),
   category: e.category,
-  paymentMethod: e.paymentMethod,
+  paymentMethod: e.paymentMethod ?? '',
   merchant: e.merchant ?? '',
   memo: e.memo ?? '',
 })
@@ -360,7 +360,8 @@ export default function ExpensePage() {
                 </label>
                 <label>
                   결제 수단
-                  <select value={form.paymentMethod} onChange={(e) => set('paymentMethod', e.target.value as PaymentMethod)}>
+                  <select value={form.paymentMethod} onChange={(e) => set('paymentMethod', e.target.value as PaymentMethod | '')}>
+                <option value="">선택 안 함</option>
                     {Object.entries(PAYMENT_METHODS).map(([k, v]) => (
                       <option key={k} value={k}>
                         {v}
@@ -434,9 +435,9 @@ export default function ExpensePage() {
                       <div>{e.merchant ?? <span className="muted">-</span>}</div>
                       {e.memo && <div className="muted small">{e.memo}</div>}
                       {/* 좁은 화면에서는 결제 칸을 숨기고 여기에 함께 표시 */}
-                      <div className="muted small pay-inline">{PAYMENT_METHODS[e.paymentMethod]}</div>
+                      {e.paymentMethod && <div className="muted small pay-inline">{PAYMENT_METHODS[e.paymentMethod]}</div>}
                     </td>
-                    <td className="muted small nowrap col-pay">{PAYMENT_METHODS[e.paymentMethod]}</td>
+                    <td className="muted small nowrap col-pay">{e.paymentMethod ? PAYMENT_METHODS[e.paymentMethod] : '-'}</td>
                     <td className="num nowrap col-amount">{won(e.amount)}</td>
                     <td className="actions">
                       <button type="button" className="link" onClick={() => openEdit(e)}>

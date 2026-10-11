@@ -38,8 +38,9 @@ public class Expense extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private ExpenseCategory category;
 
+    /** 결제 수단. 고정지출에서 반영된 내역은 비어 있을 수 있다 */
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private PaymentMethod paymentMethod;
 
     /** 사용처 (가게 이름 등) */
@@ -71,7 +72,7 @@ public class Expense extends BaseTimeEntity {
 
     /** 해당 월 고정지출 템플릿으로부터 반영 내역 생성 */
     public static Expense fromFixed(FixedExpense f, java.time.YearMonth month) {
-        return new Expense(f.dateIn(month), f.getAmount(), f.getCategory(), f.getPaymentMethod(),
+        return new Expense(f.dateIn(month), f.getAmount(), f.getCategory(), null,
                 f.getName(), f.getMemo(), ExpenseKind.FIXED, f.getId());
     }
 

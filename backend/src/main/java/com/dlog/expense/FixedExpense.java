@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
-/** 고정지출 템플릿. 매월 dayOfMonth 에 지출 내역으로 반영된다 */
+/** 고정지출 템플릿. 매월 1일 날짜로 지출 내역에 반영된다 */
 @Getter
 @Entity
 @Table(name = "fixed_expense")
@@ -34,17 +34,9 @@ public class FixedExpense extends BaseTimeEntity {
     @Column(nullable = false)
     private long amount;
 
-    /** 1~31. 해당 월에 없는 날짜면 말일로 반영 */
-    @Column(nullable = false)
-    private int dayOfMonth;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ExpenseCategory category;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private PaymentMethod paymentMethod;
 
     /** yyyy-MM */
     @Column(nullable = false, length = 7)
@@ -58,18 +50,16 @@ public class FixedExpense extends BaseTimeEntity {
     private String memo;
 
     @Builder
-    private FixedExpense(String name, long amount, int dayOfMonth, ExpenseCategory category,
-                         PaymentMethod paymentMethod, YearMonth startMonth, YearMonth endMonth, String memo) {
-        update(name, amount, dayOfMonth, category, paymentMethod, startMonth, endMonth, memo);
+    private FixedExpense(String name, long amount, ExpenseCategory category,
+                         YearMonth startMonth, YearMonth endMonth, String memo) {
+        update(name, amount, category, startMonth, endMonth, memo);
     }
 
-    public void update(String name, long amount, int dayOfMonth, ExpenseCategory category,
-                       PaymentMethod paymentMethod, YearMonth startMonth, YearMonth endMonth, String memo) {
+    public void update(String name, long amount, ExpenseCategory category,
+                       YearMonth startMonth, YearMonth endMonth, String memo) {
         this.name = name;
         this.amount = amount;
-        this.dayOfMonth = dayOfMonth;
         this.category = category;
-        this.paymentMethod = paymentMethod;
         this.startMonth = startMonth.toString();
         this.endMonth = endMonth == null ? null : endMonth.toString();
         this.memo = memo;
@@ -88,8 +78,8 @@ public class FixedExpense extends BaseTimeEntity {
         return !month.isBefore(startYearMonth()) && (endMonth == null || !month.isAfter(endYearMonth()));
     }
 
-    /** 해당 월의 결제일 (말일 보정) */
+    /** 해당 월에 반영될 날짜 (매월 1일) */
     public LocalDate dateIn(YearMonth month) {
-        return month.atDay(Math.min(dayOfMonth, month.lengthOfMonth()));
+        return month.atDay(1);
     }
 }
