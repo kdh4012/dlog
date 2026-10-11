@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface FixedExpenseRepository extends JpaRepository<FixedExpense, Long> {
 
-    List<FixedExpense> findAllByOrderByIdAsc();
+    /** 금액 큰 순 (같으면 먼저 등록한 순) */
+    List<FixedExpense> findAllByOrderByAmountDescIdAsc();
 }

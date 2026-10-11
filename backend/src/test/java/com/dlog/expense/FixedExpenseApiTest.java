@@ -138,6 +138,18 @@ class FixedExpenseApiTest {
     }
 
     @Test
+    void 고정지출_목록은_금액이_큰_순() throws Exception {
+        createFixed("넷플릭스", 13_900, now, null);
+        createFixed("월세", 550_000, now, null);
+        createFixed("통신비", 55_000, now, null);
+
+        mvc.perform(get("/api/fixed-expenses"))
+                .andExpect(jsonPath("$[0].name").value("월세"))
+                .andExpect(jsonPath("$[1].name").value("통신비"))
+                .andExpect(jsonPath("$[2].name").value("넷플릭스"));
+    }
+
+    @Test
     void 잘못된_입력은_400() throws Exception {
         mvc.perform(post("/api/fixed-expenses").contentType(MediaType.APPLICATION_JSON).content("""
                         {"name":"x","amount":0,"startMonth":"2026-10"}"""))

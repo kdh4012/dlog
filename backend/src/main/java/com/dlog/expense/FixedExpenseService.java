@@ -30,7 +30,7 @@ public class FixedExpenseService {
 
     public List<FixedExpenseResponse> getAll() {
         YearMonth now = thisMonth();
-        return fixedExpenseRepository.findAllByOrderByIdAsc().stream()
+        return fixedExpenseRepository.findAllByOrderByAmountDescIdAsc().stream()
                 .map(f -> FixedExpenseResponse.from(f, now))
                 .toList();
     }
