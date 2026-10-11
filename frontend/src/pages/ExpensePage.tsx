@@ -5,6 +5,7 @@ import { ApiError } from '../api/client'
 import {
   EXPENSE_CATEGORIES,
   PAYMENT_METHODS,
+  VARIABLE_CATEGORIES,
   type Expense,
   type ExpenseCategory,
   type ExpenseKind,
@@ -247,15 +248,20 @@ export default function ExpensePage() {
     ['VARIABLE', '변동'],
   ]
 
+  // 수정 중인 내역이 고정지출 반영분이면 카테고리는 '고정비'로 고정
+  const [editingFixed, setEditingFixed] = useState(false)
+
   const openNew = () => {
     setForm(emptyForm(month))
     setEditing('new')
+    setEditingFixed(false)
     setError('')
   }
 
   const openEdit = (e: Expense) => {
     setForm(toForm(e))
     setEditing(e.id)
+    setEditingFixed(e.kind === 'FIXED')
     setError('')
   }
 
@@ -350,13 +356,19 @@ export default function ExpensePage() {
               <div className="row">
                 <label>
                   카테고리
-                  <select value={form.category} onChange={(e) => set('category', e.target.value as ExpenseCategory)}>
-                    {Object.entries(EXPENSE_CATEGORIES).map(([k, v]) => (
-                      <option key={k} value={k}>
-                        {v}
-                      </option>
-                    ))}
-                  </select>
+                  {editingFixed ? (
+                    <select value="FIXED_COST" disabled>
+                      <option value="FIXED_COST">{EXPENSE_CATEGORIES.FIXED_COST}</option>
+                    </select>
+                  ) : (
+                    <select value={form.category} onChange={(e) => set('category', e.target.value as ExpenseCategory)}>
+                      {VARIABLE_CATEGORIES.map(([k, v]) => (
+                        <option key={k} value={k}>
+                          {v}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </label>
                 <label>
                   결제 수단
@@ -428,7 +440,6 @@ export default function ExpensePage() {
                   <tr key={e.id}>
                     <td className="nowrap col-date">{formatDay(e.spentOn)}</td>
                     <td className="nowrap col-cat">
-                      {e.kind === 'FIXED' && <span className="badge-fixed">고정</span>}
                       {EXPENSE_CATEGORIES[e.category]}
                     </td>
                     <td className="col-content">

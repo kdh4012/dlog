@@ -1,6 +1,5 @@
 package com.dlog.expense.dto;
 
-import com.dlog.expense.ExpenseCategory;
 import com.dlog.expense.FixedExpense;
 
 import java.time.YearMonth;
@@ -10,14 +9,13 @@ public record FixedExpenseResponse(
         Long id,
         String name,
         long amount,
-        ExpenseCategory category,
         YearMonth startMonth,
         YearMonth endMonth,
         String memo,
         boolean active
 ) {
     public static FixedExpenseResponse from(FixedExpense f, YearMonth thisMonth) {
-        return new FixedExpenseResponse(f.getId(), f.getName(), f.getAmount(), f.getCategory(),
+        return new FixedExpenseResponse(f.getId(), f.getName(), f.getAmount(),
                 f.startYearMonth(), f.endYearMonth(), f.getMemo(),
                 f.endYearMonth() == null || !f.endYearMonth().isBefore(thisMonth));
     }

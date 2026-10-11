@@ -3,8 +3,6 @@ package com.dlog.expense;
 import com.dlog.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,7 +15,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
-/** 고정지출 템플릿. 매월 1일 날짜로 지출 내역에 반영된다 */
+/** 고정지출 템플릿. 매월 1일 날짜, '고정비' 카테고리로 지출 내역에 반영된다 */
 @Getter
 @Entity
 @Table(name = "fixed_expense")
@@ -34,10 +32,6 @@ public class FixedExpense extends BaseTimeEntity {
     @Column(nullable = false)
     private long amount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private ExpenseCategory category;
-
     /** yyyy-MM */
     @Column(nullable = false, length = 7)
     private String startMonth;
@@ -50,16 +44,13 @@ public class FixedExpense extends BaseTimeEntity {
     private String memo;
 
     @Builder
-    private FixedExpense(String name, long amount, ExpenseCategory category,
-                         YearMonth startMonth, YearMonth endMonth, String memo) {
-        update(name, amount, category, startMonth, endMonth, memo);
+    private FixedExpense(String name, long amount, YearMonth startMonth, YearMonth endMonth, String memo) {
+        update(name, amount, startMonth, endMonth, memo);
     }
 
-    public void update(String name, long amount, ExpenseCategory category,
-                       YearMonth startMonth, YearMonth endMonth, String memo) {
+    public void update(String name, long amount, YearMonth startMonth, YearMonth endMonth, String memo) {
         this.name = name;
         this.amount = amount;
-        this.category = category;
         this.startMonth = startMonth.toString();
         this.endMonth = endMonth == null ? null : endMonth.toString();
         this.memo = memo;

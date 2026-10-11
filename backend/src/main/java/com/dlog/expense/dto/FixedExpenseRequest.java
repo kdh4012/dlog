@@ -1,6 +1,5 @@
 package com.dlog.expense.dto;
 
-import com.dlog.expense.ExpenseCategory;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
@@ -13,7 +12,6 @@ import java.time.YearMonth;
 public record FixedExpenseRequest(
         @NotBlank @Size(max = 100) String name,
         @NotNull @Positive @Max(1_000_000_000_000L) Long amount,
-        @NotNull ExpenseCategory category,
         @NotNull YearMonth startMonth,
         YearMonth endMonth,
         @Size(max = 500) String memo

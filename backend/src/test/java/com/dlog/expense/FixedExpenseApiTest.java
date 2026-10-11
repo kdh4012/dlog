@@ -47,7 +47,7 @@ class FixedExpenseApiTest {
     private Integer createFixed(String name, long amount, YearMonth start, YearMonth end) throws Exception {
         String endJson = end == null ? "null" : "\"" + end + "\"";
         String json = """
-                {"name":"%s","amount":%d,"category":"HOUSING","startMonth":"%s","endMonth":%s}"""
+                {"name":"%s","amount":%d,"startMonth":"%s","endMonth":%s}"""
                 .formatted(name, amount, start, endJson);
         String body = mvc.perform(post("/api/fixed-expenses").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isCreated())
@@ -78,15 +78,18 @@ class FixedExpenseApiTest {
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[1].kind").value("FIXED"))
                 .andExpect(jsonPath("$[1].merchant").value("월세"))
+                .andExpect(jsonPath("$[1].category").value("FIXED_COST"))
                 .andExpect(jsonPath("$[1].spentOn").value(now.atDay(1).toString()))
                 .andExpect(jsonPath("$[1].paymentMethod").value(nullValue()));
 
         mvc.perform(get("/api/expenses").param("month", now.plusMonths(1).toString()))
                 .andExpect(jsonPath("$.length()").value(0));
 
-        // 같은 달을 여러 번 조회해도 한 번만 반영
+        // 같은 달을 여러 번 조회해도 한 번만 반영. 카테고리별에는 '고정비'로 묶인다
         mvc.perform(get("/api/expenses/summary").param("month", now.toString()))
-                .andExpect(jsonPath("$.fixedTotal").value(500_000));
+                .andExpect(jsonPath("$.fixedTotal").value(500_000))
+                .andExpect(jsonPath("$.byCategory[0].category").value("FIXED_COST"))
+                .andExpect(jsonPath("$.byCategory[0].amount").value(500_000));
     }
 
     @Test
@@ -101,6 +104,7 @@ class FixedExpenseApiTest {
                         .formatted(now.atDay(10))))
                 .andExpect(jsonPath("$.amount").value(215_000))
                 .andExpect(jsonPath("$.paymentMethod").value("TRANSFER"))
+                .andExpect(jsonPath("$.category").value("FIXED_COST"))
                 .andExpect(jsonPath("$.kind").value("FIXED"));
 
         mvc.perform(delete("/api/expenses/" + expenseId)).andExpect(status().isNoContent());
@@ -136,12 +140,18 @@ class FixedExpenseApiTest {
     @Test
     void 잘못된_입력은_400() throws Exception {
         mvc.perform(post("/api/fixed-expenses").contentType(MediaType.APPLICATION_JSON).content("""
-                        {"name":"x","amount":0,"category":"ETC","startMonth":"2026-10"}"""))
+                        {"name":"x","amount":0,"startMonth":"2026-10"}"""))
                 .andExpect(status().isBadRequest());
         mvc.perform(post("/api/fixed-expenses").contentType(MediaType.APPLICATION_JSON).content("""
-                        {"name":"x","amount":1000,"category":"ETC","startMonth":"2026-10","endMonth":"2026-09"}"""))
+                        {"name":"x","amount":1000,"startMonth":"2026-10","endMonth":"2026-09"}"""))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_INPUT"));
         mvc.perform(get("/api/fixed-expenses")).andExpect(status().isOk());
+
+        // 고정비 카테고리는 변동지출에 쓸 수 없다
+        mvc.perform(post("/api/expenses").contentType(MediaType.APPLICATION_JSON).content("""
+                        {"spentOn":"2026-10-05","amount":1000,"category":"FIXED_COST"}"""))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("FIXED_COST_CATEGORY_RESERVED"));
     }
 }

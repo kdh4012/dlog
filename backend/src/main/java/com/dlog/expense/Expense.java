@@ -70,9 +70,9 @@ public class Expense extends BaseTimeEntity {
         this.fixedExpenseId = fixedExpenseId;
     }
 
-    /** 해당 월 고정지출 템플릿으로부터 반영 내역 생성 */
+    /** 해당 월 고정지출 템플릿으로부터 반영 내역 생성 ('고정비' 카테고리, 결제 수단 없음) */
     public static Expense fromFixed(FixedExpense f, java.time.YearMonth month) {
-        return new Expense(f.dateIn(month), f.getAmount(), f.getCategory(), null,
+        return new Expense(f.dateIn(month), f.getAmount(), ExpenseCategory.FIXED_COST, null,
                 f.getName(), f.getMemo(), ExpenseKind.FIXED, f.getId());
     }
 
@@ -81,7 +81,8 @@ public class Expense extends BaseTimeEntity {
                        String merchant, String memo) {
         this.spentOn = spentOn;
         this.amount = amount;
-        this.category = category;
+        // 고정지출 반영 내역은 항상 '고정비' 카테고리를 유지한다
+        this.category = kind == ExpenseKind.FIXED ? ExpenseCategory.FIXED_COST : category;
         this.paymentMethod = paymentMethod;
         this.merchant = merchant;
         this.memo = memo;

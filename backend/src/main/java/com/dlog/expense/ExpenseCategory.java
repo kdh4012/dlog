@@ -1,6 +1,7 @@
 package com.dlog.expense;
 
 public enum ExpenseCategory {
+    FIXED_COST,    // 고정비 (고정지출 전용. 직접 입력하는 변동지출에는 쓸 수 없다)
     FOOD,          // 식비
     CAFE,          // 카페·간식
     LIVING,        // 생활·마트

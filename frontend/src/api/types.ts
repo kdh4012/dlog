@@ -153,6 +153,7 @@ export interface TypeWeight {
 }
 
 export const EXPENSE_CATEGORIES = {
+  FIXED_COST: '고정비', // 고정지출 전용 (변동지출 입력에서는 고를 수 없음)
   FOOD: '식비',
   CAFE: '카페·간식',
   LIVING: '생활·마트',
@@ -170,6 +171,12 @@ export const EXPENSE_CATEGORIES = {
   ETC: '기타',
 } as const
 export type ExpenseCategory = keyof typeof EXPENSE_CATEGORIES
+
+/** 변동지출 입력에서 고를 수 있는 카테고리 ('고정비' 제외) */
+export const VARIABLE_CATEGORIES = Object.entries(EXPENSE_CATEGORIES).filter(([k]) => k !== 'FIXED_COST') as [
+  ExpenseCategory,
+  string,
+][]
 
 export const PAYMENT_METHODS = {
   CARD: '카드',
@@ -224,7 +231,6 @@ export interface FixedExpense {
   id: number
   name: string
   amount: number
-  category: ExpenseCategory
   startMonth: string
   endMonth: string | null
   memo: string | null
@@ -235,7 +241,6 @@ export interface FixedExpense {
 export interface FixedExpenseRequest {
   name: string
   amount: string
-  category: ExpenseCategory
   startMonth: string
   endMonth: string
   memo: string

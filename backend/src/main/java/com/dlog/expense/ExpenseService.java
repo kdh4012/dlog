@@ -91,6 +91,7 @@ public class ExpenseService {
 
     @Transactional
     public ExpenseResponse create(ExpenseRequest r) {
+        rejectFixedCost(r);
         Expense expense = Expense.builder()
                 .spentOn(r.spentOn())
                 .amount(r.amount())
@@ -105,6 +106,9 @@ public class ExpenseService {
     @Transactional
     public ExpenseResponse update(Long id, ExpenseRequest r) {
         Expense expense = findById(id);
+        if (expense.getKind() == ExpenseKind.VARIABLE) {
+            rejectFixedCost(r);
+        }
         expense.update(r.spentOn(), r.amount(), r.category(), r.paymentMethod(),
                 blankToNull(r.merchant()), blankToNull(r.memo()));
         return ExpenseResponse.from(expense);
@@ -126,6 +130,13 @@ public class ExpenseService {
         budgetRepository.findById(key).ifPresentOrElse(
                 b -> b.changeAmount(r.amount()),
                 () -> budgetRepository.save(new ExpenseBudget(key, r.amount())));
+    }
+
+    /** '고정비' 카테고리는 고정지출 전용이라 직접 입력하는 변동지출에는 쓸 수 없다 */
+    private static void rejectFixedCost(ExpenseRequest r) {
+        if (r.category() == ExpenseCategory.FIXED_COST) {
+            throw new BusinessException(ErrorCode.FIXED_COST_CATEGORY_RESERVED);
+        }
     }
 
     private long sumOf(YearMonth month) {

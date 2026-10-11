@@ -1196,17 +1196,6 @@ th {
   margin-top: 12px;
 }
 
-.badge-fixed {
-  display: inline-block;
-  margin-right: 6px;
-  padding: 0 6px;
-  border-radius: 4px;
-  background: var(--fg);
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 600;
-  vertical-align: 1px;
-}
 
 .fixed-panel {
   margin-top: 16px;

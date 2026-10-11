@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { fixedExpenseApi } from '../api'
 import { ApiError } from '../api/client'
-import { EXPENSE_CATEGORIES, type ExpenseCategory, type FixedExpense, type FixedExpenseRequest } from '../api/types'
+import type { FixedExpense, FixedExpenseRequest } from '../api/types'
 import { formatMonthShort, thisMonth, won } from '../utils/expense'
 import { useAsync } from '../utils/useAsync'
 import { ErrorMessage, Loading } from './Status'
@@ -9,7 +9,6 @@ import { ErrorMessage, Loading } from './Status'
 const emptyForm = (): FixedExpenseRequest => ({
   name: '',
   amount: '',
-  category: 'HOUSING',
   startMonth: thisMonth(),
   endMonth: '',
   memo: '',
@@ -18,7 +17,6 @@ const emptyForm = (): FixedExpenseRequest => ({
 const toForm = (f: FixedExpense): FixedExpenseRequest => ({
   name: f.name,
   amount: String(f.amount),
-  category: f.category,
   startMonth: f.startMonth,
   endMonth: f.endMonth ?? '',
   memo: f.memo ?? '',
@@ -86,7 +84,7 @@ export default function FixedExpensePanel({ onChanged }: { onChanged: () => void
         <div>
           <h2 className="card-title">고정지출</h2>
           <p className="muted small">
-            매월 1일 날짜로 지출 내역에 자동 반영됩니다. 반영된 내역은 그 달 것만 따로 수정·삭제할 수 있습니다.
+            매월 1일 날짜, '고정비' 카테고리로 지출 내역에 자동 반영됩니다. 반영된 내역은 그 달 것만 따로 수정·삭제할 수 있습니다.
           </p>
         </div>
         <button type="button" onClick={openNew}>
@@ -110,16 +108,6 @@ export default function FixedExpensePanel({ onChanged }: { onChanged: () => void
             <label>
               금액 (원)
               <input type="number" inputMode="numeric" min="1" step="1" value={form.amount} onChange={(e) => set('amount', e.target.value)} required />
-            </label>
-            <label>
-              카테고리
-              <select value={form.category} onChange={(e) => set('category', e.target.value as ExpenseCategory)}>
-                {Object.entries(EXPENSE_CATEGORIES).map(([k, v]) => (
-                  <option key={k} value={k}>
-                    {v}
-                  </option>
-                ))}
-              </select>
             </label>
           </div>
           <div className="row">
@@ -161,7 +149,7 @@ export default function FixedExpensePanel({ onChanged }: { onChanged: () => void
               <span className="fixed-main">
                 <strong>{f.name}</strong>
                 <span className="muted small">
-                  {EXPENSE_CATEGORIES[f.category]} · {formatPeriod(f)}
+                  {formatPeriod(f)}
                   {!f.active && ' · 종료'}
                 </span>
               </span>
