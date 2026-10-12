@@ -105,22 +105,11 @@ h1 {
   letter-spacing: -0.03em;
 }
 
-.brand-text small {
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-
-.bio {
-  margin: 0;
-  color: var(--fg-2);
-  font-size: 0.9rem;
-}
-
 .links {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: -12px 0 0; /* 소개 문구에 붙여 한 덩어리로 보이게 사이드바 gap 을 줄임 */
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -869,9 +858,7 @@ th {
   }
 
   .brand-text,
-  .bio,
-  .sidebar .links,
-  .sidebar-foot span {
+  .sidebar .links {
     display: none;
   }
 

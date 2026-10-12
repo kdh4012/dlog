@@ -1,11 +1,8 @@
 import { NavLink, Outlet, useNavigate } from 'react-router'
 import { useAuth } from '../auth/AuthContext'
 
-const CURRENT_YEAR = new Date().getFullYear()
-
 const EXTERNAL_LINKS = [
   { label: 'GitHub', href: 'https://github.com/kdh4012' },
-  { label: '복순앱', href: 'https://github.com/kim401233-ui/boksoon' },
 ]
 
 function GitHubIcon() {
@@ -47,10 +44,8 @@ export default function Layout() {
           <span className="avatar">D</span>
           <span className="brand-text">
             <strong>DLog</strong>
-            <small>동현의 개발 기록</small>
           </span>
         </NavLink>
-        <p className="bio">C++/MFC 공장 자동화와 Java/Spring 웹 개발을 합니다.</p>
         <ExternalLinks />
         <nav className="nav">
           <NavLink to="/" end>
@@ -69,7 +64,6 @@ export default function Layout() {
           ) : (
             <NavLink to="/login">로그인</NavLink>
           )}
-          <span>© {CURRENT_YEAR} 동현</span>
         </div>
       </aside>
       <main className="main">
