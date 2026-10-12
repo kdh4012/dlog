@@ -2,8 +2,10 @@ import { Link } from 'react-router'
 import { workLogApi } from '../api'
 import { useAuth } from '../auth/AuthContext'
 import Markdown from '../components/Markdown'
+import ProjectCards from '../components/ProjectCards'
 import { ErrorMessage, Loading } from '../components/Status'
 import { formatYearMonth } from '../utils/format'
+import { PROJECTS } from '../data/projects'
 import { useAsync } from '../utils/useAsync'
 
 export default function WorkLogPage() {
@@ -11,15 +13,24 @@ export default function WorkLogPage() {
   const { data, error, loading, reload } = useAsync(() => workLogApi.list(), [])
 
   const handleDelete = async (id: number) => {
-    if (!confirm('이 작업 기록을 삭제할까요?')) return
+    if (!confirm('이 작업 이력을 삭제할까요?')) return
     await workLogApi.remove(id)
     reload()
   }
 
   return (
     <>
+      <h1>프로젝트</h1>
+
+      <section className="section">
+        <div className="section-head">
+          <h2>개인 프로젝트</h2>
+        </div>
+        <ProjectCards projects={PROJECTS} />
+      </section>
+
       <div className="section-head">
-        <h1>작업 기록</h1>
+        <h2>작업 이력</h2>
         {isAdmin && (
           <Link to="/work-logs/new" className="button">
             추가
@@ -65,7 +76,7 @@ export default function WorkLogPage() {
           </li>
         ))}
       </ol>
-      {data?.length === 0 && <p className="muted">작업 기록이 없습니다.</p>}
+      {data?.length === 0 && <p className="muted">작업 이력이 없습니다.</p>}
     </>
   )
 }

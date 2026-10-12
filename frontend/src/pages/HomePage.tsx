@@ -33,7 +33,7 @@ export default function HomePage() {
 
       <section className="section">
         <div className="section-head">
-          <h2>최근 작업</h2>
+          <h2>작업 이력</h2>
           <Link to="/work-logs">전체 보기 →</Link>
         </div>
         {workLogs.loading && <Loading />}
@@ -48,7 +48,7 @@ export default function HomePage() {
             </li>
           ))}
         </ul>
-        {workLogs.data?.length === 0 && <p className="empty">작업 기록이 없습니다.</p>}
+        {workLogs.data?.length === 0 && <p className="empty">작업 이력이 없습니다.</p>}
       </section>
     </>
   )

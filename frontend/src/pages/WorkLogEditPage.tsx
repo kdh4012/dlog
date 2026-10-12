@@ -57,7 +57,7 @@ export default function WorkLogEditPage() {
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-      <h1>{id == null ? '작업 기록 추가' : '작업 기록 수정'}</h1>
+      <h1>{id == null ? '작업 이력 추가' : '작업 이력 수정'}</h1>
       <label>
         프로젝트명
         <input value={form.title} onChange={(e) => set('title', e.target.value)} maxLength={200} required />

@@ -1296,3 +1296,92 @@ th {
     justify-content: flex-start;
   }
 }
+
+/* ---------- 프로젝트 카드 ---------- */
+.project-cards {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 16px;
+}
+
+/* 카드 전체를 GitHub 링크로: 제목 링크의 가상 요소를 카드 위에 깐다 */
+.project-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.project-card:hover {
+  border-color: var(--fg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+.project-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.project-link {
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.project-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.project-link:focus-visible::after {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.project-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.project-card .tags {
+  margin: 0;
+}
+
+.project-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+  font-size: 0.85rem;
+}
+
+.project-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+
+/* 카드 링크 위로 올려 따로 누를 수 있게 */
+.project-site {
+  position: relative;
+  z-index: 1;
+}
+
+.project-link:hover {
+  text-decoration: none;
+}
+
+/* 개인 프로젝트 카드와 아래 작업 이력 사이 간격 */
+.section:has(.project-cards) {
+  margin-bottom: 48px;
+}
