@@ -12,7 +12,7 @@
   --up: #d93025; /* 국내 관례: 상승 빨강 */
   --down: #2563eb; /* 하락 파랑 */
   --sidebar-w: 280px;
-  --content-w: 760px;
+  --content-w: 1104px; /* 모든 화면 공통 본문 폭 (+ 좌우 여백 96px = 1200px) */
   --radius: 10px;
   font-family: 'Pretendard Variable', 'Pretendard', system-ui, -apple-system, 'Segoe UI', 'Malgun Gothic', sans-serif;
   line-height: 1.65;
@@ -827,10 +827,6 @@ th {
 }
 
 /* 자산 표처럼 넓은 화면은 본문 폭 제한을 넓힌다 */
-.main:has(.table-wrap) {
-  max-width: 1200px;
-}
-
 /* ---------- 모바일: 사이드바 → 상단 바 ---------- */
 @media (max-width: 860px) {
   .layout {
@@ -1251,11 +1247,6 @@ th {
     justify-self: end;
     font-size: 0.8rem;
   }
-}
-
-/* 가계부는 월별 내역 / 고정지출 화면을 오가도 본문 폭이 바뀌지 않도록 표 화면과 같은 폭을 쓴다 */
-.main:has(.view-tabs) {
-  max-width: 1200px;
 }
 
 .section-head > button {

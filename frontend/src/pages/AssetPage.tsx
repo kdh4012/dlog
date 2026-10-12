@@ -108,20 +108,14 @@ export default function AssetPage() {
     saveDisplayCurrency(next)
   }
 
-  // null: 폼 닫힘, 'new': 신규, number: 수정 대상 id
-  const [editing, setEditing] = useState<number | 'new' | null>(null)
+  // null: 폼 닫힘, number: 수정 대상 id (자산은 동기화로 들어오므로 직접 추가하지 않는다)
+  const [editing, setEditing] = useState<number | null>(null)
   const [form, setForm] = useState<AssetRequest>(EMPTY)
   const [error, setError] = useState('')
 
   const reloadAll = () => {
     assets.reload()
     summary.reload()
-  }
-
-  const openNew = () => {
-    setForm(EMPTY)
-    setEditing('new')
-    setError('')
   }
 
   const openEdit = (a: Asset) => {
@@ -135,8 +129,7 @@ export default function AssetPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     try {
-      if (editing === 'new') await assetApi.create(form)
-      else if (typeof editing === 'number') await assetApi.update(editing, form)
+      if (editing !== null) await assetApi.update(editing, form)
       setEditing(null)
       reloadAll()
     } catch (err) {
@@ -174,9 +167,6 @@ export default function AssetPage() {
               ))}
             </div>
           )}
-          <button type="button" onClick={openNew}>
-            자산 추가
-          </button>
         </div>
       </div>
 
@@ -219,7 +209,7 @@ export default function AssetPage() {
 
       {editing !== null && (
         <form className="form card" onSubmit={handleSubmit}>
-          <h2>{editing === 'new' ? '자산 추가' : '자산 수정'}</h2>
+          <h2>자산 수정</h2>
           <div className="row">
             <label>
               유형
