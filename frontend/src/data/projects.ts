@@ -16,6 +16,7 @@ export const PROJECTS: Project[] = [
     summary: '둘이 함께 쓰는 운동일지 · 일정 · 할 일 · 독서 기록 앱. 반복 일정과 푸시 알림, 책 표지 검색·글귀 인식을 지원하는 PWA',
     stack: ['Spring Boot', 'React', 'PostgreSQL', 'PWA'],
     href: 'https://github.com/kim401233-ui/boksoon',
+    site: 'https://158-247-246-133.sslip.io',
   },
   {
     name: '포트폴리오',
