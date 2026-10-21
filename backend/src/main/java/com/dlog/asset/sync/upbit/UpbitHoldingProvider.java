@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * 업비트 보유 자산 조회. 원화 잔고는 현금, 코인은 KRW 마켓 현재가로 평가한다.
+ * 업비트 보유 코인 조회. KRW 마켓 현재가로 평가하고, 원화 예수금은 자산에 넣지 않는다.
  * 주문·출금 API 는 호출하지 않는다.
  */
 @Slf4j
@@ -57,14 +57,6 @@ public class UpbitHoldingProvider implements HoldingProvider {
     public List<SyncedHolding> fetchHoldings() {
         List<UpbitDtos.Account> accounts = fetchAccounts();
         List<SyncedHolding> holdings = new ArrayList<>();
-
-        accounts.stream()
-                .filter(a -> KRW.equals(a.currency()))
-                .map(UpbitHoldingProvider::totalQuantity)
-                .filter(q -> q.signum() > 0)
-                .findFirst()
-                .ifPresent(krw -> holdings.add(new SyncedHolding(AssetType.CASH, "원화 예수금", KRW, ACCOUNT_LABEL,
-                        krw, BigDecimal.ONE, BigDecimal.ONE, Currency.KRW)));
 
         List<UpbitDtos.Account> coins = accounts.stream()
                 .filter(a -> !KRW.equals(a.currency()))

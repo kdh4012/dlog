@@ -59,9 +59,8 @@ class UpbitHoldingProviderTest {
 
         List<SyncedHolding> holdings = provider().fetchHoldings();
 
+        // 원화 예수금은 제외
         assertThat(holdings).containsExactly(
-                new SyncedHolding(AssetType.CASH, "원화 예수금", "KRW", "업비트",
-                        new BigDecimal("150000.5"), BigDecimal.ONE, BigDecimal.ONE, Currency.KRW),
                 new SyncedHolding(AssetType.CRYPTO, "비트코인", "BTC", "업비트",
                         new BigDecimal("0.015"), new BigDecimal("90000000"), new BigDecimal("95000000.0"), Currency.KRW));
         // KRW 마켓이 없는 OLD 는 제외하고, 시세는 유효한 마켓만 요청
