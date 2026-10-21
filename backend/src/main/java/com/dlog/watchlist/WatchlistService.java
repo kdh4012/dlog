@@ -40,7 +40,7 @@ public class WatchlistService {
         if (name == null && quote != null) {
             name = quote.name();
         }
-        WatchlistStock saved = repository.save(new WatchlistStock(ticker, name, r.targetPrice(), blankToNull(r.memo()),
+        WatchlistStock saved = repository.save(new WatchlistStock(ticker, name, blankToNull(r.memo()),
                 repository.findMaxSortOrder() + 1));
         return WatchlistResponse.of(saved, quote);
     }
@@ -48,7 +48,7 @@ public class WatchlistService {
     @Transactional
     public WatchlistResponse update(Long id, WatchlistRequest r) {
         WatchlistStock stock = findById(id);
-        stock.update(blankToNull(r.name()), r.targetPrice(), blankToNull(r.memo()));
+        stock.update(blankToNull(r.name()), blankToNull(r.memo()));
         return WatchlistResponse.of(stock, quoteService.quote(stock.getTicker()).orElse(null));
     }
 

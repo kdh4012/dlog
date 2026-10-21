@@ -7,12 +7,11 @@ import { useAsync } from '../utils/useAsync'
 import { ErrorMessage, Loading } from './Status'
 import StockLogo from './StockLogo'
 
-const EMPTY: WatchlistRequest = { ticker: '', name: '', targetPrice: '', memo: '' }
+const EMPTY: WatchlistRequest = { ticker: '', name: '', memo: '' }
 
 const toForm = (w: WatchlistItem): WatchlistRequest => ({
   ticker: w.ticker,
   name: w.name ?? '',
-  targetPrice: w.targetPrice == null ? '' : String(w.targetPrice),
   memo: w.memo ?? '',
 })
 
@@ -161,17 +160,6 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
               이름 (비우면 자동)
               <input value={form.name} onChange={(e) => set('name', e.target.value)} maxLength={100} />
             </label>
-            <label>
-              목표가 (USD, 선택)
-              <input
-                type="number"
-                inputMode="decimal"
-                min="0"
-                step="any"
-                value={form.targetPrice}
-                onChange={(e) => set('targetPrice', e.target.value)}
-              />
-            </label>
           </div>
           <label>
             메모
@@ -200,7 +188,6 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
               <th>종목</th>
               <th className="num">현재가</th>
               <th className="num">전일 대비</th>
-              <th className="num">목표가</th>
               <th>메모</th>
               <th />
             </tr>
@@ -264,20 +251,6 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
                     </>
                   )}
                 </td>
-                <td className={`num col-target${w.targetPrice == null ? ' empty' : ''}`}>
-                  {w.targetPrice == null ? (
-                    <span className="muted">-</span>
-                  ) : (
-                    <>
-                      {usd(w.targetPrice)}
-                      {w.targetGapRate != null && (
-                        <div className="small muted">
-                          {w.targetGapRate <= 0 ? '목표가 도달' : `${formatRate(w.targetGapRate)} 남음`}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </td>
                 <td className="muted small col-memo">{w.memo}</td>
                 <td className="actions">
                   <button type="button" className="link order-btn" onClick={() => move(i, -1)} disabled={i === 0} aria-label="위로">
@@ -303,7 +276,7 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
             ))}
             {items?.length === 0 && (
               <tr>
-                <td colSpan={7} className="muted center">
+                <td colSpan={6} className="muted center">
                   담아 둔 관심 종목이 없습니다. '종목 담기'로 티커를 추가하세요.
                 </td>
               </tr>

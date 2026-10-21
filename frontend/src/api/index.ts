@@ -76,13 +76,10 @@ export const fixedExpenseApi = {
   remove: (id: number) => http.delete(`/fixed-expenses/${id}`),
 }
 
-/** 빈 목표가는 null 로 보낸다 */
-const toWatchlistBody = (b: WatchlistRequest) => ({ ...b, targetPrice: b.targetPrice === '' ? null : b.targetPrice })
-
 export const watchlistApi = {
   list: () => http.get<WatchlistItem[]>('/watchlist'),
-  add: (body: WatchlistRequest) => http.post<WatchlistItem>('/watchlist', toWatchlistBody(body)),
-  update: (id: number, body: WatchlistRequest) => http.put<WatchlistItem>(`/watchlist/${id}`, toWatchlistBody(body)),
+  add: (body: WatchlistRequest) => http.post<WatchlistItem>('/watchlist', body),
+  update: (id: number, body: WatchlistRequest) => http.put<WatchlistItem>(`/watchlist/${id}`, body),
   remove: (id: number) => http.delete(`/watchlist/${id}`),
   /** 전체 id 를 표시할 순서대로 보낸다 */
   reorder: (ids: number[]) => http.put<WatchlistItem[]>('/watchlist/order', { ids }),

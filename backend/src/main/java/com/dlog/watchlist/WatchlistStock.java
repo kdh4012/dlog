@@ -11,8 +11,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 /** 관심 종목 (미국 주식, USD) */
 @Getter
 @Entity
@@ -31,10 +29,6 @@ public class WatchlistStock extends BaseTimeEntity {
     @Column(length = 100)
     private String name;
 
-    /** 목표가 (USD, 선택) */
-    @Column(precision = 20, scale = 4)
-    private BigDecimal targetPrice;
-
     @Column(length = 500)
     private String memo;
 
@@ -42,16 +36,15 @@ public class WatchlistStock extends BaseTimeEntity {
     @Column(nullable = false)
     private int sortOrder;
 
-    public WatchlistStock(String ticker, String name, BigDecimal targetPrice, String memo, int sortOrder) {
+    public WatchlistStock(String ticker, String name, String memo, int sortOrder) {
         this.ticker = ticker;
         this.sortOrder = sortOrder;
-        update(name, targetPrice, memo);
+        update(name, memo);
     }
 
     /** 티커는 바꾸지 않는다 (다른 종목이면 삭제 후 다시 추가) */
-    public void update(String name, BigDecimal targetPrice, String memo) {
+    public void update(String name, String memo) {
         this.name = name;
-        this.targetPrice = targetPrice;
         this.memo = memo;
     }
 

@@ -44,7 +44,7 @@ class WatchlistApiTest {
     @Test
     void 추가_조회_수정_삭제() throws Exception {
         String body = add("""
-                {"ticker":" nvda ","name":"엔비디아","targetPrice":150.5,"memo":"AI 반도체"}""");
+                {"ticker":" nvda ","name":"엔비디아","memo":"AI 반도체"}""");
         Integer id = JsonPath.read(body, "$.id");
         add("""
                 {"ticker":"brk-b"}""");
@@ -54,17 +54,16 @@ class WatchlistApiTest {
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].ticker").value("NVDA"))
                 .andExpect(jsonPath("$[0].name").value("엔비디아"))
-                .andExpect(jsonPath("$[0].targetPrice").value(150.5))
+                .andExpect(jsonPath("$[0].memo").value("AI 반도체"))
                 .andExpect(jsonPath("$[0].price").value(nullValue())) // 시세 없음
                 .andExpect(jsonPath("$[1].ticker").value("BRK-B"))
                 .andExpect(jsonPath("$[1].name").value(nullValue()));
 
         mvc.perform(put("/api/watchlist/" + id).contentType(MediaType.APPLICATION_JSON).content("""
-                        {"ticker":"IGNORED","name":"NVIDIA","targetPrice":null,"memo":""}"""))
+                        {"ticker":"IGNORED","name":"NVIDIA","memo":""}"""))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ticker").value("NVDA"))
                 .andExpect(jsonPath("$.name").value("NVIDIA"))
-                .andExpect(jsonPath("$.targetPrice").value(nullValue()))
                 .andExpect(jsonPath("$.memo").value(nullValue()));
 
         mvc.perform(delete("/api/watchlist/" + id)).andExpect(status().isNoContent());
@@ -85,9 +84,6 @@ class WatchlistApiTest {
     void 잘못된_입력은_400() throws Exception {
         mvc.perform(post("/api/watchlist").contentType(MediaType.APPLICATION_JSON).content("""
                         {"ticker":"애플"}"""))
-                .andExpect(status().isBadRequest());
-        mvc.perform(post("/api/watchlist").contentType(MediaType.APPLICATION_JSON).content("""
-                        {"ticker":"AAPL","targetPrice":-1}"""))
                 .andExpect(status().isBadRequest());
         mvc.perform(delete("/api/watchlist/9999")).andExpect(status().isNotFound());
     }

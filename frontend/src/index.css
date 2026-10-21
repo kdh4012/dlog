@@ -1388,7 +1388,7 @@ th {
 
 /* 모바일: 표 대신 카드형 2단 배치
    [종목]          [현재가]
-   [전일 대비]     [목표가]
+   [전일 대비]
    [메모]          [수정 삭제] */
 @media (max-width: 640px) {
   .watchlist-table thead {
@@ -1400,7 +1400,7 @@ th {
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
       'name price'
-      'change target'
+      'change change'
       'memo actions';
     column-gap: 12px;
     row-gap: 6px;
@@ -1436,14 +1436,6 @@ th {
   .watchlist-table .col-change .small {
     display: inline;
     margin-left: 6px;
-  }
-
-  .watchlist-table .col-target {
-    grid-area: target;
-  }
-
-  .watchlist-table .col-target.empty {
-    visibility: hidden;
   }
 
   .watchlist-table .col-price .small {
