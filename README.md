@@ -234,4 +234,4 @@ cd frontend && npm run lint && npm run build
 | POST/PUT/DELETE | `/api/expenses[/{id}]` | 관리자 |
 | PUT | `/api/expenses/budget` (`{"month":"yyyy-MM","amount":0}` 이면 해당 월 예산 삭제) | 관리자 |
 | GET/POST/PUT/DELETE | `/api/fixed-expenses[/{id}]` — 고정지출 템플릿 | 관리자 |
-| GET/POST/PUT/DELETE | `/api/watchlist[/{id}]` — 미국 주식 관심 종목 (시세: 토스증권 키가 있으면 토스, 없거나 실패하면 Yahoo Finance. 5분 캐시) | 관리자 |
+| GET/POST/PUT/DELETE | `/api/watchlist[/{id}]`, `PUT /api/watchlist/order` (`{"ids":[...]}` 전체 id 순서) — 미국 주식 관심 종목 (시세: 토스증권 키가 있으면 토스, 없거나 실패하면 Yahoo Finance. 5분 캐시) | 관리자 |

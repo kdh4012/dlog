@@ -1,5 +1,6 @@
 package com.dlog.watchlist;
 
+import com.dlog.watchlist.dto.WatchlistOrderRequest;
 import com.dlog.watchlist.dto.WatchlistRequest;
 import com.dlog.watchlist.dto.WatchlistResponse;
 import jakarta.validation.Valid;
@@ -34,6 +35,12 @@ public class WatchlistController {
     @ResponseStatus(HttpStatus.CREATED)
     public WatchlistResponse add(@Valid @RequestBody WatchlistRequest request) {
         return watchlistService.add(request);
+    }
+
+    /** 순서 변경: 전체 id 를 원하는 순서대로 */
+    @PutMapping("/order")
+    public List<WatchlistResponse> reorder(@Valid @RequestBody WatchlistOrderRequest request) {
+        return watchlistService.reorder(request.ids());
     }
 
     @PutMapping("/{id}")

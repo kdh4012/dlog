@@ -84,4 +84,6 @@ export const watchlistApi = {
   add: (body: WatchlistRequest) => http.post<WatchlistItem>('/watchlist', toWatchlistBody(body)),
   update: (id: number, body: WatchlistRequest) => http.put<WatchlistItem>(`/watchlist/${id}`, toWatchlistBody(body)),
   remove: (id: number) => http.delete(`/watchlist/${id}`),
+  /** 전체 id 를 표시할 순서대로 보낸다 */
+  reorder: (ids: number[]) => http.put<WatchlistItem[]>('/watchlist/order', { ids }),
 }

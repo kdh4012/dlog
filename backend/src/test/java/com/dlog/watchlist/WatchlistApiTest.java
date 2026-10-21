@@ -91,4 +91,37 @@ class WatchlistApiTest {
                 .andExpect(status().isBadRequest());
         mvc.perform(delete("/api/watchlist/9999")).andExpect(status().isNotFound());
     }
+
+    @Test
+    void 순서_변경() throws Exception {
+        Integer aapl = JsonPath.read(add("{\"ticker\":\"AAPL\"}"), "$.id");
+        Integer nvda = JsonPath.read(add("{\"ticker\":\"NVDA\"}"), "$.id");
+        Integer tsla = JsonPath.read(add("{\"ticker\":\"TSLA\"}"), "$.id");
+
+        // 기본은 담은 순
+        mvc.perform(get("/api/watchlist"))
+                .andExpect(jsonPath("$[0].ticker").value("AAPL"))
+                .andExpect(jsonPath("$[2].ticker").value("TSLA"));
+
+        mvc.perform(put("/api/watchlist/order").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"ids\":[%d,%d,%d]}".formatted(tsla, aapl, nvda)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].ticker").value("TSLA"));
+
+        // 새로 담은 종목은 맨 아래
+        add("{\"ticker\":\"MSFT\"}");
+        mvc.perform(get("/api/watchlist"))
+                .andExpect(jsonPath("$[0].ticker").value("TSLA"))
+                .andExpect(jsonPath("$[1].ticker").value("AAPL"))
+                .andExpect(jsonPath("$[2].ticker").value("NVDA"))
+                .andExpect(jsonPath("$[3].ticker").value("MSFT"));
+
+        // 일부만 보내거나 없는 id 면 400
+        mvc.perform(put("/api/watchlist/order").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"ids\":[%d,%d]}".formatted(tsla, aapl)))
+                .andExpect(status().isBadRequest());
+        mvc.perform(put("/api/watchlist/order").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"ids\":[%d,%d,%d,999999]}".formatted(tsla, aapl, nvda)))
+                .andExpect(status().isBadRequest());
+    }
 }

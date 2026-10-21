@@ -39,10 +39,57 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
   const [editing, setEditing] = useState<number | 'new' | null>(null)
   const [form, setForm] = useState<WatchlistRequest>(EMPTY)
   const [error, setError] = useState('')
+  // 순서 변경 직후 서버 응답(또는 낙관적 반영) 목록. null 이면 조회 결과를 그대로 쓴다
+  const [ordered, setOrdered] = useState<WatchlistItem[] | null>(null)
+  const [dragId, setDragId] = useState<number | null>(null)
+  const [overId, setOverId] = useState<number | null>(null)
+  const [orderError, setOrderError] = useState('')
+
+  const items = ordered ?? list.data
+  const reload = () => {
+    setOrdered(null)
+    list.reload()
+  }
+
+  /** 새 순서를 바로 화면에 반영하고 저장. 실패하면 서버 목록으로 되돌린다 */
+  const saveOrder = async (next: WatchlistItem[]) => {
+    setOrdered(next)
+    setOrderError('')
+    try {
+      setOrdered(await watchlistApi.reorder(next.map((w) => w.id)))
+    } catch (err) {
+      setOrderError(err instanceof ApiError ? err.detail : String(err))
+      reload()
+    }
+  }
+
+  /** ▲▼ 버튼: 한 칸 이동 */
+  const move = (index: number, delta: -1 | 1) => {
+    if (!items) return
+    const target = index + delta
+    if (target < 0 || target >= items.length) return
+    const next = [...items]
+    ;[next[index], next[target]] = [next[target], next[index]]
+    void saveOrder(next)
+  }
+
+  /** 드래그: 끌던 종목을 놓은 행 자리로 옮긴다 */
+  const dropOn = (targetId: number) => {
+    const sourceId = dragId
+    setDragId(null)
+    setOverId(null)
+    if (!items || sourceId === null || sourceId === targetId) return
+    const next = items.filter((w) => w.id !== sourceId)
+    const source = items.find((w) => w.id === sourceId)
+    const targetIndex = items.findIndex((w) => w.id === targetId)
+    if (!source || targetIndex < 0) return
+    next.splice(targetIndex, 0, source)
+    void saveOrder(next)
+  }
 
   const krwPerUsd = rate?.krwPerUnit.USD ?? null
   // 시세를 하나도 못 받았으면 안내 문구를 보여준다
-  const noQuotes = !!list.data?.length && list.data.every((w) => w.price == null)
+  const noQuotes = !!items?.length && items.every((w) => w.price == null)
 
   const openNew = () => {
     setForm(EMPTY)
@@ -70,7 +117,7 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
         setEditing(null)
       }
       setError('')
-      list.reload()
+      reload()
     } catch (err) {
       setError(err instanceof ApiError ? err.detail : String(err))
     }
@@ -80,7 +127,7 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
     if (!confirm(`'${w.ticker}' 을(를) 관심 종목에서 뺄까요?`)) return
     await watchlistApi.remove(w.id)
     if (editing === w.id) setEditing(null)
-    list.reload()
+    reload()
   }
 
   return (
@@ -142,12 +189,14 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
 
       {list.loading && <Loading />}
       {list.error && <ErrorMessage error={list.error} />}
+      {orderError && <p className="error">{orderError}</p>}
       {noQuotes && <p className="muted small">지금은 시세를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.</p>}
 
       <div className="table-wrap">
         <table className="watchlist-table">
           <thead>
             <tr>
+              <th className="col-handle" aria-label="순서" />
               <th>종목</th>
               <th className="num">현재가</th>
               <th className="num">전일 대비</th>
@@ -157,8 +206,33 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
             </tr>
           </thead>
           <tbody>
-            {list.data?.map((w) => (
-              <tr key={w.id}>
+            {items?.map((w, i) => (
+              <tr
+                key={w.id}
+                // 표에서는 행을 끌어 순서를 바꾼다 (모바일은 ▲▼ 버튼)
+                draggable={items.length > 1}
+                onDragStart={(e) => {
+                  setDragId(w.id)
+                  e.dataTransfer.effectAllowed = 'move'
+                }}
+                onDragOver={(e) => {
+                  if (dragId === null) return
+                  e.preventDefault()
+                  setOverId(w.id)
+                }}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  dropOn(w.id)
+                }}
+                onDragEnd={() => {
+                  setDragId(null)
+                  setOverId(null)
+                }}
+                className={[dragId === w.id ? 'dragging' : '', overId === w.id && dragId !== w.id ? 'drag-over' : ''].join(' ').trim() || undefined}
+              >
+                <td className="col-handle" title="끌어서 순서 변경">
+                  ⠿
+                </td>
                 <td className="col-name">
                   <div className="stock-cell">
                     <StockLogo ticker={w.ticker} />
@@ -206,6 +280,18 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
                 </td>
                 <td className="muted small col-memo">{w.memo}</td>
                 <td className="actions">
+                  <button type="button" className="link order-btn" onClick={() => move(i, -1)} disabled={i === 0} aria-label="위로">
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    className="link order-btn"
+                    onClick={() => move(i, 1)}
+                    disabled={i === items.length - 1}
+                    aria-label="아래로"
+                  >
+                    ▼
+                  </button>
                   <button type="button" className="link" onClick={() => openEdit(w)}>
                     수정
                   </button>
@@ -215,9 +301,9 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
                 </td>
               </tr>
             ))}
-            {list.data?.length === 0 && (
+            {items?.length === 0 && (
               <tr>
-                <td colSpan={6} className="muted center">
+                <td colSpan={7} className="muted center">
                   담아 둔 관심 종목이 없습니다. '종목 담기'로 티커를 추가하세요.
                 </td>
               </tr>

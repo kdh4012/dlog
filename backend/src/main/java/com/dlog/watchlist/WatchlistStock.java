@@ -38,8 +38,13 @@ public class WatchlistStock extends BaseTimeEntity {
     @Column(length = 500)
     private String memo;
 
-    public WatchlistStock(String ticker, String name, BigDecimal targetPrice, String memo) {
+    /** 표시 순서 (작을수록 위) */
+    @Column(nullable = false)
+    private int sortOrder;
+
+    public WatchlistStock(String ticker, String name, BigDecimal targetPrice, String memo, int sortOrder) {
         this.ticker = ticker;
+        this.sortOrder = sortOrder;
         update(name, targetPrice, memo);
     }
 
@@ -48,5 +53,9 @@ public class WatchlistStock extends BaseTimeEntity {
         this.name = name;
         this.targetPrice = targetPrice;
         this.memo = memo;
+    }
+
+    public void changeOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }
