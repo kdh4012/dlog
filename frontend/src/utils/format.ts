@@ -9,6 +9,8 @@ export const formatMoney = (value: number, currency: Currency) =>
   new Intl.NumberFormat('ko-KR', {
     style: 'currency',
     currency,
+    // 'US$' 대신 '$' (EUR '€', JPY '¥' 도 동일하게 짧은 기호)
+    currencyDisplay: 'narrowSymbol',
     maximumFractionDigits:
       value !== 0 && Math.abs(value) < 1 ? SMALL_VALUE_FRACTION_DIGITS : FRACTION_DIGITS[currency],
   }).format(value)

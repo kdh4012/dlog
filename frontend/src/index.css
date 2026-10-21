@@ -1465,3 +1465,36 @@ th {
     display: table-row;
   }
 }
+
+/* 관심 종목 로고 */
+.stock-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.stock-cell > div {
+  min-width: 0;
+}
+
+.stock-logo {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid var(--border);
+}
+
+.stock-logo.fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fg-2);
+  border-color: transparent;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}

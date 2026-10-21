@@ -5,6 +5,7 @@ import type { ExchangeRate, WatchlistItem, WatchlistRequest } from '../api/types
 import { formatMoney, formatRate, profitClass } from '../utils/format'
 import { useAsync } from '../utils/useAsync'
 import { ErrorMessage, Loading } from './Status'
+import StockLogo from './StockLogo'
 
 const EMPTY: WatchlistRequest = { ticker: '', name: '', targetPrice: '', memo: '' }
 
@@ -159,8 +160,13 @@ export default function WatchlistPanel({ rate }: { rate: ExchangeRate | null }) 
             {list.data?.map((w) => (
               <tr key={w.id}>
                 <td className="col-name">
-                  <div className="ticker">{w.ticker}</div>
-                  {w.name && <div className="muted small">{w.name}</div>}
+                  <div className="stock-cell">
+                    <StockLogo ticker={w.ticker} />
+                    <div>
+                      <div className="ticker">{w.ticker}</div>
+                      {w.name && <div className="muted small">{w.name}</div>}
+                    </div>
+                  </div>
                 </td>
                 <td className="num col-price">
                   {w.price == null ? (
