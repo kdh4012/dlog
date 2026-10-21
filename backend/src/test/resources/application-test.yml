@@ -19,4 +19,4 @@ dlog:
     base-url: http://127.0.0.1:9
   # 시세도 외부 호출 없음 (연결 거부 → 시세 없이 목록만)
   quote:
-    base-url: http://127.0.0.1:9
+    yahoo-base-url: http://127.0.0.1:9

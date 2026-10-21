@@ -55,7 +55,7 @@ class TossHoldingProviderTest {
     }
 
     private TossHoldingProvider provider() {
-        return new TossHoldingProvider(new TossProperties(server.baseUrl(), "tsck_live_id", "s_secret"));
+        return new TossHoldingProvider(new TossApiClient(new TossProperties(server.baseUrl(), "tsck_live_id", "s_secret")));
     }
 
     /** 토큰 발급: 호출될 때마다 token-1, token-2 ... 를 발급 (재발급 시 이전 토큰 무효) */

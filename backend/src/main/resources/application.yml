@@ -48,6 +48,6 @@ dlog:
   # 원화·달러 환산용 환율 (ECB 고시, 키 불필요). 1시간 캐시
   fx:
     base-url: https://api.frankfurter.dev
-  # 관심 종목(미국 주식) 시세 (Yahoo Finance 차트 API, 키 불필요). 5분 캐시
+  # 관심 종목(미국 주식) 시세: 토스증권 키가 있으면 토스, 없거나 실패하면 Yahoo Finance 차트 API. 5분 캐시
   quote:
-    base-url: https://query1.finance.yahoo.com
+    yahoo-base-url: https://query1.finance.yahoo.com

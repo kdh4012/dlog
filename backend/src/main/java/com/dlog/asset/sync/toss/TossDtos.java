@@ -17,10 +17,6 @@ final class TossDtos {
     ) {
     }
 
-    /** 공통 성공 envelope */
-    record Envelope<T>(T result) {
-    }
-
     /** GET /api/v1/accounts. accountSeq 는 계좌 API 의 X-Tossinvest-Account 헤더 값 */
     record Account(
             String accountNo,

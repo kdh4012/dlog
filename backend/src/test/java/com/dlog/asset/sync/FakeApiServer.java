@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
@@ -23,6 +25,7 @@ public class FakeApiServer implements AutoCloseable {
     private final HttpServer server;
     /** 받은 요청 기록: "METHOD path?query" */
     public final List<String> requests = new CopyOnWriteArrayList<>();
+    private final Set<String> paths = new HashSet<>();
 
     public FakeApiServer() {
         try {
@@ -33,7 +36,11 @@ public class FakeApiServer implements AutoCloseable {
         server.start();
     }
 
+    /** 같은 경로를 다시 등록하면 핸들러를 교체한다 */
     public FakeApiServer route(String path, Function<HttpExchange, Response> handler) {
+        if (!paths.add(path)) {
+            server.removeContext(path);
+        }
         server.createContext(path, exchange -> {
             String query = exchange.getRequestURI().getRawQuery();
             requests.add(exchange.getRequestMethod() + " " + path + (query == null ? "" : "?" + query));

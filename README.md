@@ -204,7 +204,7 @@ docker compose --profile app up -d --build
 | `JWT_EXPIRATION_MINUTES` | 토큰 만료 시간 (기본 720분) |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` | 관리자 계정 |
 | `UPBIT_ACCESS_KEY` / `UPBIT_SECRET_KEY` | 업비트 자산 동기화 (선택) |
-| `TOSS_CLIENT_ID` / `TOSS_CLIENT_SECRET` | 토스증권 자산 동기화 (선택) |
+| `TOSS_CLIENT_ID` / `TOSS_CLIENT_SECRET` | 토스증권 자산 동기화·관심 종목 시세 (선택) |
 | `ASSET_SYNC_INTERVAL` | 자산 동기화 주기 (기본 `PT10M`) |
 
 > `.env` 에 넣는 BCrypt 해시의 `$` 는 `$$` 로 이스케이프해야 합니다.
@@ -234,4 +234,4 @@ cd frontend && npm run lint && npm run build
 | POST/PUT/DELETE | `/api/expenses[/{id}]` | 관리자 |
 | PUT | `/api/expenses/budget` (`{"month":"yyyy-MM","amount":0}` 이면 해당 월 예산 삭제) | 관리자 |
 | GET/POST/PUT/DELETE | `/api/fixed-expenses[/{id}]` — 고정지출 템플릿 | 관리자 |
-| GET/POST/PUT/DELETE | `/api/watchlist[/{id}]` — 미국 주식 관심 종목 (Yahoo Finance 시세 5분 캐시, 목표가 대비 등락) | 관리자 |
+| GET/POST/PUT/DELETE | `/api/watchlist[/{id}]` — 미국 주식 관심 종목 (시세: 토스증권 키가 있으면 토스, 없거나 실패하면 Yahoo Finance. 5분 캐시) | 관리자 |
