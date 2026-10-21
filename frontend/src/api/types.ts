@@ -245,3 +245,27 @@ export interface FixedExpenseRequest {
   endMonth: string
   memo: string
 }
+
+/** 관심 종목(미국 주식). 시세를 못 구하면 price 이하가 null */
+export interface WatchlistItem {
+  id: number
+  ticker: string
+  name: string | null
+  targetPrice: number | null
+  memo: string | null
+  price: number | null
+  change: number | null
+  /** 전일 대비 등락률(%) */
+  changeRate: number | null
+  currency: string | null
+  quotedAt: string | null
+  /** 목표가까지 남은 비율(%). 음수면 목표가 도달 */
+  targetGapRate: number | null
+}
+
+export interface WatchlistRequest {
+  ticker: string
+  name: string
+  targetPrice: string
+  memo: string
+}

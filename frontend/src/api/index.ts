@@ -13,6 +13,8 @@ import type {
   PostRequest,
   PostSummary,
   SyncStatus,
+  WatchlistItem,
+  WatchlistRequest,
   WorkLog,
   WorkLogRequest,
 } from './types'
@@ -72,4 +74,14 @@ export const fixedExpenseApi = {
   update: (id: number, body: FixedExpenseRequest) =>
     http.put<FixedExpense>(`/fixed-expenses/${id}`, { ...body, endMonth: body.endMonth || null }),
   remove: (id: number) => http.delete(`/fixed-expenses/${id}`),
+}
+
+/** 빈 목표가는 null 로 보낸다 */
+const toWatchlistBody = (b: WatchlistRequest) => ({ ...b, targetPrice: b.targetPrice === '' ? null : b.targetPrice })
+
+export const watchlistApi = {
+  list: () => http.get<WatchlistItem[]>('/watchlist'),
+  add: (body: WatchlistRequest) => http.post<WatchlistItem>('/watchlist', toWatchlistBody(body)),
+  update: (id: number, body: WatchlistRequest) => http.put<WatchlistItem>(`/watchlist/${id}`, toWatchlistBody(body)),
+  remove: (id: number) => http.delete(`/watchlist/${id}`),
 }

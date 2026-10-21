@@ -1363,3 +1363,105 @@ th {
 .section:has(.project-cards) {
   margin-bottom: 48px;
 }
+
+/* ---------- 관심 종목 (자산 포트폴리오 하단) ---------- */
+.watchlist {
+  margin-top: 56px;
+}
+
+.watchlist .section-head p {
+  margin: 4px 0 0;
+}
+
+.watchlist-form {
+  margin-top: 16px;
+}
+
+.watchlist .table-wrap {
+  margin-top: 16px;
+}
+
+.watchlist-table .ticker {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* 모바일: 표 대신 카드형 2단 배치
+   [종목]          [현재가]
+   [전일 대비]     [목표가]
+   [메모]          [수정 삭제] */
+@media (max-width: 640px) {
+  .watchlist-table thead {
+    display: none;
+  }
+
+  .watchlist-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'name price'
+      'change target'
+      'memo actions';
+    column-gap: 12px;
+    row-gap: 6px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .watchlist-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .watchlist-table tbody td {
+    padding: 0;
+    border: none;
+  }
+
+  .watchlist-table .col-name {
+    grid-area: name;
+    min-width: 0;
+  }
+
+  .watchlist-table .col-price {
+    grid-area: price;
+    font-weight: 600;
+  }
+
+  .watchlist-table .col-change {
+    grid-area: change;
+    text-align: left;
+  }
+
+  /* 전일 대비는 금액·등락률을 한 줄로 */
+  .watchlist-table .col-change .small {
+    display: inline;
+    margin-left: 6px;
+  }
+
+  .watchlist-table .col-target {
+    grid-area: target;
+  }
+
+  .watchlist-table .col-target.empty {
+    visibility: hidden;
+  }
+
+  .watchlist-table .col-price .small {
+    font-weight: 400;
+  }
+
+  .watchlist-table .col-memo {
+    grid-area: memo;
+    min-width: 0;
+  }
+
+  .watchlist-table .actions {
+    grid-area: actions;
+    justify-self: end;
+    font-size: 0.8rem;
+  }
+
+  .watchlist-table tbody tr:has(td[colspan]) {
+    display: table-row;
+  }
+}

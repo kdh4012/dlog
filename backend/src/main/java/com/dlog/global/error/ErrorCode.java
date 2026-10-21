@@ -19,6 +19,8 @@ public enum ErrorCode {
     EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "지출 내역을 찾을 수 없습니다."),
     FIXED_EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "고정지출을 찾을 수 없습니다."),
     FIXED_COST_CATEGORY_RESERVED(HttpStatus.BAD_REQUEST, "고정비 카테고리는 고정지출에서만 사용할 수 있습니다."),
+    WATCHLIST_NOT_FOUND(HttpStatus.NOT_FOUND, "관심 종목을 찾을 수 없습니다."),
+    WATCHLIST_DUPLICATE(HttpStatus.CONFLICT, "이미 관심 종목에 있는 티커입니다."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
 
     private final HttpStatus status;

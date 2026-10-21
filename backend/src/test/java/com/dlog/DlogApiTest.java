@@ -55,6 +55,7 @@ class DlogApiTest {
         mvc.perform(get("/api/expenses")).andExpect(status().isUnauthorized());
         mvc.perform(get("/api/expenses/summary")).andExpect(status().isUnauthorized());
         mvc.perform(get("/api/fixed-expenses")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/watchlist")).andExpect(status().isUnauthorized());
     }
 
     @Test

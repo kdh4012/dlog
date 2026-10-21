@@ -4,6 +4,7 @@ import { ApiError } from '../api/client'
 import { ASSET_TYPES, CURRENCIES, type Asset, type AssetRequest, type AssetType, type Currency, type ExchangeRate, type TypeWeight } from '../api/types'
 import AssetSyncPanel from '../components/AssetSyncPanel'
 import { ErrorMessage, Loading } from '../components/Status'
+import WatchlistPanel from '../components/WatchlistPanel'
 import { formatDate, formatIn, formatMoney, formatNumber, formatRate, profitClass, type DisplayCurrency } from '../utils/format'
 import { useAsync } from '../utils/useAsync'
 
@@ -331,6 +332,9 @@ export default function AssetPage() {
           </tbody>
         </table>
       </div>
+
+      {/* 보유 자산과 별개로 지켜보는 미국 주식 */}
+      <WatchlistPanel rate={rate} />
     </>
   )
 }
