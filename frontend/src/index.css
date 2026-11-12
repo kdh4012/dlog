@@ -663,76 +663,6 @@ textarea {
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
 }
 
-/* ---------- asset ---------- */
-.sync-panel {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 24px;
-  margin-top: 24px;
-  padding: 14px 18px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  font-size: 0.875rem;
-}
-
-.sync-panel .error {
-  flex-basis: 100%;
-  margin: 0;
-}
-
-.sync-list {
-  display: grid;
-  gap: 6px;
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.sync-list li {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  min-width: 0;
-}
-
-.sync-list li > span:last-child {
-  overflow-wrap: anywhere;
-}
-
-.sync-list strong {
-  flex: none;
-  min-width: 56px;
-}
-
-.sync-dot {
-  flex: none;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22a06b;
-  transform: translateY(-1px);
-}
-
-.sync-dot.off {
-  background: #d4d4ce;
-}
-
-.sync-dot.fail {
-  background: var(--danger);
-}
-
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
-  gap: 16px;
-  margin: 24px 0 32px;
-}
-
 .summary.total {
   margin-top: 24px;
   border-color: var(--fg);
@@ -1253,26 +1183,8 @@ th {
   white-space: nowrap;
 }
 
-/* 자산 포트폴리오 제목 아래 현재 환율 */
-.rate-line {
-  margin: 4px 0 0;
-  font-variant-numeric: tabular-nums;
-}
-
 .tabs button {
   white-space: nowrap;
-}
-
-/* 좁은 화면: 제목(+환율)과 버튼 묶음을 두 줄로 */
-@media (max-width: 640px) {
-  .section-head:has(.rate-line) {
-    flex-wrap: wrap;
-  }
-
-  .section-head:has(.rate-line) .head-actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
 }
 
 /* ---------- 프로젝트 카드 ---------- */
@@ -1364,169 +1276,220 @@ th {
   margin-bottom: 48px;
 }
 
-/* ---------- 관심 종목 (자산 포트폴리오 하단) ---------- */
-.watchlist {
-  margin-top: 56px;
+/* ---------- 자산 포트폴리오 (토스 스타일) ---------- */
+.invest-total {
+  margin-top: 28px;
 }
 
-.watchlist .section-head p {
-  margin: 4px 0 0;
-}
-
-.watchlist-form {
-  margin-top: 16px;
-}
-
-.watchlist .table-wrap {
-  margin-top: 16px;
-}
-
-.watchlist-table .ticker {
+.invest-label {
+  font-size: 1.05rem;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  color: var(--fg-2);
 }
 
-/* 모바일: 표 대신 카드형 2단 배치
-   [종목]          [현재가]
-   [전일 대비]
-   [메모]          [수정 삭제] */
-@media (max-width: 640px) {
-  .watchlist-table thead {
-    display: none;
-  }
-
-  .watchlist-table tbody tr {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas:
-      'name price'
-      'change change'
-      'memo actions';
-    column-gap: 12px;
-    row-gap: 6px;
-    padding: 12px 14px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .watchlist-table tbody tr:last-child {
-    border-bottom: none;
-  }
-
-  .watchlist-table tbody td {
-    padding: 0;
-    border: none;
-  }
-
-  .watchlist-table .col-name {
-    grid-area: name;
-    min-width: 0;
-  }
-
-  .watchlist-table .col-price {
-    grid-area: price;
-    font-weight: 600;
-  }
-
-  .watchlist-table .col-change {
-    grid-area: change;
-    text-align: left;
-  }
-
-  /* 전일 대비는 금액·등락률을 한 줄로 */
-  .watchlist-table .col-change .small {
-    display: inline;
-    margin-left: 6px;
-  }
-
-  .watchlist-table .col-price .small {
-    font-weight: 400;
-  }
-
-  .watchlist-table .col-memo {
-    grid-area: memo;
-    min-width: 0;
-  }
-
-  .watchlist-table .actions {
-    grid-area: actions;
-    justify-self: end;
-    font-size: 0.8rem;
-  }
-
-  .watchlist-table tbody tr:has(td[colspan]) {
-    display: table-row;
-  }
+.invest-amount {
+  margin-top: 6px;
+  font-size: clamp(2rem, 6vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
 }
 
-/* 관심 종목 로고 */
-.stock-cell {
+.invest-profit {
+  margin-top: 4px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.invest-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 28px 0 8px;
+}
+
+/* 토스식 둥근 세그먼트 토글 */
+.seg {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 10px;
+  background: #f2f2ef;
+}
+
+.seg button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.seg button:not(:disabled):hover {
+  background: transparent;
+  color: var(--fg-2);
+}
+
+.seg button.on,
+.seg button.on:not(:disabled):hover {
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+}
+
+.invest-empty {
+  margin: 40px 0;
+}
+
+.invest-group {
+  margin-top: 16px;
+}
+
+.invest-group-head {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 0;
+  width: 100%;
+  padding: 14px 0;
+  border: none;
+  background: none;
+  color: var(--fg);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: left;
 }
 
-.stock-cell > div {
-  min-width: 0;
+button.invest-group-head:not(:disabled):hover {
+  background: none;
+  color: var(--fg);
 }
 
-.stock-logo {
+.invest-group-head .chevron {
+  margin-left: auto;
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 0.15s;
+}
+
+.invest-group-head .chevron.open {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+
+.invest-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.invest-list li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+}
+
+.asset-logo {
   flex: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   object-fit: contain;
   background: #fff;
   border: 1px solid var(--border);
 }
 
-.stock-logo.fallback {
+.asset-logo.fallback {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--fg-2);
-  border-color: transparent;
+  border: none;
   color: #fff;
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 700;
 }
 
-/* 관심 종목 순서 변경 */
-.watchlist-table .col-handle {
-  width: 28px;
-  padding-right: 0;
+.invest-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.invest-name .name {
+  overflow: hidden;
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.invest-list .sub {
+  margin-top: 3px;
   color: var(--muted);
-  cursor: grab;
-  user-select: none;
+  font-size: 0.875rem;
 }
 
-.watchlist-table tr.dragging {
-  opacity: 0.4;
+.invest-value {
+  flex: none;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
-.watchlist-table tr.drag-over td {
-  box-shadow: inset 0 2px 0 var(--accent);
+.invest-value .value {
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
-.watchlist-table .order-btn {
-  font-size: 0.7rem;
+.invest-value .sub.up,
+.invest-value .sub.down {
+  font-weight: 500;
+}
+
+.invest-value .sub .up,
+.invest-value .sub .down {
+  margin-left: 4px;
+}
+
+.asset-sync {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+}
+
+.asset-sync-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
   color: var(--muted);
 }
 
-.watchlist-table .order-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
+.asset-sync-item + .asset-sync-item::before {
+  content: '·';
+  margin: 0 8px;
 }
 
-/* 데스크톱은 드래그, 모바일은 ▲▼ 버튼 */
-@media (min-width: 641px) {
-  .watchlist-table .order-btn {
-    display: none;
-  }
+.asset-sync-item.fail {
+  color: var(--danger);
+}
+
+.asset-sync .error {
+  margin: 6px 0 0;
 }
 
 @media (max-width: 640px) {
-  .watchlist-table .col-handle {
-    display: none;
+  .invest-list li {
+    gap: 12px;
+  }
+
+  .invest-name .name,
+  .invest-value .value {
+    font-size: 1rem;
   }
 }

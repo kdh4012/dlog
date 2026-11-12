@@ -17,7 +17,7 @@ import java.time.Instant;
 import java.util.function.Function;
 
 /**
- * 토스증권 Open API 공통 호출 (토큰 관리 포함). 보유 자산 동기화와 관심 종목 시세가 함께 쓴다.
+ * 토스증권 Open API 공통 호출 (토큰 관리 포함).
  * <p>
  * client 당 유효한 토큰은 1개이고 재발급 시 이전 토큰이 즉시 무효화되므로,
  * 토큰은 반드시 이 빈 하나에서만 발급·보관하고 401 을 받았을 때만 한 번 재발급한다.

@@ -3,22 +3,18 @@ import { assetApi } from '../api'
 import { ApiError } from '../api/client'
 import { ASSET_SOURCES, type SyncStatus } from '../api/types'
 import { useAsync } from '../utils/useAsync'
-import { ErrorMessage } from './Status'
 
-const formatDateTime = (iso: string) => iso.slice(0, 16).replace('T', ' ')
+/** 2026-11-12T17:20:31 → 11.12 17:20 */
+const formatDateTime = (iso: string) => `${iso.slice(5, 7)}.${iso.slice(8, 10)} ${iso.slice(11, 16)}`
 
-function StatusLine({ status }: { status: SyncStatus }) {
-  if (!status.configured) return <span className="muted">API 키 미설정</span>
-  if (!status.lastSyncedAt) return <span className="muted">동기화 대기 중</span>
-  if (!status.success) return <span className="error">{status.error}</span>
-  return (
-    <span className="muted">
-      {formatDateTime(status.lastSyncedAt)} · {status.assetCount}건
-    </span>
-  )
+const statusText = (s: SyncStatus) => {
+  if (!s.configured) return 'API 키 미설정'
+  if (!s.lastSyncedAt) return '동기화 대기 중'
+  if (!s.success) return '동기화 실패'
+  return formatDateTime(s.lastSyncedAt)
 }
 
-/** 업비트·토스증권 동기화 상태와 수동 동기화 버튼 */
+/** 화면 하단의 업비트·토스증권 동기화 상태 한 줄 + 새로고침 */
 export default function AssetSyncPanel({ onSynced }: { onSynced: () => void }) {
   const statuses = useAsync(() => assetApi.syncStatuses(), [])
   const [syncing, setSyncing] = useState(false)
@@ -27,6 +23,8 @@ export default function AssetSyncPanel({ onSynced }: { onSynced: () => void }) {
 
   const list = latest ?? statuses.data
   const anyConfigured = list?.some((s) => s.configured) ?? false
+  // 실패 원인(허용 IP 미등록 등)은 길어서 아래에 따로 보여준다
+  const failures = list?.filter((s) => s.configured && s.lastSyncedAt && !s.success) ?? []
 
   const handleSync = async () => {
     setSyncing(true)
@@ -42,21 +40,25 @@ export default function AssetSyncPanel({ onSynced }: { onSynced: () => void }) {
   }
 
   return (
-    <section className="sync-panel">
-      <ul className="sync-list">
-        {list?.map((s) => (
-          <li key={s.source}>
-            <span className={`sync-dot ${!s.configured ? 'off' : s.lastSyncedAt && !s.success ? 'fail' : 'on'}`} />
-            <strong>{ASSET_SOURCES[s.source]}</strong>
-            <StatusLine status={s} />
-          </li>
-        ))}
-      </ul>
-      <button type="button" className="secondary" onClick={handleSync} disabled={syncing || !anyConfigured}>
-        {syncing ? '동기화 중...' : '지금 동기화'}
-      </button>
-      {statuses.error && <ErrorMessage error={statuses.error} />}
-      {error && <p className="error">{error}</p>}
-    </section>
+    <footer className="asset-sync">
+      <div className="asset-sync-line">
+        <span>
+          {list?.map((s) => (
+            <span key={s.source} className={`asset-sync-item${failures.includes(s) ? ' fail' : ''}`}>
+              {ASSET_SOURCES[s.source]} {statusText(s)}
+            </span>
+          ))}
+        </span>
+        <button type="button" className="link" onClick={handleSync} disabled={syncing || !anyConfigured}>
+          {syncing ? '동기화 중...' : '지금 동기화'}
+        </button>
+      </div>
+      {failures.map((s) => (
+        <p key={s.source} className="error small">
+          {ASSET_SOURCES[s.source]}: {s.error}
+        </p>
+      ))}
+      {(error || statuses.error) && <p className="error small">{error || statuses.error?.message}</p>}
+    </footer>
   )
 }
