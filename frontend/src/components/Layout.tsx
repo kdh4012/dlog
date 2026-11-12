@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router'
 import { useAuth } from '../auth/AuthContext'
+import ThemeToggle from './ThemeToggle'
 
 const EXTERNAL_LINKS = [
   { label: 'GitHub', href: 'https://github.com/kdh4012' },
@@ -65,6 +66,7 @@ export default function Layout() {
             <NavLink to="/login">로그인</NavLink>
           )}
         </div>
+        <ThemeToggle />
       </aside>
       <main className="main">
         <Outlet />
