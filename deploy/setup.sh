@@ -55,6 +55,18 @@ if [ -f "$BOKSOON_HTTPS_CONF" ]; then
   KEY="$(awk '$1=="ssl_certificate_key"{gsub(";","",$2); print $2; exit}' "$BOKSOON_HTTPS_CONF")"
 fi
 
+# 복순을 서버에서 내려 설정 파일이 없어도, 발급받은 Let's Encrypt 인증서가 남아 있으면 그대로 쓴다
+if [ -z "$CERT" ] || [ ! -f "$CERT" ]; then
+  for dir in /etc/letsencrypt/live/*/; do
+    if [ -f "${dir}fullchain.pem" ] && [ -f "${dir}privkey.pem" ]; then
+      CERT="${dir}fullchain.pem"
+      KEY="${dir}privkey.pem"
+      echo "복순 HTTPS 설정이 없어 Let's Encrypt 인증서를 직접 사용: ${dir}"
+      break
+    fi
+  done
+fi
+
 mkdir -p /etc/nginx/snippets
 install -m 644 "${DEPLOY_DIR}/nginx-app.conf" /etc/nginx/snippets/dlog-app.conf
 
