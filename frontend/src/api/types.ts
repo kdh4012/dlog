@@ -158,6 +158,8 @@ export type LedgerKind = 'INCOME' | 'FIXED_EXPENSE' | 'DEBT'
 export interface LedgerItem {
   id: number
   kind: LedgerKind
+  /** yyyy-MM. 부채는 null */
+  month: string | null
   name: string
   /** 원 단위. 수입·고정지출은 월 금액, 부채는 잔액 */
   amount: number
@@ -166,12 +168,22 @@ export interface LedgerItem {
 
 export interface LedgerItemRequest {
   kind: LedgerKind
+  /** yyyy-MM. 수입·고정지출만 (등록 시) */
+  month: string | null
   name: string
   amount: string
   memo: string
 }
 
+export interface LedgerMonthTotal {
+  month: string
+  income: number
+  fixedExpense: number
+}
+
+/** 한 달의 가계부. 부채는 달과 무관한 현재 잔액 */
 export interface Ledger {
+  month: string
   incomeTotal: number
   fixedExpenseTotal: number
   /** 월 수입 - 월 고정지출 (음수면 적자) */
@@ -180,4 +192,6 @@ export interface Ledger {
   incomes: LedgerItem[]
   fixedExpenses: LedgerItem[]
   debts: LedgerItem[]
+  /** 그 달까지 최근 12개월 (오래된 달부터) */
+  trend: LedgerMonthTotal[]
 }

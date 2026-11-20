@@ -1373,3 +1373,151 @@ button.ledger-row:not(:disabled):hover {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.ledger-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+}
+
+.ledger-head h1 {
+  margin-bottom: 0;
+}
+
+.ledger-month-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ledger-month-nav strong {
+  min-width: 112px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger-month-nav button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* 최근 12개월 막대 */
+.ledger-trend {
+  margin-top: 28px;
+  padding: 18px 18px 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.ledger-trend-legend {
+  display: flex;
+  gap: 14px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  border-radius: 3px;
+  vertical-align: -1px;
+}
+
+.swatch.income,
+.bar-income {
+  background: var(--accent);
+}
+
+.swatch.fixed,
+.bar-fixed {
+  background: var(--soft-bar);
+}
+
+.ledger-trend-bars {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 12px;
+}
+
+button.ledger-trend-item,
+button.ledger-trend-item:not(:disabled):hover {
+  display: grid;
+  grid-template-rows: auto 120px auto;
+  gap: 6px;
+  min-width: 0;
+  padding: 6px 2px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+button.ledger-trend-item:not(:disabled):hover {
+  background: var(--subtle);
+}
+
+button.ledger-trend-item.active {
+  background: var(--subtle);
+  color: var(--fg);
+  font-weight: 700;
+}
+
+.ledger-trend-value {
+  min-height: 1.4em; /* 금액이 없는 달도 막대·월 위치를 맞춘다 */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger-trend-pair {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+}
+
+.ledger-trend-pair > span {
+  width: min(12px, 40%);
+  min-height: 0;
+  border-radius: 3px 3px 0 0;
+}
+
+.ledger-note {
+  margin: 10px 0 0;
+}
+
+@media (max-width: 640px) {
+  .ledger-trend {
+    padding: 14px 8px 8px;
+  }
+
+  .ledger-trend-bars {
+    gap: 0;
+  }
+
+  button.ledger-trend-item,
+  button.ledger-trend-item:not(:disabled):hover {
+    font-size: 0.62rem;
+  }
+
+  /* 좁은 화면에서는 막대 위 금액을 숨긴다 (선택한 달 금액은 위 요약에 있음) */
+  .ledger-trend-value {
+    display: none;
+  }
+
+  button.ledger-trend-item,
+  button.ledger-trend-item:not(:disabled):hover {
+    grid-template-rows: 90px auto;
+  }
+}

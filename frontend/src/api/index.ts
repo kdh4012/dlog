@@ -52,7 +52,8 @@ export const assetApi = {
 }
 
 export const ledgerApi = {
-  get: () => http.get<Ledger>('/ledger'),
+  /** 빈 달이면 서버가 이전 달 항목을 이월한 뒤 돌려준다 */
+  get: (month: string) => http.get<Ledger>(`/ledger?month=${month}`),
   create: (body: LedgerItemRequest) => http.post<LedgerItem>('/ledger', body),
   update: (id: number, body: LedgerItemRequest) => http.put<LedgerItem>(`/ledger/${id}`, body),
   remove: (id: number) => http.delete(`/ledger/${id}`),
