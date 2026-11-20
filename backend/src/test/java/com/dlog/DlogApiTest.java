@@ -51,10 +51,8 @@ class DlogApiTest {
     }
 
     @Test
-    void 지출은_비로그인시_401() throws Exception {
-        mvc.perform(get("/api/expenses")).andExpect(status().isUnauthorized());
-        mvc.perform(get("/api/expenses/summary")).andExpect(status().isUnauthorized());
-        mvc.perform(get("/api/fixed-expenses")).andExpect(status().isUnauthorized());
+    void 가계부는_비로그인시_401() throws Exception {
+        mvc.perform(get("/api/ledger")).andExpect(status().isUnauthorized());
     }
 
     @Test

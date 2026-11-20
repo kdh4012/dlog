@@ -1,10 +1,10 @@
-import { BrowserRouter, Route, Routes } from 'react-router'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { AuthProvider } from './auth/AuthContext'
 import Layout from './components/Layout'
 import RequireAdmin from './components/RequireAdmin'
 import AssetPage from './pages/AssetPage'
-import ExpensePage from './pages/ExpensePage'
 import HomePage from './pages/HomePage'
+import LedgerPage from './pages/LedgerPage'
 import LoginPage from './pages/LoginPage'
 import NotFoundPage from './pages/NotFoundPage'
 import PostDetailPage from './pages/PostDetailPage'
@@ -32,7 +32,9 @@ export default function App() {
               <Route path="work-logs/new" element={<WorkLogEditPage />} />
               <Route path="work-logs/:id/edit" element={<WorkLogEditPage />} />
               <Route path="assets" element={<AssetPage />} />
-              <Route path="expenses" element={<ExpensePage />} />
+              <Route path="ledger" element={<LedgerPage />} />
+              {/* 예전 가계부 주소 */}
+              <Route path="expenses" element={<Navigate to="/ledger" replace />} />
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />

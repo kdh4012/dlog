@@ -1,7 +1,8 @@
-package com.dlog.expense;
+package com.dlog.ledger;
 
-import com.dlog.expense.dto.FixedExpenseRequest;
-import com.dlog.expense.dto.FixedExpenseResponse;
+import com.dlog.ledger.dto.LedgerItemRequest;
+import com.dlog.ledger.dto.LedgerItemResponse;
+import com.dlog.ledger.dto.LedgerResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,35 +16,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-/** 고정지출 템플릿 API - SecurityConfig 에서 관리자 전용으로 제한 */
+/** 가계부(월 수입·월 고정지출·부채) API - SecurityConfig 에서 관리자 전용으로 제한 */
 @RestController
-@RequestMapping("/api/fixed-expenses")
+@RequestMapping("/api/ledger")
 @RequiredArgsConstructor
-public class FixedExpenseController {
+public class LedgerController {
 
-    private final FixedExpenseService fixedExpenseService;
+    private final LedgerService ledgerService;
 
     @GetMapping
-    public List<FixedExpenseResponse> getAll() {
-        return fixedExpenseService.getAll();
+    public LedgerResponse get() {
+        return ledgerService.get();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FixedExpenseResponse create(@Valid @RequestBody FixedExpenseRequest request) {
-        return fixedExpenseService.create(request);
+    public LedgerItemResponse create(@Valid @RequestBody LedgerItemRequest request) {
+        return ledgerService.create(request);
     }
 
     @PutMapping("/{id}")
-    public FixedExpenseResponse update(@PathVariable Long id, @Valid @RequestBody FixedExpenseRequest request) {
-        return fixedExpenseService.update(id, request);
+    public LedgerItemResponse update(@PathVariable Long id, @Valid @RequestBody LedgerItemRequest request) {
+        return ledgerService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        fixedExpenseService.delete(id);
+        ledgerService.delete(id);
     }
 }

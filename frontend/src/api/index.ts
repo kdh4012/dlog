@@ -3,11 +3,9 @@ import type {
   Asset,
   AssetRequest,
   AssetSummary,
-  Expense,
-  ExpenseRequest,
-  ExpenseSummary,
-  FixedExpense,
-  FixedExpenseRequest,
+  Ledger,
+  LedgerItem,
+  LedgerItemRequest,
   PageResponse,
   Post,
   PostRequest,
@@ -53,24 +51,10 @@ export const assetApi = {
   sync: () => http.post<SyncStatus[]>('/assets/sync', {}),
 }
 
-export const expenseApi = {
-  list: (month: string) => http.get<Expense[]>(`/expenses?month=${month}`),
-  summary: (month: string) => http.get<ExpenseSummary>(`/expenses/summary?month=${month}`),
-  /** 결제 수단 '선택 안 함'('')은 null 로 보낸다 */
-  create: (body: ExpenseRequest) => http.post<Expense>('/expenses', { ...body, paymentMethod: body.paymentMethod || null }),
-  update: (id: number, body: ExpenseRequest) =>
-    http.put<Expense>(`/expenses/${id}`, { ...body, paymentMethod: body.paymentMethod || null }),
-  remove: (id: number) => http.delete(`/expenses/${id}`),
-  /** amount 0 이면 해당 월 예산 삭제 (이전 달 예산을 이어서 사용) */
-  setBudget: (month: string, amount: number) => http.put<void>('/expenses/budget', { month, amount }),
-}
-
-export const fixedExpenseApi = {
-  list: () => http.get<FixedExpense[]>('/fixed-expenses'),
-  /** 빈 종료 월은 null(계속)로 보낸다 */
-  create: (body: FixedExpenseRequest) => http.post<FixedExpense>('/fixed-expenses', { ...body, endMonth: body.endMonth || null }),
-  update: (id: number, body: FixedExpenseRequest) =>
-    http.put<FixedExpense>(`/fixed-expenses/${id}`, { ...body, endMonth: body.endMonth || null }),
-  remove: (id: number) => http.delete(`/fixed-expenses/${id}`),
+export const ledgerApi = {
+  get: () => http.get<Ledger>('/ledger'),
+  create: (body: LedgerItemRequest) => http.post<LedgerItem>('/ledger', body),
+  update: (id: number, body: LedgerItemRequest) => http.put<LedgerItem>(`/ledger/${id}`, body),
+  remove: (id: number) => http.delete(`/ledger/${id}`),
 }
 
