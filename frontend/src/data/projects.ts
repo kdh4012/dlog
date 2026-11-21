@@ -20,8 +20,8 @@ export const PROJECTS: Project[] = [
   },
   {
     name: '포트폴리오',
-    summary: '경력·프로젝트·자격증을 정리한 정적 포트폴리오 사이트. 빌드 도구 없이 HTML/CSS/JS 로 만들고 GitHub Pages 로 배포',
-    stack: ['HTML', 'CSS', 'JavaScript', 'GitHub Pages'],
+    summary: '경력·프로젝트·문제 해결 사례를 정리한 정적 포트폴리오 사이트. 빌드 도구 없이 데이터(data.js)와 렌더링(main.js)을 분리했고, 자격증 PDF는 AES-256-GCM 으로 암호화해 비밀번호를 입력해야 브라우저에서 복호화되도록 구현',
+    stack: ['HTML', 'CSS', 'JavaScript', 'Web Crypto API', 'Node.js', 'GitHub Pages'],
     href: 'https://github.com/kdh4012/kdh4012.github.io',
     site: 'https://kdh4012.github.io',
   },
