@@ -1,6 +1,7 @@
 package com.dlog.study;
 
 import com.dlog.study.dto.MemorizedRequest;
+import com.dlog.study.dto.StudyCardImportRequest;
 import com.dlog.study.dto.StudyCardRequest;
 import com.dlog.study.dto.StudyCardResponse;
 import jakarta.validation.Valid;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /** 학습 노트 카드. /api/** 규칙에 따라 관리자만 접근한다 */
 @RestController
@@ -42,6 +44,13 @@ public class StudyCardController {
     @ResponseStatus(HttpStatus.CREATED)
     public StudyCardResponse create(@Valid @RequestBody StudyCardRequest request) {
         return service.create(request);
+    }
+
+    /** JSON 파일 가져오기: 추가한 카드 수를 돌려준다 */
+    @PostMapping("/import")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Map<String, Integer> importAll(@Valid @RequestBody StudyCardImportRequest request) {
+        return Map.of("imported", service.importAll(request.cards()));
     }
 
     @PutMapping("/{id}")

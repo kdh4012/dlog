@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { Link } from 'react-router'
 import { studyApi } from '../api'
-import { STUDY_CATEGORIES, type StudyCard, type StudyCategory } from '../api/types'
+import { ApiError } from '../api/client'
+import { STUDY_CATEGORIES, type StudyCard, type StudyCardRequest, type StudyCategory } from '../api/types'
 import Markdown from '../components/Markdown'
 import { ErrorMessage, Loading } from '../components/Status'
 import { useAsync } from '../utils/useAsync'
@@ -22,6 +23,32 @@ function shuffled<T>(items: T[]): T[] {
     ;[copy[i], copy[j]] = [copy[j], copy[i]]
   }
   return copy
+}
+
+/** 가져오기 파일: 카드 배열 또는 { cards: [...] } 둘 다 받는다 */
+function parseImportFile(text: string): StudyCardRequest[] {
+  const json: unknown = JSON.parse(text)
+  const list = Array.isArray(json) ? json : (json as { cards?: unknown }).cards
+  if (!Array.isArray(list)) throw new Error('카드 배열을 찾을 수 없습니다.')
+  return list.map((c: Partial<StudyCardRequest>, i) => {
+    if (!c.category || !(c.category in STUDY_CATEGORIES) || !c.question || !c.answer) {
+      throw new Error(`${i + 1}번째 카드의 category, question, answer 를 확인해 주세요.`)
+    }
+    return { category: c.category, question: c.question, answer: c.answer, sortOrder: Number(c.sortOrder) || 0 }
+  })
+}
+
+/** 현재 카드를 가져오기와 같은 형식의 JSON 파일로 저장 (백업용) */
+function downloadCards(cards: StudyCard[]) {
+  const body = {
+    cards: cards.map(({ category, question, answer, sortOrder }) => ({ category, question, answer, sortOrder })),
+  }
+  const url = URL.createObjectURL(new Blob([JSON.stringify(body, null, 2)], { type: 'application/json' }))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `study-cards-${new Date().toISOString().slice(0, 10)}.json`
+  a.click()
+  URL.revokeObjectURL(url)
 }
 
 export default function StudyPage() {
@@ -86,6 +113,23 @@ export default function StudyPage() {
     }
   }
 
+  const fileInput = useRef<HTMLInputElement>(null)
+
+  const handleImport = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = '' // 같은 파일을 다시 골라도 change 가 발생하도록
+    if (!file) return
+    try {
+      const cards = parseImportFile(await file.text())
+      if (!confirm(`카드 ${cards.length}장을 추가할까요? (기존 카드는 그대로 둡니다)`)) return
+      const { imported } = await studyApi.importAll(cards)
+      alert(`${imported}장을 추가했습니다.`)
+      reload()
+    } catch (err) {
+      alert(err instanceof ApiError ? err.detail : err instanceof Error ? err.message : String(err))
+    }
+  }
+
   const handleDelete = async (id: number) => {
     if (!confirm('이 카드를 삭제할까요?')) return
     await studyApi.remove(id)
@@ -96,9 +140,23 @@ export default function StudyPage() {
     <>
       <div className="section-head">
         <h1>학습 노트</h1>
-        <Link to="/study/new" className="button">
-          추가
-        </Link>
+        <div className="head-actions">
+          <button type="button" className="secondary" onClick={() => fileInput.current?.click()}>
+            가져오기
+          </button>
+          <button
+            type="button"
+            className="secondary"
+            disabled={!data?.length}
+            onClick={() => data && downloadCards([...data].sort(byCategoryThenOrder))}
+          >
+            내보내기
+          </button>
+          <Link to="/study/new" className="button">
+            추가
+          </Link>
+          <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={handleImport} />
+        </div>
       </div>
 
       <div className="study-toolbar">

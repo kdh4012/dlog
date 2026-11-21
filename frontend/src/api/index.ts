@@ -71,4 +71,6 @@ export const studyApi = {
   setMemorized: (id: number, memorized: boolean) =>
     http.patch<StudyCard>(`/study-cards/${id}/memorized`, { memorized }),
   remove: (id: number) => http.delete(`/study-cards/${id}`),
+  importAll: (cards: StudyCardRequest[]) =>
+    http.post<{ imported: number }>('/study-cards/import', { cards }),
 }

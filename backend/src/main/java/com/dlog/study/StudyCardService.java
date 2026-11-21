@@ -40,6 +40,20 @@ public class StudyCardService {
         return StudyCardResponse.from(repository.save(card));
     }
 
+    /** 전체를 한 트랜잭션으로 저장해, 하나라도 실패하면 아무것도 들어가지 않는다 */
+    @Transactional
+    public int importAll(List<StudyCardRequest> requests) {
+        List<StudyCard> cards = requests.stream()
+                .map(r -> StudyCard.builder()
+                        .category(r.category())
+                        .question(r.question())
+                        .answer(r.answer())
+                        .sortOrder(orderOf(r))
+                        .build())
+                .toList();
+        return repository.saveAll(cards).size();
+    }
+
     @Transactional
     public StudyCardResponse update(Long id, StudyCardRequest r) {
         StudyCard card = findById(id);

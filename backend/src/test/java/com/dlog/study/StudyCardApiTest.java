@@ -79,6 +79,35 @@ class StudyCardApiTest {
     }
 
     @Test
+    void 가져오기는_한꺼번에_저장하고_하나라도_잘못되면_아무것도_저장하지_않는다() throws Exception {
+        String before = mvc.perform(get("/api/study-cards")).andReturn().getResponse().getContentAsString();
+        int countBefore = JsonPath.<java.util.List<Object>>read(before, "$").size();
+
+        mvc.perform(post("/api/study-cards/import").contentType(MediaType.APPLICATION_JSON).content("""
+                        {"cards":[
+                          {"category":"INTRO","question":"가져온 질문1","answer":"답1","sortOrder":10},
+                          {"category":"TECH","question":"가져온 질문2","answer":"답2"}
+                        ]}"""))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.imported").value(2));
+
+        // 두 번째 카드의 답이 비어 있으면 400, 첫 번째 카드도 저장되지 않는다
+        mvc.perform(post("/api/study-cards/import").contentType(MediaType.APPLICATION_JSON).content("""
+                        {"cards":[
+                          {"category":"INTRO","question":"저장되면 안 됨","answer":"답"},
+                          {"category":"TECH","question":"답 없음","answer":""}
+                        ]}"""))
+                .andExpect(status().isBadRequest());
+
+        String after = mvc.perform(get("/api/study-cards")).andReturn().getResponse().getContentAsString();
+        java.util.List<Integer> ids = JsonPath.read(after, "$[?(@.question =~ /가져온 질문.*/)].id");
+        java.util.List<Object> blocked = JsonPath.read(after, "$[?(@.question == '저장되면 안 됨')]");
+        org.assertj.core.api.Assertions.assertThat(JsonPath.<java.util.List<Object>>read(after, "$")).hasSize(countBefore + 2);
+        org.assertj.core.api.Assertions.assertThat(blocked).isEmpty();
+        for (Integer id : ids) mvc.perform(delete("/api/study-cards/" + id));
+    }
+
+    @Test
     void 필수값_누락과_잘못된_분류는_400() throws Exception {
         mvc.perform(post("/api/study-cards").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"category\":\"TECH\",\"question\":\"\",\"answer\":\"a\"}"))
