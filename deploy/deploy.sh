@@ -73,7 +73,7 @@ ssh "${SSH_OPTS[@]}" "$REMOTE" "
 
   # 기동 확인 (최대 120초). 1GB 서버라 JVM 기동이 느릴 수 있다.
   for i in \$(seq 1 60); do
-    if curl -fs -o /dev/null http://127.0.0.1:8081/api/posts; then
+    if curl -fs -o /dev/null http://127.0.0.1:8081/api/work-logs; then
       echo 'DLog 기동 확인'
       rm -rf /tmp/dlog-deploy
       exit 0
