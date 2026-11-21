@@ -86,9 +86,19 @@ export default function StudyPage() {
     <div className="study">
       <div className="section-head">
         <h1>학습 노트</h1>
-        <Link to="/study/new" className="button">
-          카드 추가
-        </Link>
+        <div className="head-actions">
+          {shuffleOrder && (
+            <button type="button" className="link" onClick={() => setShuffleOrder(null)}>
+              원래 순서
+            </button>
+          )}
+          <button type="button" className="secondary" onClick={handleShuffle}>
+            섞기
+          </button>
+          <Link to="/study/new" className="button">
+            카드 추가
+          </Link>
+        </div>
       </div>
 
       <div className="study-bar">
@@ -98,16 +108,6 @@ export default function StudyPage() {
               {f === 'ALL' ? '전체' : STUDY_CATEGORIES[f]} <span className="seg-count">{countOf(f)}</span>
             </button>
           ))}
-        </div>
-        <div className="study-shuffle">
-          {shuffleOrder && (
-            <button type="button" className="link" onClick={() => setShuffleOrder(null)}>
-              원래 순서
-            </button>
-          )}
-          <button type="button" className="link" onClick={handleShuffle}>
-            섞기
-          </button>
         </div>
       </div>
 

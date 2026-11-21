@@ -18,11 +18,7 @@ export default function DiaryList({ entries, groupByMonth = true }: { entries: D
     <div className="diary-list">
       {groups.map((g) => (
         <section key={g.month + g.items[0].id}>
-          {groupByMonth && (
-            <h2 className="diary-month">
-              {g.month} <span>{g.items.length}편</span>
-            </h2>
-          )}
+          {groupByMonth && <h2 className="diary-month">{g.month}</h2>}
           <ul>
             {g.items.map((e) => {
               const { day, weekday, weekend } = dayParts(e.entryDate)

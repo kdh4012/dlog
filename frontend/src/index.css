@@ -211,24 +211,6 @@ h1 {
 }
 
 /* ---------- home ---------- */
-.hero {
-  padding-bottom: 48px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.hero h1 {
-  margin: 0 0 16px;
-  font-size: clamp(2.2rem, 5vw, 3.2rem);
-  line-height: 1.15;
-  letter-spacing: -0.04em;
-}
-
-.hero p {
-  margin: 0;
-  font-size: 1.05rem;
-}
-
 .section {
   margin-top: 48px;
 }
@@ -263,12 +245,6 @@ h1 {
   margin: 36px 0 8px;
   font-size: 1.05rem;
   font-weight: 700;
-}
-
-.diary-month span {
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 500;
 }
 
 .diary-list ul {
@@ -1485,12 +1461,6 @@ button.ledger-trend-item.active {
   font-variant-numeric: tabular-nums;
 }
 
-.study-shuffle {
-  display: flex;
-  gap: 14px;
-  font-size: 0.9rem;
-}
-
 .study-list {
   display: grid;
   gap: 8px;
@@ -1623,7 +1593,7 @@ button.chip.on:not(:disabled):hover {
 
 /* ---------- 홈: 연도별 목표 ---------- */
 .goal-board {
-  margin-top: 48px;
+  margin-top: 20px;
   padding: 24px;
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -1884,7 +1854,77 @@ button.goal-delete:not(:disabled):hover {
 
 @media (max-width: 640px) {
   .goal-board {
-    margin-top: 32px;
     padding: 18px 14px;
+  }
+}
+
+/* ---------- 홈: 나의 다짐 ---------- */
+.resolution {
+  padding: 28px 28px 24px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--accent-soft), var(--surface));
+  border: 1px solid var(--border);
+}
+
+.resolution-label {
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* 다짐 문장: 크게, 줄바꿈 그대로 */
+button.resolution-text,
+button.resolution-text:not(:disabled):hover {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--fg);
+  font-size: clamp(1.35rem, 3.2vw, 1.75rem);
+  font-weight: 800;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  cursor: text;
+}
+
+button.resolution-text.empty,
+button.resolution-text.empty:not(:disabled):hover {
+  color: var(--muted);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.resolution-input {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.resolution-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+@media (max-width: 640px) {
+  .resolution {
+    padding: 22px 18px 20px;
   }
 }

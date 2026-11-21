@@ -6,6 +6,12 @@ export interface PageResponse<T> {
   totalPages: number
 }
 
+/** 홈 화면 다짐. 아직 없으면 content 는 '' */
+export interface Resolution {
+  content: string
+  updatedAt: string | null
+}
+
 /** 한 해의 목표 */
 export interface Goal {
   id: number

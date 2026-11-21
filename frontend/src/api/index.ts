@@ -11,6 +11,7 @@ import type {
   LedgerItem,
   LedgerItemRequest,
   PageResponse,
+  Resolution,
   StudyCard,
   StudyCardRequest,
   StudyCategory,
@@ -21,6 +22,12 @@ export const authApi = {
   login: (username: string, password: string) =>
     http.post<{ accessToken: string; expiresAt: string }>('/auth/login', { username, password }),
   me: () => http.get<{ username: string }>('/auth/me'),
+}
+
+export const resolutionApi = {
+  get: () => http.get<Resolution>('/resolution'),
+  /** 빈 문자열이면 지운다 */
+  save: (content: string) => http.put<Resolution>('/resolution', { content }),
 }
 
 export const goalApi = {
