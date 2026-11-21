@@ -38,7 +38,6 @@ export default function ResolutionCard() {
 
   return (
     <section className="resolution">
-      <div className="resolution-label">나의 다짐</div>
       {editing ? (
         <>
           <textarea

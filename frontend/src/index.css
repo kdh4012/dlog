@@ -1860,17 +1860,10 @@ button.goal-delete:not(:disabled):hover {
 
 /* ---------- 홈: 나의 다짐 ---------- */
 .resolution {
-  padding: 28px 28px 24px;
+  padding: 26px 28px;
   border-radius: 20px;
   background: linear-gradient(135deg, var(--accent-soft), var(--surface));
   border: 1px solid var(--border);
-}
-
-.resolution-label {
-  color: var(--accent);
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
 }
 
 /* 다짐 문장: 크게, 줄바꿈 그대로 */
@@ -1878,7 +1871,6 @@ button.resolution-text,
 button.resolution-text:not(:disabled):hover {
   display: block;
   width: 100%;
-  margin-top: 10px;
   padding: 0;
   border: none;
   background: none;
@@ -1903,7 +1895,6 @@ button.resolution-text.empty:not(:disabled):hover {
 
 .resolution-input {
   width: 100%;
-  margin-top: 10px;
   padding: 12px 14px;
   border: 1px solid var(--accent);
   border-radius: 12px;
