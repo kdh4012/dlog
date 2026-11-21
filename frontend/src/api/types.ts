@@ -55,10 +55,9 @@ export interface StudyCard {
   question: string
   answer: string
   sortOrder: number
-  memorized: boolean
 }
 
-export type StudyCardRequest = Omit<StudyCard, 'id' | 'memorized'>
+export type StudyCardRequest = Omit<StudyCard, 'id'>
 
 export const ASSET_TYPES = {
   STOCK: '주식',

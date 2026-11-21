@@ -1468,104 +1468,115 @@ button.ledger-trend-item.active {
 }
 
 /* ---------- 학습 노트 ---------- */
-.study-toolbar {
+.study-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin: 8px 0 4px;
+  margin-top: 20px;
 }
 
-/* 분류가 많아 좁은 화면에서는 가로 스크롤 */
-.study-tabs {
-  max-width: 100%;
-  overflow-x: auto;
+.seg-count {
+  margin-left: 2px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
-.study-options {
+.study-shuffle {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-}
-
-.study-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  color: var(--fg-2);
-  cursor: pointer;
-}
-
-.study-progress {
-  margin: 4px 0 12px;
-  font-size: 0.875rem;
+  gap: 14px;
+  font-size: 0.9rem;
 }
 
 .study-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: grid;
-  gap: 10px;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.study-card {
+.study-list > li {
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 16px;
   background: var(--surface);
   overflow: hidden;
+  transition: border-color 0.12s;
 }
 
-.study-card.done {
-  opacity: 0.6;
+.study-list > li.open {
+  border-color: var(--input-border);
 }
 
-/* 전역 button:hover(검정 배경)보다 우선하도록 button 선택자를 붙인다 */
-button.study-question,
-button.study-question:not(:disabled):hover {
+button.study-q,
+button.study-q:not(:disabled):hover {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
   width: 100%;
-  padding: 14px 16px;
+  padding: 16px 20px;
   border: none;
   border-radius: 0;
-  background: transparent;
+  background: none;
   color: var(--fg);
   text-align: left;
-  font-weight: 600;
-  cursor: pointer;
 }
 
-button.study-question:not(:disabled):hover {
+button.study-q:not(:disabled):hover {
   background: var(--subtle);
 }
 
-.study-question-text {
+.study-q-text {
+  display: grid;
   flex: 1;
+  gap: 3px;
   min-width: 0;
 }
 
-.study-toggle {
-  flex-shrink: 0;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: var(--accent);
+.study-q-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
-.study-answer {
-  padding: 4px 16px 8px;
+.study-q-label {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* 펼침 표시: 아래 화살표 → 열리면 위 */
+.study-chevron {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-right: 2px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.15s;
+}
+
+.open .study-chevron {
+  transform: translateY(2px) rotate(-135deg);
+}
+
+.study-a {
+  padding: 4px 20px 16px;
   border-top: 1px solid var(--border);
 }
 
-.study-actions {
+.study-a .markdown {
+  font-size: 0.98rem;
+}
+
+.study-a-actions {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 16px 12px;
+  justify-content: flex-end;
+  gap: 14px;
+  font-size: 0.85rem;
 }
 
 /* 학습 노트 유형 칩 (여러 개 선택) */
@@ -1608,8 +1619,4 @@ button.chip.on:not(:disabled):hover {
 
 .study-type-field .study-types {
   margin: 4px 0 0;
-}
-
-.study-question .tag + .tag {
-  margin-left: -4px;
 }

@@ -11,7 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,13 +34,12 @@ class StudyCardApiTest {
                         {"category":"%s","types":%s,"question":"%s","answer":"**답**","sortOrder":%d}"""
                         .formatted(category, typesJson, question, sortOrder)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.memorized").value(false))
                 .andReturn().getResponse().getContentAsString();
         return JsonPath.read(body, "$.id");
     }
 
     @Test
-    void 생성_수정_외움표시_삭제() throws Exception {
+    void 생성_수정_삭제() throws Exception {
         // 유형은 선언 순서(WORK, DOMAIN, TECH, TROUBLE)로 돌려준다
         Integer id = create("KNOWLEDGE", "[\"TECH\",\"WORK\"]", "낙관적 락이란?", 5);
         mvc.perform(get("/api/study-cards/" + id))
@@ -58,13 +56,8 @@ class StudyCardApiTest {
                 .andExpect(jsonPath("$.question").value("수정된 질문"))
                 .andExpect(jsonPath("$.sortOrder").value(1));
 
-        mvc.perform(patch("/api/study-cards/" + id + "/memorized").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"memorized\":true}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.memorized").value(true));
 
         mvc.perform(get("/api/study-cards/" + id))
-                .andExpect(jsonPath("$.memorized").value(true))
                 .andExpect(jsonPath("$.answer").value("수정된 답"));
 
         mvc.perform(delete("/api/study-cards/" + id)).andExpect(status().isNoContent());
@@ -89,34 +82,6 @@ class StudyCardApiTest {
         mvc.perform(delete("/api/study-cards/" + second));
     }
 
-    @Test
-    void 가져오기는_한꺼번에_저장하고_하나라도_잘못되면_아무것도_저장하지_않는다() throws Exception {
-        String before = mvc.perform(get("/api/study-cards")).andReturn().getResponse().getContentAsString();
-        int countBefore = JsonPath.<java.util.List<Object>>read(before, "$").size();
-
-        mvc.perform(post("/api/study-cards/import").contentType(MediaType.APPLICATION_JSON).content("""
-                        {"cards":[
-                          {"category":"INTERVIEW","question":"가져온 질문1","answer":"답1","sortOrder":10},
-                          {"category":"KNOWLEDGE","types":["DOMAIN","TROUBLE"],"question":"가져온 질문2","answer":"답2"}
-                        ]}"""))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.imported").value(2));
-
-        // 두 번째 카드의 답이 비어 있으면 400, 첫 번째 카드도 저장되지 않는다
-        mvc.perform(post("/api/study-cards/import").contentType(MediaType.APPLICATION_JSON).content("""
-                        {"cards":[
-                          {"category":"INTERVIEW","question":"저장되면 안 됨","answer":"답"},
-                          {"category":"KNOWLEDGE","question":"답 없음","answer":""}
-                        ]}"""))
-                .andExpect(status().isBadRequest());
-
-        String after = mvc.perform(get("/api/study-cards")).andReturn().getResponse().getContentAsString();
-        java.util.List<Integer> ids = JsonPath.read(after, "$[?(@.question =~ /가져온 질문.*/)].id");
-        java.util.List<Object> blocked = JsonPath.read(after, "$[?(@.question == '저장되면 안 됨')]");
-        org.assertj.core.api.Assertions.assertThat(JsonPath.<java.util.List<Object>>read(after, "$")).hasSize(countBefore + 2);
-        org.assertj.core.api.Assertions.assertThat(blocked).isEmpty();
-        for (Integer id : ids) mvc.perform(delete("/api/study-cards/" + id));
-    }
 
     @Test
     void 필수값_누락과_잘못된_분류는_400() throws Exception {

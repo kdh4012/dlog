@@ -49,10 +49,6 @@ public class StudyCard extends BaseTimeEntity {
     @Column(nullable = false)
     private int sortOrder;
 
-    /** 외웠다고 표시한 카드 */
-    @Column(nullable = false)
-    private boolean memorized;
-
     @Builder
     private StudyCard(StudyCategory category, Set<StudyType> types, String question, String answer, int sortOrder) {
         this.category = category;
@@ -68,10 +64,6 @@ public class StudyCard extends BaseTimeEntity {
         this.question = question;
         this.answer = answer;
         this.sortOrder = sortOrder;
-    }
-
-    public void changeMemorized(boolean memorized) {
-        this.memorized = memorized;
     }
 
     /** 유형은 기술·업무 카드에만 둔다 */
