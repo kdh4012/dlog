@@ -255,48 +255,38 @@ h1 {
   font-size: 0.875rem;
 }
 
-.work-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.work-list li {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.work-list strong {
-  font-weight: 600;
-}
-
 /* ---------- 일기 목록 ---------- */
 .diary-month {
-  margin: 36px 0 4px;
-  color: var(--muted);
-  font-size: 0.95rem;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 36px 0 8px;
+  font-size: 1.05rem;
   font-weight: 700;
 }
 
+.diary-month span {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
 .diary-list ul {
+  display: grid;
+  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.diary-list li {
-  border-bottom: 1px solid var(--border);
 }
 
 a.diary-item {
   display: flex;
-  align-items: flex-start;
-  gap: 20px;
-  padding: 18px 4px;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 14px;
+  border-radius: 16px;
   color: var(--fg);
+  transition: background 0.12s;
 }
 
 a.diary-item:hover {
@@ -304,55 +294,109 @@ a.diary-item:hover {
   text-decoration: none;
 }
 
+/* 날짜 배지: 일요일은 빨강, 토요일은 파랑 */
 .diary-day {
   display: grid;
   flex: none;
-  width: 40px;
+  width: 48px;
+  height: 48px;
+  place-content: center;
   justify-items: center;
-  line-height: 1.2;
+  border-radius: 14px;
+  background: var(--subtle);
+  line-height: 1.15;
+}
+
+a.diary-item:hover .diary-day {
+  background: var(--surface);
 }
 
 .diary-day strong {
-  font-size: 1.45rem;
+  font-size: 1.1rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
 .diary-day span {
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.diary-day.sun strong,
+.diary-day.sun span {
+  color: var(--up);
+}
+
+.diary-day.sat strong,
+.diary-day.sat span {
+  color: var(--down);
 }
 
 .diary-text {
   display: grid;
-  gap: 4px;
+  flex: 1;
+  gap: 2px;
   min-width: 0;
-  padding-top: 2px;
+}
+
+/* 제목·본문 모두 한 줄, 넘치면 말줄임 */
+.diary-title,
+.diary-preview {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .diary-title {
-  font-size: 1.1rem;
+  font-size: 1.02rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
-/* 본문 미리보기는 두 줄까지 */
 .diary-preview {
-  display: -webkit-box;
-  overflow: hidden;
-  color: var(--fg-2);
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
-.diary-preview.only {
-  color: var(--fg);
+/* 제목 없는 일기는 본문 첫 줄을 보통 굵기로 */
+.diary-title.untitled {
+  color: var(--fg-2);
+  font-weight: 500;
+}
+
+.diary-chevron {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-top: 2px solid var(--muted);
+  border-right: 2px solid var(--muted);
+  opacity: 0.6;
+  transform: rotate(45deg);
+}
+
+.diary-head-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 24px;
+  margin-bottom: 16px;
+}
+
+.diary-head-row h1 {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
 }
 
 .diary-date-label {
-  margin: 0 0 8px;
+  flex: none;
+  margin: 0 0 0 auto;
   color: var(--muted);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .empty {
@@ -583,55 +627,6 @@ a.tag:hover {
   border: 1px solid var(--border);
 }
 
-/* ---------- timeline ---------- */
-.timeline {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.timeline > li {
-  position: relative;
-  padding: 0 0 40px 28px;
-  border-left: 2px solid var(--border);
-}
-
-.timeline > li:last-child {
-  padding-bottom: 0;
-}
-
-/* 타임라인 점 */
-.timeline > li::before {
-  content: '';
-  position: absolute;
-  top: 6px;
-  left: -7px;
-  width: 12px;
-  height: 12px;
-  border: 2px solid var(--fg);
-  border-radius: 50%;
-  background: var(--bg);
-}
-
-.timeline .period {
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.timeline h3 {
-  margin: 4px 0 2px;
-  font-size: 1.2rem;
-}
-
-.timeline p {
-  margin: 4px 0;
-}
-
-.timeline .markdown {
-  font-size: 0.95rem;
-}
-
 /* ---------- form ---------- */
 .form {
   display: grid;
@@ -860,95 +855,6 @@ th {
 
 .tabs button {
   white-space: nowrap;
-}
-
-/* ---------- 프로젝트 카드 ---------- */
-.project-cards {
-  list-style: none;
-  padding: 0;
-  margin: 16px 0 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
-  gap: 16px;
-}
-
-/* 카드 전체를 GitHub 링크로: 제목 링크의 가상 요소를 카드 위에 깐다 */
-.project-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
-}
-
-.project-card:hover {
-  border-color: var(--fg);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  transform: translateY(-2px);
-}
-
-.project-card h3 {
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-.project-link {
-  color: var(--fg);
-  text-decoration: none;
-}
-
-.project-link::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-}
-
-.project-link:focus-visible::after {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.project-card p {
-  margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
-.project-card .tags {
-  margin: 0;
-}
-
-.project-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: auto;
-  padding-top: 8px;
-  font-size: 0.85rem;
-}
-
-.project-github {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--muted);
-}
-
-/* 카드 링크 위로 올려 따로 누를 수 있게 */
-.project-site {
-  position: relative;
-  z-index: 1;
-}
-
-.project-link:hover {
-  text-decoration: none;
-}
-
-/* 개인 프로젝트 카드와 아래 작업 이력 사이 간격 */
-.section:has(.project-cards) {
-  margin-bottom: 48px;
 }
 
 /* ---------- 자산 포트폴리오 (토스 스타일) ---------- */

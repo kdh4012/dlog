@@ -31,9 +31,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        // 작업 기록은 누구나 조회 가능
-                        .requestMatchers(HttpMethod.GET, "/api/work-logs/**").permitAll()
-                        // 일기·자산 포트폴리오를 포함한 나머지 API 는 관리자 전용
+                        // 로그인 외 모든 API 는 관리자 전용
                         .requestMatchers("/api/**").hasRole("ADMIN")
                         // 프론트엔드 정적 리소스
                         .anyRequest().permitAll())

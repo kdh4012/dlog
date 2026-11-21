@@ -30,7 +30,9 @@ function parseImportFile(text: string): StudyCardRequest[] {
   const json: unknown = JSON.parse(text)
   const list = Array.isArray(json) ? json : (json as { cards?: unknown }).cards
   if (!Array.isArray(list)) throw new Error('카드 배열을 찾을 수 없습니다.')
-  return list.map((c: Partial<StudyCardRequest>, i) => {
+  return list.map((raw: Partial<Omit<StudyCardRequest, 'category'>> & { category?: string }, i) => {
+    // 예전 내보내기 파일의 '문제 해결 사례'(TROUBLE)는 업무·도메인으로 합쳐졌다
+    const c = { ...raw, category: (raw.category === 'TROUBLE' ? 'DOMAIN' : raw.category) as StudyCategory | undefined }
     if (!c.category || !(c.category in STUDY_CATEGORIES) || !c.question || !c.answer) {
       throw new Error(`${i + 1}번째 카드의 category, question, answer 를 확인해 주세요.`)
     }

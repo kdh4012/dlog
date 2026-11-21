@@ -14,8 +14,6 @@ import type {
   StudyCardRequest,
   StudyCategory,
   SyncStatus,
-  WorkLog,
-  WorkLogRequest,
 } from './types'
 
 export const authApi = {
@@ -31,14 +29,6 @@ export const diaryApi = {
   create: (body: DiaryRequest) => http.post<Diary>('/diary', body),
   update: (id: number, body: DiaryRequest) => http.put<Diary>(`/diary/${id}`, body),
   remove: (id: number) => http.delete(`/diary/${id}`),
-}
-
-export const workLogApi = {
-  list: () => http.get<WorkLog[]>('/work-logs'),
-  get: (id: number) => http.get<WorkLog>(`/work-logs/${id}`),
-  create: (body: WorkLogRequest) => http.post<WorkLog>('/work-logs', body),
-  update: (id: number, body: WorkLogRequest) => http.put<WorkLog>(`/work-logs/${id}`, body),
-  remove: (id: number) => http.delete(`/work-logs/${id}`),
 }
 
 export const assetApi = {

@@ -18,21 +18,27 @@ export default function DiaryList({ entries, groupByMonth = true }: { entries: D
     <div className="diary-list">
       {groups.map((g) => (
         <section key={g.month + g.items[0].id}>
-          {groupByMonth && <h2 className="diary-month">{g.month}</h2>}
+          {groupByMonth && (
+            <h2 className="diary-month">
+              {g.month} <span>{g.items.length}편</span>
+            </h2>
+          )}
           <ul>
             {g.items.map((e) => {
-              const { day, weekday } = dayParts(e.entryDate)
+              const { day, weekday, weekend } = dayParts(e.entryDate)
               return (
                 <li key={e.id}>
                   <Link to={`/diary/${e.id}`} className="diary-item">
-                    <span className="diary-day">
+                    <span className={`diary-day ${weekend}`.trim()}>
                       <strong>{day}</strong>
                       <span>{weekday}</span>
                     </span>
                     <span className="diary-text">
-                      {e.title && <span className="diary-title">{e.title}</span>}
-                      <span className={e.title ? 'diary-preview' : 'diary-preview only'}>{e.preview}</span>
+                      {/* 제목이 없으면 본문 첫 줄을 제목 자리에 */}
+                      <span className={e.title ? 'diary-title' : 'diary-title untitled'}>{e.title ?? e.preview}</span>
+                      {e.title && <span className="diary-preview">{e.preview}</span>}
                     </span>
+                    <span className="diary-chevron" aria-hidden="true" />
                   </Link>
                 </li>
               )

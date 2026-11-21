@@ -13,7 +13,6 @@ public enum ErrorCode {
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 올바르지 않습니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없습니다."),
     DIARY_NOT_FOUND(HttpStatus.NOT_FOUND, "일기를 찾을 수 없습니다."),
-    WORK_LOG_NOT_FOUND(HttpStatus.NOT_FOUND, "작업 기록을 찾을 수 없습니다."),
     ASSET_NOT_FOUND(HttpStatus.NOT_FOUND, "자산을 찾을 수 없습니다."),
     ASSET_SYNCED_READONLY(HttpStatus.CONFLICT, "외부 API 로 동기화되는 자산은 수정·삭제할 수 없습니다."),
     LEDGER_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "가계부 항목을 찾을 수 없습니다."),

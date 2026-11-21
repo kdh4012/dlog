@@ -21,9 +21,6 @@ export const formatRate = (value: number) => `${value > 0 ? '+' : ''}${value.toF
 
 export const formatDate = (iso: string) => iso.slice(0, 10)
 
-/** 2024-05-01 → 2024.05 */
-export const formatYearMonth = (iso: string) => iso.slice(0, 7).replace('-', '.')
-
 /** 자산 화면의 금액 표시 통화 (원화/달러 전환) */
 export type DisplayCurrency = Extract<Currency, 'KRW' | 'USD'>
 

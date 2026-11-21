@@ -10,8 +10,11 @@ const weekday = (date: string) => WEEKDAYS[new Date(`${date}T00:00:00Z`).getUTCD
 export const formatDiaryDate = (date: string) =>
   `${date.slice(0, 4)}년 ${Number(date.slice(5, 7))}월 ${Number(date.slice(8, 10))}일 ${weekday(date)}요일`
 
-/** 2026-11-21 → { day: '21', weekday: '토' } (목록의 날짜 칸) */
-export const dayParts = (date: string) => ({ day: String(Number(date.slice(8, 10))), weekday: weekday(date) })
+/** 2026-11-21 → { day: '21', weekday: '토', weekend: 'sat' } (목록의 날짜 칸, 주말은 색으로 구분) */
+export const dayParts = (date: string) => {
+  const w = weekday(date)
+  return { day: String(Number(date.slice(8, 10))), weekday: w, weekend: w === '토' ? 'sat' : w === '일' ? 'sun' : '' }
+}
 
 /** 2026-11-21 → 2026년 11월 (목록의 달 묶음 제목) */
 export const formatDiaryMonth = (date: string) => `${date.slice(0, 4)}년 ${Number(date.slice(5, 7))}월`

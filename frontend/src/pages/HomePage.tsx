@@ -1,16 +1,14 @@
 import { Link } from 'react-router'
-import { diaryApi, workLogApi } from '../api'
+import { diaryApi } from '../api'
 import { useAuth } from '../auth/AuthContext'
 import DiaryList from '../components/DiaryList'
 import { ErrorMessage, Loading } from '../components/Status'
-import { formatYearMonth } from '../utils/format'
 import { useAsync } from '../utils/useAsync'
 
 export default function HomePage() {
   const { isAdmin } = useAuth()
   // 일기는 나만 보는 공간이라 로그인했을 때만 불러온다
   const diary = useAsync(() => (isAdmin ? diaryApi.list(0, 3) : Promise.resolve(null)), [isAdmin])
-  const workLogs = useAsync(() => workLogApi.list(), [])
 
   return (
     <>
@@ -40,25 +38,6 @@ export default function HomePage() {
         </section>
       )}
 
-      <section className="section">
-        <div className="section-head">
-          <h2>작업 이력</h2>
-          <Link to="/work-logs">전체 보기 →</Link>
-        </div>
-        {workLogs.loading && <Loading />}
-        {workLogs.error && <ErrorMessage error={workLogs.error} />}
-        <ul className="work-list">
-          {workLogs.data?.slice(0, 3).map((w) => (
-            <li key={w.id}>
-              <strong>{w.title}</strong>
-              <span className="muted">
-                {formatYearMonth(w.startDate)} ~ {w.endDate ? formatYearMonth(w.endDate) : '진행 중'}
-              </span>
-            </li>
-          ))}
-        </ul>
-        {workLogs.data?.length === 0 && <p className="empty">작업 이력이 없습니다.</p>}
-      </section>
     </>
   )
 }

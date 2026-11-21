@@ -12,8 +12,6 @@ import LoginPage from './pages/LoginPage'
 import NotFoundPage from './pages/NotFoundPage'
 import StudyEditPage from './pages/StudyEditPage'
 import StudyPage from './pages/StudyPage'
-import WorkLogEditPage from './pages/WorkLogEditPage'
-import WorkLogPage from './pages/WorkLogPage'
 
 export default function App() {
   return (
@@ -25,7 +23,8 @@ export default function App() {
             <Route path="login" element={<LoginPage />} />
             {/* 블로그는 일기로 바뀌었다: 예전 주소는 홈으로 */}
             <Route path="posts/*" element={<Navigate to="/" replace />} />
-            <Route path="work-logs" element={<WorkLogPage />} />
+            {/* 프로젝트 화면은 없앴다: 예전 주소는 홈으로 */}
+            <Route path="work-logs/*" element={<Navigate to="/" replace />} />
 
             {/* 관리자 전용 */}
             <Route element={<RequireAdmin />}>
@@ -33,8 +32,6 @@ export default function App() {
               <Route path="diary/new" element={<DiaryEditPage />} />
               <Route path="diary/:id" element={<DiaryDetailPage />} />
               <Route path="diary/:id/edit" element={<DiaryEditPage />} />
-              <Route path="work-logs/new" element={<WorkLogEditPage />} />
-              <Route path="work-logs/:id/edit" element={<WorkLogEditPage />} />
               <Route path="assets" element={<AssetPage />} />
               <Route path="ledger" element={<LedgerPage />} />
               <Route path="study" element={<StudyPage />} />

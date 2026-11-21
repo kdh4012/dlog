@@ -53,7 +53,6 @@ export default function Layout() {
             홈
           </NavLink>
           {isAdmin && <NavLink to="/diary">일기</NavLink>}
-          <NavLink to="/work-logs">프로젝트</NavLink>
           {isAdmin && <NavLink to="/assets">자산 포트폴리오</NavLink>}
           {isAdmin && <NavLink to="/ledger">가계부</NavLink>}
           {isAdmin && <NavLink to="/study">학습 노트</NavLink>}

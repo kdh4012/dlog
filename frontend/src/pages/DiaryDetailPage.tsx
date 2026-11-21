@@ -23,8 +23,11 @@ export default function DiaryDetailPage() {
   return (
     <article>
       <header className="article-head">
-        <p className="diary-date-label">{formatDiaryDate(entry.entryDate)}</p>
-        {entry.title && <h1>{entry.title}</h1>}
+        {/* 제목은 왼쪽, 날짜는 오른쪽 (제목이 없으면 날짜만 오른쪽) */}
+        <div className="diary-head-row">
+          {entry.title ? <h1>{entry.title}</h1> : <span />}
+          <p className="diary-date-label">{formatDiaryDate(entry.entryDate)}</p>
+        </div>
         <div className="meta">
           <Link to="/diary">← 목록</Link>
           <span className="actions">

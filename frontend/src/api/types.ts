@@ -30,25 +30,11 @@ export interface DiaryRequest {
   content: string
 }
 
-export interface WorkLog {
-  id: number
-  title: string
-  organization: string | null
-  role: string | null
-  startDate: string
-  endDate: string | null
-  techStack: string | null
-  content: string | null
-}
-
-export type WorkLogRequest = Omit<WorkLog, 'id'>
-
 /** 학습 노트 분류 (화면 표시 순서) */
 export const STUDY_CATEGORIES = {
-  INTRO: '자기소개·지원동기',
+  INTRO: '자기소개',
   INTERVIEW: '면접 질문',
   DOMAIN: '업무·도메인',
-  TROUBLE: '문제 해결 사례',
   TECH: '기술 개념',
 } as const
 export type StudyCategory = keyof typeof STUDY_CATEGORIES

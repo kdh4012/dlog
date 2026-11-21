@@ -88,16 +88,4 @@ class DlogApiTest {
                 .andExpect(jsonPath("$.currencies[0].profitRate").value(10.00))
                 .andExpect(jsonPath("$.currencies[0].byType[0].weight").value(100.00));
     }
-
-    @Test
-    void 작업기록_종료일이_시작일보다_빠르면_400() throws Exception {
-        mvc.perform(post("/api/work-logs")
-                        .header("Authorization", login())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"title":"MES 구축","startDate":"2024-05-01","endDate":"2024-01-01"}
-                                """))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("INVALID_INPUT"));
-    }
 }
