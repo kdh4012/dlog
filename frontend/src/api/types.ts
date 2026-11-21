@@ -41,6 +41,27 @@ export interface WorkLog {
 
 export type WorkLogRequest = Omit<WorkLog, 'id'>
 
+/** 학습 노트 분류 (화면 표시 순서) */
+export const STUDY_CATEGORIES = {
+  INTRO: '자기소개·지원동기',
+  INTERVIEW: '면접 질문',
+  DOMAIN: '업무·도메인',
+  TROUBLE: '문제 해결 사례',
+  TECH: '기술 개념',
+} as const
+export type StudyCategory = keyof typeof STUDY_CATEGORIES
+
+export interface StudyCard {
+  id: number
+  category: StudyCategory
+  question: string
+  answer: string
+  sortOrder: number
+  memorized: boolean
+}
+
+export type StudyCardRequest = Omit<StudyCard, 'id' | 'memorized'>
+
 export const ASSET_TYPES = {
   STOCK: '주식',
   ETF: 'ETF',

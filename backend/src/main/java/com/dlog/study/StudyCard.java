@@ -1,0 +1,65 @@
+package com.dlog.study;
+
+import com.dlog.global.entity.BaseTimeEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+/** 면접 멘트·기술 복습용 질문-답 카드 (관리자 전용) */
+@Getter
+@Entity
+@Table(name = "study_card")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class StudyCard extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private StudyCategory category;
+
+    @Column(nullable = false, length = 500)
+    private String question;
+
+    /** 마크다운 답변 */
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String answer;
+
+    /** 같은 분류 안에서의 표시 순서 (작을수록 위) */
+    @Column(nullable = false)
+    private int sortOrder;
+
+    /** 외웠다고 표시한 카드 */
+    @Column(nullable = false)
+    private boolean memorized;
+
+    @Builder
+    private StudyCard(StudyCategory category, String question, String answer, int sortOrder) {
+        this.category = category;
+        this.question = question;
+        this.answer = answer;
+        this.sortOrder = sortOrder;
+    }
+
+    public void update(StudyCategory category, String question, String answer, int sortOrder) {
+        this.category = category;
+        this.question = question;
+        this.answer = answer;
+        this.sortOrder = sortOrder;
+    }
+
+    public void changeMemorized(boolean memorized) {
+        this.memorized = memorized;
+    }
+}

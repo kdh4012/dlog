@@ -1521,3 +1521,104 @@ button.ledger-trend-item.active {
     grid-template-rows: 90px auto;
   }
 }
+
+/* ---------- 학습 노트 ---------- */
+.study-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 4px;
+}
+
+/* 분류가 많아 좁은 화면에서는 가로 스크롤 */
+.study-tabs {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.study-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.study-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: var(--fg-2);
+  cursor: pointer;
+}
+
+.study-progress {
+  margin: 4px 0 12px;
+  font-size: 0.875rem;
+}
+
+.study-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.study-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.study-card.done {
+  opacity: 0.6;
+}
+
+/* 전역 button:hover(검정 배경)보다 우선하도록 button 선택자를 붙인다 */
+button.study-question,
+button.study-question:not(:disabled):hover {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+  text-align: left;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button.study-question:not(:disabled):hover {
+  background: var(--subtle);
+}
+
+.study-question-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.study-toggle {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.study-answer {
+  padding: 4px 16px 8px;
+  border-top: 1px solid var(--border);
+}
+
+.study-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px 12px;
+}

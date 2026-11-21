@@ -10,6 +10,8 @@ import NotFoundPage from './pages/NotFoundPage'
 import PostDetailPage from './pages/PostDetailPage'
 import PostEditPage from './pages/PostEditPage'
 import PostListPage from './pages/PostListPage'
+import StudyEditPage from './pages/StudyEditPage'
+import StudyPage from './pages/StudyPage'
 import WorkLogEditPage from './pages/WorkLogEditPage'
 import WorkLogPage from './pages/WorkLogPage'
 
@@ -33,6 +35,9 @@ export default function App() {
               <Route path="work-logs/:id/edit" element={<WorkLogEditPage />} />
               <Route path="assets" element={<AssetPage />} />
               <Route path="ledger" element={<LedgerPage />} />
+              <Route path="study" element={<StudyPage />} />
+              <Route path="study/new" element={<StudyEditPage />} />
+              <Route path="study/:id/edit" element={<StudyEditPage />} />
               {/* 예전 가계부 주소 */}
               <Route path="expenses" element={<Navigate to="/ledger" replace />} />
             </Route>

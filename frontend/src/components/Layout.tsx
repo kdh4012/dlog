@@ -56,6 +56,7 @@ export default function Layout() {
           <NavLink to="/work-logs">프로젝트</NavLink>
           {isAdmin && <NavLink to="/assets">자산 포트폴리오</NavLink>}
           {isAdmin && <NavLink to="/ledger">가계부</NavLink>}
+          {isAdmin && <NavLink to="/study">학습 노트</NavLink>}
         </nav>
         <div className="sidebar-foot">
           {isAdmin ? (

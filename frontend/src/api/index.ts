@@ -10,6 +10,9 @@ import type {
   Post,
   PostRequest,
   PostSummary,
+  StudyCard,
+  StudyCardRequest,
+  StudyCategory,
   SyncStatus,
   WorkLog,
   WorkLogRequest,
@@ -59,3 +62,13 @@ export const ledgerApi = {
   remove: (id: number) => http.delete(`/ledger/${id}`),
 }
 
+
+export const studyApi = {
+  list: (category?: StudyCategory) => http.get<StudyCard[]>(category ? `/study-cards?category=${category}` : '/study-cards'),
+  get: (id: number) => http.get<StudyCard>(`/study-cards/${id}`),
+  create: (body: StudyCardRequest) => http.post<StudyCard>('/study-cards', body),
+  update: (id: number, body: StudyCardRequest) => http.put<StudyCard>(`/study-cards/${id}`, body),
+  setMemorized: (id: number, memorized: boolean) =>
+    http.patch<StudyCard>(`/study-cards/${id}/memorized`, { memorized }),
+  remove: (id: number) => http.delete(`/study-cards/${id}`),
+}
