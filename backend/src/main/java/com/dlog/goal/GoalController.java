@@ -1,5 +1,7 @@
 package com.dlog.goal;
 
+import com.dlog.goal.dto.GoalDoneRequest;
+import com.dlog.goal.dto.GoalOrderRequest;
 import com.dlog.goal.dto.GoalRequest;
 import com.dlog.goal.dto.GoalResponse;
 import jakarta.validation.Valid;
@@ -7,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -38,9 +41,21 @@ public class GoalController {
         return goalService.create(request);
     }
 
+    /** 순서 변경: 그 해 목표 id 전체를 순서대로 */
+    @PutMapping("/order")
+    public List<GoalResponse> reorder(@Valid @RequestBody GoalOrderRequest request) {
+        return goalService.reorder(request.year(), request.ids());
+    }
+
     @PutMapping("/{id}")
     public GoalResponse update(@PathVariable Long id, @Valid @RequestBody GoalRequest request) {
         return goalService.update(id, request);
+    }
+
+    /** 달성 표시만 바꾼다 */
+    @PatchMapping("/{id}/done")
+    public GoalResponse changeDone(@PathVariable Long id, @Valid @RequestBody GoalDoneRequest request) {
+        return goalService.changeDone(id, request.done());
     }
 
     @DeleteMapping("/{id}")

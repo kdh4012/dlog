@@ -1646,15 +1646,6 @@ button.chip.on:not(:disabled):hover {
   font-size: 1.3rem;
 }
 
-.goal-count {
-  padding: 1px 9px;
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
 .goal-year-nav {
   display: flex;
   align-items: center;
@@ -1688,19 +1679,116 @@ button.chip.on:not(:disabled):hover {
   background: var(--subtle);
 }
 
-/* 번호 배지 */
-.goal-no {
+/* 번호 배지 = 달성 체크 버튼 (달성하면 초록 ✓) */
+button.goal-check,
+button.goal-check:not(:disabled):hover {
   display: grid;
   flex: none;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
   place-items: center;
+  border: 2px solid transparent;
   border-radius: 50%;
   background: var(--accent-soft);
   color: var(--accent);
   font-size: 0.85rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
+}
+
+button.goal-check:not(:disabled):hover {
+  border-color: #22a06b;
+}
+
+.goal-row.done button.goal-check,
+.goal-row.done button.goal-check:not(:disabled):hover {
+  border-color: transparent;
+  background: #22a06b;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.goal-row.done button.goal-title,
+.goal-row.done button.goal-title:not(:disabled):hover {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+/* 순서 변경: 데스크톱은 끌기 손잡이, 모바일은 ▲▼ */
+.goal-handle {
+  flex: none;
+  width: 12px;
+  color: var(--muted);
+  cursor: grab;
+  opacity: 0;
+  user-select: none;
+}
+
+.goal-row:hover .goal-handle {
+  opacity: 0.7;
+}
+
+.goal-row.dragging {
+  opacity: 0.4;
+}
+
+.goal-row.drag-over {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+
+.goal-move {
+  display: none;
+  flex: none;
+  gap: 2px;
+}
+
+.goal-move button,
+.goal-move button:not(:disabled):hover {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+
+.goal-move button:disabled {
+  opacity: 0.25;
+}
+
+/* 달성 진행률 */
+.goal-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 4px 12px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.goal-progress strong {
+  color: #22a06b;
+}
+
+.goal-progress-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--subtle);
+  overflow: hidden;
+}
+
+.goal-progress-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: #22a06b;
+  transition: width 0.25s;
 }
 
 button.goal-title,
@@ -1761,6 +1849,14 @@ button.goal-delete:not(:disabled):hover {
   button.goal-delete,
   button.goal-delete:not(:disabled):hover {
     opacity: 0.5;
+  }
+
+  .goal-handle {
+    display: none;
+  }
+
+  .goal-move {
+    display: flex;
   }
 }
 

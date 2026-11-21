@@ -11,6 +11,8 @@ export interface Goal {
   id: number
   year: number
   title: string
+  /** 달성했는지 */
+  done: boolean
 }
 
 export interface DiarySummary {

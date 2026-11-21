@@ -27,6 +27,9 @@ export const goalApi = {
   list: (year: number) => http.get<Goal[]>(`/goals?year=${year}`),
   create: (year: number, title: string) => http.post<Goal>('/goals', { year, title }),
   update: (id: number, title: string) => http.put<Goal>(`/goals/${id}`, { title }),
+  setDone: (id: number, done: boolean) => http.patch<Goal>(`/goals/${id}/done`, { done }),
+  /** 그 해 목표 id 전체를 보여줄 순서대로 */
+  reorder: (year: number, ids: number[]) => http.put<Goal[]>('/goals/order', { year, ids }),
   remove: (id: number) => http.delete(`/goals/${id}`),
 }
 

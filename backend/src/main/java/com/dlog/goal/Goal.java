@@ -29,12 +29,29 @@ public class Goal extends BaseTimeEntity {
     @Column(nullable = false, length = 200)
     private String title;
 
-    public Goal(int year, String title) {
+    /** 달성했는지 */
+    @Column(nullable = false)
+    private boolean done;
+
+    /** 같은 해 안에서의 표시 순서 (작을수록 위) */
+    @Column(nullable = false)
+    private int sortOrder;
+
+    public Goal(int year, String title, int sortOrder) {
         this.year = year;
         this.title = title;
+        this.sortOrder = sortOrder;
     }
 
     public void changeTitle(String title) {
         this.title = title;
+    }
+
+    public void changeDone(boolean done) {
+        this.done = done;
+    }
+
+    public void changeOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }

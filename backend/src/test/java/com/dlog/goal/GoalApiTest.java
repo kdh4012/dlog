@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -67,6 +68,15 @@ class GoalApiTest {
                 .andExpect(jsonPath("$.title").value("고친 목표"))
                 .andExpect(jsonPath("$.year").value(2026)); // 연도는 바뀌지 않는다
 
+        // 달성 표시 (기본은 미달성)
+        mvc.perform(get("/api/goals").param("year", "2026")).andExpect(jsonPath("$[0].done").value(false));
+        mvc.perform(patch("/api/goals/" + id + "/done").contentType(MediaType.APPLICATION_JSON).content("{\"done\":true}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.done").value(true))
+                .andExpect(jsonPath("$.title").value("고친 목표"));
+        mvc.perform(patch("/api/goals/" + id + "/done").contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isBadRequest());
+
         mvc.perform(delete("/api/goals/" + id)).andExpect(status().isNoContent());
         mvc.perform(delete("/api/goals/" + id)).andExpect(status().isNotFound());
     }
@@ -74,6 +84,31 @@ class GoalApiTest {
     @Test
     void 빈_제목은_400() throws Exception {
         mvc.perform(post("/api/goals").contentType(MediaType.APPLICATION_JSON).content("{\"title\":\"  \"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void 순서_변경() throws Exception {
+        Integer a = add("{\"year\":2026,\"title\":\"A\"}");
+        Integer b = add("{\"year\":2026,\"title\":\"B\"}");
+        Integer c = add("{\"year\":2026,\"title\":\"C\"}");
+
+        mvc.perform(put("/api/goals/order").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"year\":2026,\"ids\":[%d,%d,%d]}".formatted(c, a, b)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("C"));
+
+        // 새 목표는 맨 아래
+        add("{\"year\":2026,\"title\":\"D\"}");
+        mvc.perform(get("/api/goals").param("year", "2026"))
+                .andExpect(jsonPath("$[0].title").value("C"))
+                .andExpect(jsonPath("$[1].title").value("A"))
+                .andExpect(jsonPath("$[2].title").value("B"))
+                .andExpect(jsonPath("$[3].title").value("D"));
+
+        // 일부만 보내면 400
+        mvc.perform(put("/api/goals/order").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"year\":2026,\"ids\":[%d,%d]}".formatted(c, a)))
                 .andExpect(status().isBadRequest());
     }
 }
