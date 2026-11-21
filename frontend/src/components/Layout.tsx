@@ -52,7 +52,7 @@ export default function Layout() {
           <NavLink to="/" end>
             홈
           </NavLink>
-          <NavLink to="/posts">블로그</NavLink>
+          {isAdmin && <NavLink to="/diary">일기</NavLink>}
           <NavLink to="/work-logs">프로젝트</NavLink>
           {isAdmin && <NavLink to="/assets">자산 포트폴리오</NavLink>}
           {isAdmin && <NavLink to="/ledger">가계부</NavLink>}

@@ -3,13 +3,13 @@ import type {
   Asset,
   AssetRequest,
   AssetSummary,
+  Diary,
+  DiaryRequest,
+  DiarySummary,
   Ledger,
   LedgerItem,
   LedgerItemRequest,
   PageResponse,
-  Post,
-  PostRequest,
-  PostSummary,
   StudyCard,
   StudyCardRequest,
   StudyCategory,
@@ -24,16 +24,13 @@ export const authApi = {
   me: () => http.get<{ username: string }>('/auth/me'),
 }
 
-export const postApi = {
-  list: (page = 0, category?: string) => {
-    const q = new URLSearchParams({ page: String(page) })
-    if (category) q.set('category', category)
-    return http.get<PageResponse<PostSummary>>(`/posts?${q}`)
-  },
-  get: (id: number) => http.get<Post>(`/posts/${id}`),
-  create: (body: PostRequest) => http.post<Post>('/posts', body),
-  update: (id: number, body: PostRequest) => http.put<Post>(`/posts/${id}`, body),
-  remove: (id: number) => http.delete(`/posts/${id}`),
+export const diaryApi = {
+  /** 최근 날짜 순 */
+  list: (page: number, size = 20) => http.get<PageResponse<DiarySummary>>(`/diary?page=${page}&size=${size}`),
+  get: (id: number) => http.get<Diary>(`/diary/${id}`),
+  create: (body: DiaryRequest) => http.post<Diary>('/diary', body),
+  update: (id: number, body: DiaryRequest) => http.put<Diary>(`/diary/${id}`, body),
+  remove: (id: number) => http.delete(`/diary/${id}`),
 }
 
 export const workLogApi = {

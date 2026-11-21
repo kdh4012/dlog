@@ -56,33 +56,15 @@ class DlogApiTest {
     }
 
     @Test
-    void 게시글_작성은_비로그인시_401() throws Exception {
-        mvc.perform(post("/api/posts")
+    void 일기는_비로그인시_조회도_401() throws Exception {
+        mvc.perform(get("/api/diary")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/diary/1")).andExpect(status().isUnauthorized());
+        mvc.perform(post("/api/diary")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"title":"t","content":"c","published":true}
+                                {"entryDate":"2026-11-21","content":"c"}
                                 """))
                 .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    void 비공개_글은_관리자에게만_보인다() throws Exception {
-        String token = login();
-
-        String body = mvc.perform(post("/api/posts")
-                        .header("Authorization", token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"title":"임시글","content":"본문","category":"dev","published":false}
-                                """))
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-        Integer id = JsonPath.read(body, "$.id");
-
-        mvc.perform(get("/api/posts/" + id)).andExpect(status().isNotFound());
-        mvc.perform(get("/api/posts/" + id).header("Authorization", token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("임시글"));
     }
 
     @Test

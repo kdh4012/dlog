@@ -1,10 +1,10 @@
 # DLog
 
-동현의 개인 홈페이지입니다. 블로그, 작업 기록, 자산 포트폴리오를 관리합니다.
+동현의 개인 홈페이지입니다. 일기, 작업 기록, 자산 포트폴리오, 가계부를 관리합니다.
 
 | 메뉴 | 공개 범위 |
 |---|---|
-| 블로그 (마크다운) | 공개 글은 누구나, 비공개 글은 관리자만 |
+| 일기 (날짜·제목·마크다운 본문, 달별 목록) | **관리자만** |
 | 프로젝트 (개인 프로젝트 카드 + 작업 이력 타임라인) | 누구나 조회, 작업 이력 수정은 관리자만 |
 | 자산 포트폴리오 (통화별 평가금액·수익률·유형별 비중, 원화·달러 환산 합계, 업비트·토스증권 자동 동기화) | **관리자만** |
 | 가계부 (달마다 수입·고정지출 기록과 자동 이월, 남는 돈, 최근 12개월 추이, 부채 잔액) | **관리자만** |
@@ -21,7 +21,7 @@
 dlog/
 ├── backend/            Spring Boot (com.dlog)
 │   ├── auth/           로그인, JWT 발급
-│   ├── post/           블로그
+│   ├── diary/          일기
 │   ├── worklog/        작업 이력 (프로젝트 화면)
 │   ├── asset/          자산 포트폴리오
 │   ├── ledger/         가계부 (수입·고정지출·부채)
@@ -133,7 +133,7 @@ TOSS_CLIENT_SECRET=발급받은_client_secret
 
 ## 관리자 계정
 
-1인 블로그라서 관리자 계정은 DB 대신 환경 변수로 관리합니다.
+1인 홈페이지라서 관리자 계정은 DB 대신 환경 변수로 관리합니다.
 
 ```bash
 cd backend
@@ -222,8 +222,8 @@ cd frontend && npm run lint && npm run build
 |---|---|---|
 | POST | `/api/auth/login` | 공개 |
 | GET | `/api/auth/me` | 관리자 |
-| GET | `/api/posts?page=&category=`, `/api/posts/{id}` | 공개 |
-| POST/PUT/DELETE | `/api/posts[/{id}]` | 관리자 |
+| GET | `/api/diary?page=&size=` (최근 날짜 순, 본문 미리보기), `/api/diary/{id}` | 관리자 |
+| POST/PUT/DELETE | `/api/diary[/{id}]` (`{"entryDate":"yyyy-MM-dd","title","content"}`, title 선택) | 관리자 |
 | GET | `/api/work-logs`, `/api/work-logs/{id}` | 공개 |
 | POST/PUT/DELETE | `/api/work-logs[/{id}]` | 관리자 |
 | GET | `/api/assets`, `/api/assets/summary` (통화별 요약 + `total` 원화·달러 합계·유형별 비중 + `exchangeRate`), `/api/assets/{id}` | 관리자 |

@@ -3,13 +3,13 @@ import { AuthProvider } from './auth/AuthContext'
 import Layout from './components/Layout'
 import RequireAdmin from './components/RequireAdmin'
 import AssetPage from './pages/AssetPage'
+import DiaryDetailPage from './pages/DiaryDetailPage'
+import DiaryEditPage from './pages/DiaryEditPage'
+import DiaryListPage from './pages/DiaryListPage'
 import HomePage from './pages/HomePage'
 import LedgerPage from './pages/LedgerPage'
 import LoginPage from './pages/LoginPage'
 import NotFoundPage from './pages/NotFoundPage'
-import PostDetailPage from './pages/PostDetailPage'
-import PostEditPage from './pages/PostEditPage'
-import PostListPage from './pages/PostListPage'
 import StudyEditPage from './pages/StudyEditPage'
 import StudyPage from './pages/StudyPage'
 import WorkLogEditPage from './pages/WorkLogEditPage'
@@ -23,14 +23,16 @@ export default function App() {
           <Route element={<Layout />}>
             <Route index element={<HomePage />} />
             <Route path="login" element={<LoginPage />} />
-            <Route path="posts" element={<PostListPage />} />
-            <Route path="posts/:id" element={<PostDetailPage />} />
+            {/* 블로그는 일기로 바뀌었다: 예전 주소는 홈으로 */}
+            <Route path="posts/*" element={<Navigate to="/" replace />} />
             <Route path="work-logs" element={<WorkLogPage />} />
 
             {/* 관리자 전용 */}
             <Route element={<RequireAdmin />}>
-              <Route path="posts/new" element={<PostEditPage />} />
-              <Route path="posts/:id/edit" element={<PostEditPage />} />
+              <Route path="diary" element={<DiaryListPage />} />
+              <Route path="diary/new" element={<DiaryEditPage />} />
+              <Route path="diary/:id" element={<DiaryDetailPage />} />
+              <Route path="diary/:id/edit" element={<DiaryEditPage />} />
               <Route path="work-logs/new" element={<WorkLogEditPage />} />
               <Route path="work-logs/:id/edit" element={<WorkLogEditPage />} />
               <Route path="assets" element={<AssetPage />} />

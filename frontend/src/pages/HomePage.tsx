@@ -1,12 +1,15 @@
 import { Link } from 'react-router'
-import { postApi, workLogApi } from '../api'
-import PostList from '../components/PostList'
+import { diaryApi, workLogApi } from '../api'
+import { useAuth } from '../auth/AuthContext'
+import DiaryList from '../components/DiaryList'
 import { ErrorMessage, Loading } from '../components/Status'
 import { formatYearMonth } from '../utils/format'
 import { useAsync } from '../utils/useAsync'
 
 export default function HomePage() {
-  const posts = useAsync(() => postApi.list(0), [])
+  const { isAdmin } = useAuth()
+  // 일기는 나만 보는 공간이라 로그인했을 때만 불러온다
+  const diary = useAsync(() => (isAdmin ? diaryApi.list(0, 3) : Promise.resolve(null)), [isAdmin])
   const workLogs = useAsync(() => workLogApi.list(), [])
 
   return (
@@ -20,16 +23,22 @@ export default function HomePage() {
         <p className="muted">현장 자동화부터 웹 서비스까지, 개발하며 배운 것들을 남기는 공간입니다.</p>
       </section>
 
-      <section className="section">
-        <div className="section-head">
-          <h2>최근 글</h2>
-          <Link to="/posts">전체 보기 →</Link>
-        </div>
-        {posts.loading && <Loading />}
-        {posts.error && <ErrorMessage error={posts.error} />}
-        {posts.data && <PostList posts={posts.data.content.slice(0, 5)} />}
-        {posts.data?.content.length === 0 && <p className="empty">아직 작성한 글이 없습니다.</p>}
-      </section>
+      {isAdmin && (
+        <section className="section">
+          <div className="section-head">
+            <h2>최근 일기</h2>
+            <Link to="/diary">전체 보기 →</Link>
+          </div>
+          {diary.loading && <Loading />}
+          {diary.error && <ErrorMessage error={diary.error} />}
+          {diary.data && <DiaryList entries={diary.data.content} />}
+          {diary.data?.content.length === 0 && (
+            <p className="empty">
+              아직 쓴 일기가 없습니다. <Link to="/diary/new">오늘 일기 쓰기</Link>
+            </p>
+          )}
+        </section>
+      )}
 
       <section className="section">
         <div className="section-head">

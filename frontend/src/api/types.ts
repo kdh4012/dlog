@@ -6,26 +6,28 @@ export interface PageResponse<T> {
   totalPages: number
 }
 
-export interface PostSummary {
+export interface DiarySummary {
   id: number
-  title: string
-  summary: string | null
-  category: string | null
-  published: boolean
-  createdAt: string
+  /** yyyy-MM-dd */
+  entryDate: string
+  title: string | null
+  /** 본문 앞부분 (마크다운 기호 제거, 최대 120자) */
+  preview: string
 }
 
-export interface Post extends PostSummary {
+export interface Diary {
+  id: number
+  entryDate: string
+  title: string | null
   content: string
+  createdAt: string
   updatedAt: string
 }
 
-export interface PostRequest {
+export interface DiaryRequest {
+  entryDate: string
   title: string
-  summary: string
   content: string
-  category: string
-  published: boolean
 }
 
 export interface WorkLog {

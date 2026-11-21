@@ -1,45 +1,36 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { postApi } from '../api'
+import { diaryApi } from '../api'
 import { ApiError } from '../api/client'
-import type { PostRequest } from '../api/types'
+import type { DiaryRequest } from '../api/types'
 import Markdown from '../components/Markdown'
+import { todayKst } from '../utils/diary'
 
-const EMPTY: PostRequest = { title: '', summary: '', content: '', category: '', published: false }
-
-/** 새 글 작성 / 기존 글 수정 겸용 */
-export default function PostEditPage() {
+/** 새 일기 / 일기 수정 겸용. 날짜는 오늘(한국 시간)이 기본 */
+export default function DiaryEditPage() {
   const params = useParams()
   const id = params.id ? Number(params.id) : null
   const navigate = useNavigate()
 
-  const [form, setForm] = useState<PostRequest>(EMPTY)
+  const [form, setForm] = useState<DiaryRequest>({ entryDate: todayKst(), title: '', content: '' })
   const [preview, setPreview] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
     if (id == null) return
-    postApi
+    diaryApi
       .get(id)
-      .then((p) =>
-        setForm({
-          title: p.title,
-          summary: p.summary ?? '',
-          content: p.content,
-          category: p.category ?? '',
-          published: p.published,
-        }),
-      )
+      .then((d) => setForm({ entryDate: d.entryDate, title: d.title ?? '', content: d.content }))
       .catch((e: Error) => setError(e.message))
   }, [id])
 
-  const set = <K extends keyof PostRequest>(key: K, value: PostRequest[K]) => setForm((f) => ({ ...f, [key]: value }))
+  const set = <K extends keyof DiaryRequest>(key: K, value: DiaryRequest[K]) => setForm((f) => ({ ...f, [key]: value }))
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     try {
-      const saved = id == null ? await postApi.create(form) : await postApi.update(id, form)
-      navigate(`/posts/${saved.id}`, { replace: true })
+      const saved = id == null ? await diaryApi.create(form) : await diaryApi.update(id, form)
+      navigate(`/diary/${saved.id}`, { replace: true })
     } catch (err) {
       setError(err instanceof ApiError ? err.detail : String(err))
     }
@@ -47,25 +38,17 @@ export default function PostEditPage() {
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-      <h1>{id == null ? '새 글' : '글 수정'}</h1>
-      <label>
-        제목
-        <input value={form.title} onChange={(e) => set('title', e.target.value)} maxLength={200} required />
-      </label>
+      <h1>{id == null ? '일기 쓰기' : '일기 수정'}</h1>
       <div className="row">
         <label>
-          카테고리
-          <input value={form.category} onChange={(e) => set('category', e.target.value)} maxLength={50} />
+          날짜
+          <input type="date" value={form.entryDate} onChange={(e) => set('entryDate', e.target.value)} required />
         </label>
-        <label className="checkbox">
-          <input type="checkbox" checked={form.published} onChange={(e) => set('published', e.target.checked)} />
-          공개
+        <label>
+          제목 (선택)
+          <input value={form.title} onChange={(e) => set('title', e.target.value)} maxLength={200} />
         </label>
       </div>
-      <label>
-        요약
-        <input value={form.summary} onChange={(e) => set('summary', e.target.value)} maxLength={500} />
-      </label>
       <div className="tabs">
         <button type="button" className={preview ? '' : 'active'} onClick={() => setPreview(false)}>
           작성
@@ -81,8 +64,9 @@ export default function PostEditPage() {
           value={form.content}
           onChange={(e) => set('content', e.target.value)}
           rows={20}
-          placeholder="마크다운으로 작성하세요."
+          placeholder="오늘 있었던 일, 생각, 느낀 점을 적어 보세요. (마크다운 사용 가능)"
           required
+          autoFocus={id == null}
         />
       )}
       {error && <p className="error pre">{error}</p>}
