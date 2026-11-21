@@ -33,6 +33,7 @@ public class StudyCardService {
     public StudyCardResponse create(StudyCardRequest r) {
         StudyCard card = StudyCard.builder()
                 .category(r.category())
+                .types(r.types())
                 .question(r.question())
                 .answer(r.answer())
                 .sortOrder(orderOf(r))
@@ -46,6 +47,7 @@ public class StudyCardService {
         List<StudyCard> cards = requests.stream()
                 .map(r -> StudyCard.builder()
                         .category(r.category())
+                        .types(r.types())
                         .question(r.question())
                         .answer(r.answer())
                         .sortOrder(orderOf(r))
@@ -57,7 +59,7 @@ public class StudyCardService {
     @Transactional
     public StudyCardResponse update(Long id, StudyCardRequest r) {
         StudyCard card = findById(id);
-        card.update(r.category(), r.question(), r.answer(), orderOf(r));
+        card.update(r.category(), r.types(), r.question(), r.answer(), orderOf(r));
         return StudyCardResponse.from(card);
     }
 

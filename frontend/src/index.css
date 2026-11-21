@@ -1567,3 +1567,49 @@ button.study-question:not(:disabled):hover {
   gap: 12px;
   padding: 8px 16px 12px;
 }
+
+/* 학습 노트 유형 칩 (여러 개 선택) */
+.study-types {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 4px;
+}
+
+button.chip,
+button.chip:not(:disabled):hover {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--fg-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+button.chip:not(:disabled):hover {
+  border-color: var(--muted);
+}
+
+button.chip.on,
+button.chip.on:not(:disabled):hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.study-type-field {
+  display: grid;
+  gap: 2px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.study-type-field .study-types {
+  margin: 4px 0 0;
+}
+
+.study-question .tag + .tag {
+  margin-left: -4px;
+}

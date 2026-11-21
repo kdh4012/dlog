@@ -32,16 +32,26 @@ export interface DiaryRequest {
 
 /** 학습 노트 분류 (화면 표시 순서) */
 export const STUDY_CATEGORIES = {
-  INTRO: '자기소개',
   INTERVIEW: '면접 질문',
-  DOMAIN: '업무·도메인',
-  TECH: '기술 개념',
+  KNOWLEDGE: '기술·업무',
 } as const
 export type StudyCategory = keyof typeof STUDY_CATEGORIES
+
+/** 기술·업무 카드의 유형 (여러 개 선택, 화면 표시 순서) */
+export const STUDY_TYPES = {
+  WORK: '업무',
+  DOMAIN: '도메인',
+  TECH: '기술 개념',
+  TROUBLE: '문제 해결',
+} as const
+export type StudyType = keyof typeof STUDY_TYPES
+export const STUDY_TYPE_KEYS = Object.keys(STUDY_TYPES) as StudyType[]
 
 export interface StudyCard {
   id: number
   category: StudyCategory
+  /** 기술·업무 카드만. 면접 질문은 빈 배열 */
+  types: StudyType[]
   question: string
   answer: string
   sortOrder: number

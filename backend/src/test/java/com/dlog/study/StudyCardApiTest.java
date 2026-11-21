@@ -27,9 +27,13 @@ class StudyCardApiTest {
     MockMvc mvc;
 
     private Integer create(String category, String question, int sortOrder) throws Exception {
+        return create(category, "[]", question, sortOrder);
+    }
+
+    private Integer create(String category, String typesJson, String question, int sortOrder) throws Exception {
         String body = mvc.perform(post("/api/study-cards").contentType(MediaType.APPLICATION_JSON).content("""
-                        {"category":"%s","question":"%s","answer":"**답**","sortOrder":%d}"""
-                        .formatted(category, question, sortOrder)))
+                        {"category":"%s","types":%s,"question":"%s","answer":"**답**","sortOrder":%d}"""
+                        .formatted(category, typesJson, question, sortOrder)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.memorized").value(false))
                 .andReturn().getResponse().getContentAsString();
@@ -38,12 +42,19 @@ class StudyCardApiTest {
 
     @Test
     void 생성_수정_외움표시_삭제() throws Exception {
-        Integer id = create("TECH", "낙관적 락이란?", 5);
+        // 유형은 선언 순서(WORK, DOMAIN, TECH, TROUBLE)로 돌려준다
+        Integer id = create("KNOWLEDGE", "[\"TECH\",\"WORK\"]", "낙관적 락이란?", 5);
+        mvc.perform(get("/api/study-cards/" + id))
+                .andExpect(jsonPath("$.types[0]").value("WORK"))
+                .andExpect(jsonPath("$.types[1]").value("TECH"));
+
+        // 면접 질문으로 옮기면 유형은 비운다
 
         mvc.perform(put("/api/study-cards/" + id).contentType(MediaType.APPLICATION_JSON).content("""
-                        {"category":"INTERVIEW","question":"수정된 질문","answer":"수정된 답","sortOrder":1}"""))
+                        {"category":"INTERVIEW","types":["TECH"],"question":"수정된 질문","answer":"수정된 답","sortOrder":1}"""))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.category").value("INTERVIEW"))
+                .andExpect(jsonPath("$.types.length()").value(0))
                 .andExpect(jsonPath("$.question").value("수정된 질문"))
                 .andExpect(jsonPath("$.sortOrder").value(1));
 
@@ -62,16 +73,16 @@ class StudyCardApiTest {
 
     @Test
     void 분류별_조회는_순서대로() throws Exception {
-        Integer second = create("DOMAIN", "두번째", 20);
-        Integer first = create("DOMAIN", "첫번째", 10);
+        Integer second = create("KNOWLEDGE", "두번째", 20);
+        Integer first = create("KNOWLEDGE", "첫번째", 10);
 
-        String body = mvc.perform(get("/api/study-cards").param("category", "DOMAIN"))
+        String body = mvc.perform(get("/api/study-cards").param("category", "KNOWLEDGE"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         java.util.List<Integer> ids = JsonPath.read(body, "$[*].id");
         java.util.List<String> categories = JsonPath.read(body, "$[*].category");
 
-        org.assertj.core.api.Assertions.assertThat(categories).containsOnly("DOMAIN");
+        org.assertj.core.api.Assertions.assertThat(categories).containsOnly("KNOWLEDGE");
         org.assertj.core.api.Assertions.assertThat(ids.indexOf(first)).isLessThan(ids.indexOf(second));
 
         mvc.perform(delete("/api/study-cards/" + first));
@@ -85,8 +96,8 @@ class StudyCardApiTest {
 
         mvc.perform(post("/api/study-cards/import").contentType(MediaType.APPLICATION_JSON).content("""
                         {"cards":[
-                          {"category":"INTRO","question":"가져온 질문1","answer":"답1","sortOrder":10},
-                          {"category":"TECH","question":"가져온 질문2","answer":"답2"}
+                          {"category":"INTERVIEW","question":"가져온 질문1","answer":"답1","sortOrder":10},
+                          {"category":"KNOWLEDGE","types":["DOMAIN","TROUBLE"],"question":"가져온 질문2","answer":"답2"}
                         ]}"""))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.imported").value(2));
@@ -94,8 +105,8 @@ class StudyCardApiTest {
         // 두 번째 카드의 답이 비어 있으면 400, 첫 번째 카드도 저장되지 않는다
         mvc.perform(post("/api/study-cards/import").contentType(MediaType.APPLICATION_JSON).content("""
                         {"cards":[
-                          {"category":"INTRO","question":"저장되면 안 됨","answer":"답"},
-                          {"category":"TECH","question":"답 없음","answer":""}
+                          {"category":"INTERVIEW","question":"저장되면 안 됨","answer":"답"},
+                          {"category":"KNOWLEDGE","question":"답 없음","answer":""}
                         ]}"""))
                 .andExpect(status().isBadRequest());
 
@@ -110,7 +121,10 @@ class StudyCardApiTest {
     @Test
     void 필수값_누락과_잘못된_분류는_400() throws Exception {
         mvc.perform(post("/api/study-cards").contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"category\":\"TECH\",\"question\":\"\",\"answer\":\"a\"}"))
+                        .content("{\"category\":\"KNOWLEDGE\",\"question\":\"\",\"answer\":\"a\"}"))
+                .andExpect(status().isBadRequest());
+        mvc.perform(post("/api/study-cards").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"category\":\"KNOWLEDGE\",\"types\":[\"NOPE\"],\"question\":\"q\",\"answer\":\"a\"}"))
                 .andExpect(status().isBadRequest());
         mvc.perform(get("/api/study-cards").param("category", "NOPE"))
                 .andExpect(status().isBadRequest());

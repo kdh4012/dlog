@@ -2,6 +2,7 @@ package com.dlog.study;
 
 import com.dlog.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,6 +14,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 /** 면접 멘트·기술 복습용 질문-답 카드 (관리자 전용) */
 @Getter
@@ -28,6 +32,11 @@ public class StudyCard extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private StudyCategory category;
+
+    /** 기술·업무 카드의 유형 (여러 개). 면접 질문은 비어 있다 */
+    @Convert(converter = StudyTypesConverter.class)
+    @Column(nullable = false, length = 100)
+    private Set<StudyType> types = EnumSet.noneOf(StudyType.class);
 
     @Column(nullable = false, length = 500)
     private String question;
@@ -45,15 +54,17 @@ public class StudyCard extends BaseTimeEntity {
     private boolean memorized;
 
     @Builder
-    private StudyCard(StudyCategory category, String question, String answer, int sortOrder) {
+    private StudyCard(StudyCategory category, Set<StudyType> types, String question, String answer, int sortOrder) {
         this.category = category;
+        this.types = typesFor(category, types);
         this.question = question;
         this.answer = answer;
         this.sortOrder = sortOrder;
     }
 
-    public void update(StudyCategory category, String question, String answer, int sortOrder) {
+    public void update(StudyCategory category, Set<StudyType> types, String question, String answer, int sortOrder) {
         this.category = category;
+        this.types = typesFor(category, types);
         this.question = question;
         this.answer = answer;
         this.sortOrder = sortOrder;
@@ -61,5 +72,13 @@ public class StudyCard extends BaseTimeEntity {
 
     public void changeMemorized(boolean memorized) {
         this.memorized = memorized;
+    }
+
+    /** 유형은 기술·업무 카드에만 둔다 */
+    private static Set<StudyType> typesFor(StudyCategory category, Set<StudyType> types) {
+        if (category != StudyCategory.KNOWLEDGE || types == null || types.isEmpty()) {
+            return EnumSet.noneOf(StudyType.class);
+        }
+        return EnumSet.copyOf(types);
     }
 }

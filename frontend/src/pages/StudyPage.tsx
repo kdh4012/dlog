@@ -1,8 +1,16 @@
-import { useMemo, useRef, useState, type ChangeEvent } from 'react'
+import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { Link } from 'react-router'
 import { studyApi } from '../api'
 import { ApiError } from '../api/client'
-import { STUDY_CATEGORIES, type StudyCard, type StudyCardRequest, type StudyCategory } from '../api/types'
+import {
+  STUDY_CATEGORIES,
+  STUDY_TYPE_KEYS,
+  STUDY_TYPES,
+  type StudyCard,
+  type StudyCardRequest,
+  type StudyCategory,
+  type StudyType,
+} from '../api/types'
 import Markdown from '../components/Markdown'
 import { ErrorMessage, Loading } from '../components/Status'
 import { useAsync } from '../utils/useAsync'
@@ -25,25 +33,34 @@ function shuffled<T>(items: T[]): T[] {
   return copy
 }
 
+/** 예전 분류(내보내기 파일)를 지금의 분류·유형으로 바꾼다 */
+const LEGACY_CATEGORIES: Record<string, { category: StudyCategory; types: StudyType[] }> = {
+  INTRO: { category: 'INTERVIEW', types: [] },
+  DOMAIN: { category: 'KNOWLEDGE', types: ['WORK', 'DOMAIN'] },
+  TECH: { category: 'KNOWLEDGE', types: ['TECH'] },
+  TROUBLE: { category: 'KNOWLEDGE', types: ['TROUBLE'] },
+}
+
 /** 가져오기 파일: 카드 배열 또는 { cards: [...] } 둘 다 받는다 */
 function parseImportFile(text: string): StudyCardRequest[] {
   const json: unknown = JSON.parse(text)
   const list = Array.isArray(json) ? json : (json as { cards?: unknown }).cards
   if (!Array.isArray(list)) throw new Error('카드 배열을 찾을 수 없습니다.')
-  return list.map((raw: Partial<Omit<StudyCardRequest, 'category'>> & { category?: string }, i) => {
-    // 예전 내보내기 파일의 '문제 해결 사례'(TROUBLE)는 업무·도메인으로 합쳐졌다
-    const c = { ...raw, category: (raw.category === 'TROUBLE' ? 'DOMAIN' : raw.category) as StudyCategory | undefined }
-    if (!c.category || !(c.category in STUDY_CATEGORIES) || !c.question || !c.answer) {
+  return list.map((raw: Partial<Omit<StudyCardRequest, 'category' | 'types'>> & { category?: string; types?: string[] }, i) => {
+    const legacy = raw.category ? LEGACY_CATEGORIES[raw.category] : undefined
+    const category = (legacy?.category ?? raw.category) as StudyCategory | undefined
+    const types = (legacy?.types ?? raw.types ?? []).filter((t): t is StudyType => t in STUDY_TYPES)
+    if (!category || !(category in STUDY_CATEGORIES) || !raw.question || !raw.answer) {
       throw new Error(`${i + 1}번째 카드의 category, question, answer 를 확인해 주세요.`)
     }
-    return { category: c.category, question: c.question, answer: c.answer, sortOrder: Number(c.sortOrder) || 0 }
+    return { category, types, question: raw.question, answer: raw.answer, sortOrder: Number(raw.sortOrder) || 0 }
   })
 }
 
 /** 현재 카드를 가져오기와 같은 형식의 JSON 파일로 저장 (백업용) */
 function downloadCards(cards: StudyCard[]) {
   const body = {
-    cards: cards.map(({ category, question, answer, sortOrder }) => ({ category, question, answer, sortOrder })),
+    cards: cards.map(({ category, types, question, answer, sortOrder }) => ({ category, types, question, answer, sortOrder })),
   }
   const url = URL.createObjectURL(new Blob([JSON.stringify(body, null, 2)], { type: 'application/json' }))
   const a = document.createElement('a')
@@ -56,6 +73,8 @@ function downloadCards(cards: StudyCard[]) {
 export default function StudyPage() {
   const { data, error, loading, reload } = useAsync(() => studyApi.list(), [])
   const [filter, setFilter] = useState<Filter>('ALL')
+  // 기술·업무 탭의 유형 필터 (여러 개 선택, 비어 있으면 전체). 고른 유형 중 하나라도 있으면 보여준다
+  const [typeFilter, setTypeFilter] = useState<Set<StudyType>>(new Set())
   const [onlyUnmemorized, setOnlyUnmemorized] = useState(false)
   const [showAll, setShowAll] = useState(false)
   // 카드별로 답을 펼쳤는지 (showAll 이 켜지면 전부 펼친 것으로 본다)
@@ -65,21 +84,28 @@ export default function StudyPage() {
   // 외움 표시는 서버 응답을 기다리지 않고 화면에 먼저 반영한다
   const [memorizedOverride, setMemorizedOverride] = useState<Map<number, boolean>>(new Map())
 
+  const matches = useCallback(
+    (c: StudyCard) =>
+      (filter === 'ALL' || c.category === filter) &&
+      (filter !== 'KNOWLEDGE' || typeFilter.size === 0 || c.types.some((t) => typeFilter.has(t))),
+    [filter, typeFilter],
+  )
+
   const cards = useMemo(() => {
     const all = (data ?? []).map((c) =>
       memorizedOverride.has(c.id) ? { ...c, memorized: memorizedOverride.get(c.id)! } : c,
     )
     let list = all
-      .filter((c) => (filter === 'ALL' || c.category === filter) && (!onlyUnmemorized || !c.memorized))
+      .filter((c) => matches(c) && (!onlyUnmemorized || !c.memorized))
       .sort(byCategoryThenOrder)
     if (shuffleOrder) {
       const rank = new Map(shuffleOrder.map((id, i) => [id, i]))
       list = [...list].sort((a, b) => (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0))
     }
     return list
-  }, [data, filter, onlyUnmemorized, shuffleOrder, memorizedOverride])
+  }, [data, matches, onlyUnmemorized, shuffleOrder, memorizedOverride])
 
-  const total = (data ?? []).filter((c) => filter === 'ALL' || c.category === filter)
+  const total = (data ?? []).filter(matches)
   const memorizedCount = total.filter((c) => memorizedOverride.get(c.id) ?? c.memorized).length
 
   const toggleOpen = (id: number) =>
@@ -92,8 +118,17 @@ export default function StudyPage() {
 
   const changeFilter = (f: Filter) => {
     setFilter(f)
+    setTypeFilter(new Set())
     setOpened(new Set())
   }
+
+  const toggleType = (t: StudyType) =>
+    setTypeFilter((prev) => {
+      const next = new Set(prev)
+      if (next.has(t)) next.delete(t)
+      else next.add(t)
+      return next
+    })
 
   const handleShuffle = () => {
     setShuffleOrder(shuffled((data ?? []).map((c) => c.id)))
@@ -192,6 +227,27 @@ export default function StudyPage() {
         </div>
       </div>
 
+      {filter === 'KNOWLEDGE' && (
+        <div className="study-types" role="group" aria-label="유형 (여러 개 선택)">
+          {STUDY_TYPE_KEYS.map((t) => (
+            <button
+              key={t}
+              type="button"
+              className={`chip${typeFilter.has(t) ? ' on' : ''}`}
+              aria-pressed={typeFilter.has(t)}
+              onClick={() => toggleType(t)}
+            >
+              {STUDY_TYPES[t]}
+            </button>
+          ))}
+          {typeFilter.size > 0 && (
+            <button type="button" className="link small" onClick={() => setTypeFilter(new Set())}>
+              유형 선택 해제
+            </button>
+          )}
+        </div>
+      )}
+
       {data && (
         <p className="muted study-progress">
           외움 {memorizedCount} / {total.length}
@@ -207,7 +263,16 @@ export default function StudyPage() {
           return (
             <li key={c.id} className={`study-card${c.memorized ? ' done' : ''}`}>
               <button type="button" className="study-question" onClick={() => toggleOpen(c.id)} aria-expanded={open}>
-                <span className="tag">{STUDY_CATEGORIES[c.category]}</span>
+                {/* 기술·업무 카드는 분류 대신 유형을 보여준다 */}
+                {c.category === 'KNOWLEDGE' && c.types.length > 0 ? (
+                  c.types.map((t) => (
+                    <span key={t} className="tag">
+                      {STUDY_TYPES[t]}
+                    </span>
+                  ))
+                ) : (
+                  <span className="tag">{STUDY_CATEGORIES[c.category]}</span>
+                )}
                 <span className="study-question-text">{c.question}</span>
                 <span className="study-toggle" aria-hidden="true">
                   {open ? '접기' : '답 보기'}
