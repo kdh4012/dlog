@@ -4,6 +4,7 @@
 
 | 메뉴 | 공개 범위 |
 |---|---|
+| 홈: 연도별 목표 목록 (등록·수정·삭제, 지난해 보기) | **관리자만** (방문자에게는 소개 문구만) |
 | 일기 (날짜·제목·마크다운 본문, 달별 목록) | **관리자만** |
 | 자산 포트폴리오 (통화별 평가금액·수익률·유형별 비중, 원화·달러 환산 합계, 업비트·토스증권 자동 동기화) | **관리자만** |
 | 가계부 (달마다 수입·고정지출 기록과 자동 이월, 남는 돈, 최근 12개월 추이, 부채 잔액) | **관리자만** |
@@ -220,6 +221,7 @@ cd frontend && npm run lint && npm run build
 |---|---|---|
 | POST | `/api/auth/login` | 공개 |
 | GET | `/api/auth/me` | 관리자 |
+| GET/POST/PUT/DELETE | `/api/goals[/{id}]` (`?year=` 생략 시 올해, `{"year","title"}`, 수정 시 year 무시) | 관리자 |
 | GET | `/api/diary?page=&size=` (최근 날짜 순, 본문 미리보기), `/api/diary/{id}` | 관리자 |
 | POST/PUT/DELETE | `/api/diary[/{id}]` (`{"entryDate":"yyyy-MM-dd","title","content"}`, title 선택) | 관리자 |
 | GET | `/api/assets`, `/api/assets/summary` (통화별 요약 + `total` 원화·달러 합계·유형별 비중 + `exchangeRate`), `/api/assets/{id}` | 관리자 |

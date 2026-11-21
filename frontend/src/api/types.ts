@@ -6,6 +6,13 @@ export interface PageResponse<T> {
   totalPages: number
 }
 
+/** 한 해의 목표 */
+export interface Goal {
+  id: number
+  year: number
+  title: string
+}
+
 export interface DiarySummary {
   id: number
   /** yyyy-MM-dd */

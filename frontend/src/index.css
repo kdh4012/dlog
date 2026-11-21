@@ -1620,3 +1620,175 @@ button.chip.on:not(:disabled):hover {
 .study-type-field .study-types {
   margin: 4px 0 0;
 }
+
+/* ---------- 홈: 연도별 목표 ---------- */
+.goal-board {
+  margin-top: 48px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+}
+
+.goal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.goal-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.goal-count {
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.goal-year-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.goal-year-nav button.secondary {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.goal-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.goal-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 4px;
+  border-radius: 12px;
+}
+
+.goal-row:hover {
+  background: var(--subtle);
+}
+
+/* 번호 배지 */
+.goal-no {
+  display: grid;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+button.goal-title,
+button.goal-title:not(:disabled):hover {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 0;
+  border: none;
+  background: none;
+  color: var(--fg);
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: text;
+}
+
+.goal-edit {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+button.goal-delete,
+button.goal-delete:not(:disabled):hover {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1;
+  opacity: 0;
+}
+
+.goal-row:hover button.goal-delete,
+button.goal-delete:focus-visible {
+  opacity: 1;
+}
+
+button.goal-delete:not(:disabled):hover {
+  background: var(--surface);
+  color: var(--danger);
+}
+
+/* 터치 기기에는 hover 가 없으므로 삭제 버튼을 항상 흐리게 보인다 */
+@media (hover: none) {
+  button.goal-delete,
+  button.goal-delete:not(:disabled):hover {
+    opacity: 0.5;
+  }
+}
+
+.goal-empty {
+  margin: 8px 4px;
+  color: var(--muted);
+}
+
+.goal-add {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.goal-add input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+}
+
+@media (max-width: 640px) {
+  .goal-board {
+    margin-top: 32px;
+    padding: 18px 14px;
+  }
+}

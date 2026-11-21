@@ -6,6 +6,7 @@ import type {
   Diary,
   DiaryRequest,
   DiarySummary,
+  Goal,
   Ledger,
   LedgerItem,
   LedgerItemRequest,
@@ -20,6 +21,13 @@ export const authApi = {
   login: (username: string, password: string) =>
     http.post<{ accessToken: string; expiresAt: string }>('/auth/login', { username, password }),
   me: () => http.get<{ username: string }>('/auth/me'),
+}
+
+export const goalApi = {
+  list: (year: number) => http.get<Goal[]>(`/goals?year=${year}`),
+  create: (year: number, title: string) => http.post<Goal>('/goals', { year, title }),
+  update: (id: number, title: string) => http.put<Goal>(`/goals/${id}`, { title }),
+  remove: (id: number) => http.delete(`/goals/${id}`),
 }
 
 export const diaryApi = {
