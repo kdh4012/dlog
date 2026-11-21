@@ -2,6 +2,8 @@ import { NavLink, Outlet, useNavigate } from 'react-router'
 import { useAuth } from '../auth/AuthContext'
 import ThemeToggle from './ThemeToggle'
 
+const SHOW_ASSETS = false
+
 const EXTERNAL_LINKS = [
   { label: 'GitHub', href: 'https://github.com/kdh4012' },
 ]
@@ -53,7 +55,8 @@ export default function Layout() {
             홈
           </NavLink>
           {isAdmin && <NavLink to="/diary">일기</NavLink>}
-          {isAdmin && <NavLink to="/assets">자산 포트폴리오</NavLink>}
+          {/* 자산 포트폴리오는 잠시 숨김: 메뉴만 감추고 /assets 주소로는 그대로 들어갈 수 있다. 다시 보이려면 SHOW_ASSETS 를 true 로 */}
+          {isAdmin && SHOW_ASSETS && <NavLink to="/assets">자산 포트폴리오</NavLink>}
           {isAdmin && <NavLink to="/ledger">가계부</NavLink>}
           {isAdmin && <NavLink to="/study">학습 노트</NavLink>}
         </nav>
