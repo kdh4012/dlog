@@ -29,6 +29,16 @@ const toKrw = (a: Asset, rate: ExchangeRate | null) => {
   return r ? a.evalAmount * r : null
 }
 
+/**
+ * 비중 표시: 소수 첫째 자리까지.
+ * 다른 자산이 있는데 반올림으로 100.0 이 되거나, 아주 작은 비중이 0.0 이 되는 일이 없도록 맞춘다.
+ */
+const formatShare = (share: number, only: boolean) => {
+  if (only) return '100'
+  if (share > 0 && share < 0.1) return '<0.1'
+  return (Math.min(Math.round(share * 10) / 10, 99.9)).toFixed(1)
+}
+
 /** 1억 이상은 '1.8억', 만 단위는 '3,250만' 처럼 짧게 */
 const shortKrw = (v: number) => {
   if (v >= 100_000_000) return `${(v / 100_000_000).toFixed(v >= 1_000_000_000 ? 0 : 1)}억`
@@ -70,7 +80,7 @@ export default function AssetAllocation({ assets, rate }: { assets: Asset[]; rat
               {c.label}
             </div>
             <div className="alloc-share">
-              {c.share >= 10 ? c.share.toFixed(0) : c.share.toFixed(1)}
+              {formatShare(c.share, items.length === 1)}
               <small>%</small>
             </div>
             <div className="alloc-value">{shortKrw(c.value)}원</div>
