@@ -6,7 +6,7 @@
 |---|---|
 | 홈: 나의 다짐(눌러서 수정) + 연도별 목표 목록 (등록·수정·삭제, 달성 체크·진행률, 순서 변경, 지난해 보기) | **관리자만** |
 | 일기 (날짜·제목·마크다운 본문, 달별 목록) | **관리자만** |
-| 자산 포트폴리오 (주식·비트코인·금 등 종류별 비중 카드, 원화·달러 환산 합계, 업비트·토스증권 자동 동기화) | **관리자만** |
+| 자산 포트폴리오 (주식·비트코인·금 등 종류별 비중 카드, 원화·달러 환산 합계, 일별 총 자산 추이, 업비트·토스증권·금 시세 자동 동기화) | **관리자만** |
 | 가계부 (달마다 수입·고정지출 기록과 자동 이월, 남는 돈, 최근 12개월 추이, 부채 잔액) | **관리자만** |
 
 ## 기술 스택
@@ -228,6 +228,7 @@ cd frontend && npm run lint && npm run build
 | POST/PUT/DELETE | `/api/diary[/{id}]` (`{"entryDate":"yyyy-MM-dd","title","content"}`, title 선택) | 관리자 |
 | GET | `/api/assets`, `/api/assets/summary` (통화별 요약 + `total` 원화·달러 합계·유형별 비중 + `exchangeRate`), `/api/assets/{id}` | 관리자 |
 | POST/PUT/DELETE | `/api/assets[/{id}]` (동기화 자산은 PUT/DELETE 시 409) | 관리자 |
+| GET | `/api/assets/history` — 일별 총 자산(원화 평가·매입 합계, 동기화 때마다 그날 값 갱신) | 관리자 |
 | GET/PUT | `/api/assets/gold` — 금 현물 보유량(g)·평균 매입 단가(원/g) 입력, 시세는 KRX 금시세로 자동 반영 (`grams` 0 이면 삭제) | 관리자 |
 | GET | `/api/assets/sync` — 출처별 마지막 동기화 상태 | 관리자 |
 | POST | `/api/assets/sync` — 즉시 동기화 | 관리자 |

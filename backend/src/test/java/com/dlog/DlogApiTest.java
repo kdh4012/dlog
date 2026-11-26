@@ -60,6 +60,7 @@ class DlogApiTest {
         mvc.perform(get("/api/diary")).andExpect(status().isUnauthorized());
         mvc.perform(get("/api/goals")).andExpect(status().isUnauthorized());
         mvc.perform(get("/api/resolution")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/assets/history")).andExpect(status().isUnauthorized());
         mvc.perform(get("/api/diary/1")).andExpect(status().isUnauthorized());
         mvc.perform(post("/api/diary")
                         .contentType(MediaType.APPLICATION_JSON)

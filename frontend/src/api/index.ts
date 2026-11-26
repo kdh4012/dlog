@@ -2,6 +2,7 @@ import { http } from './client'
 import type {
   Asset,
   AssetRequest,
+  AssetHistoryPoint,
   AssetSummary,
   Diary,
   DiaryRequest,
@@ -58,6 +59,8 @@ export const assetApi = {
   remove: (id: number) => http.delete(`/assets/${id}`),
   syncStatuses: () => http.get<SyncStatus[]>('/assets/sync'),
   sync: () => http.post<SyncStatus[]>('/assets/sync', {}),
+  /** 일별 총 자산 (오래된 날짜부터) */
+  history: () => http.get<AssetHistoryPoint[]>('/assets/history'),
   gold: () => http.get<GoldHolding>('/assets/gold'),
   /** 보유량 0 이면 금 자산을 지운다 */
   saveGold: (grams: number, avgPrice: number) => http.put<GoldHolding>('/assets/gold', { grams, avgPrice }),

@@ -1,8 +1,10 @@
 package com.dlog.asset;
 
 import com.dlog.asset.sync.SyncedHolding;
+import com.dlog.asset.sync.gold.GoldHoldingRepository;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,9 +39,15 @@ class AssetSyncApiTest {
     @Autowired
     AssetRepository assetRepository;
 
+    @Autowired
+    GoldHoldingRepository goldRepository;
+
+    /** 금 보유량이 남아 있으면 금 출처가 '설정됨'으로 잡히므로 앞뒤로 비운다 */
+    @BeforeEach
     @AfterEach
     void cleanUp() {
         assetRepository.deleteAll();
+        goldRepository.deleteAll();
     }
 
     private static SyncedHolding btc(String quantity) {

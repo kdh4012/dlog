@@ -100,6 +100,14 @@ export const ASSET_SOURCES = {
 } as const
 export type AssetSource = keyof typeof ASSET_SOURCES
 
+/** 하루의 총 자산 (원화, 모든 출처 합계) */
+export interface AssetHistoryPoint {
+  /** yyyy-MM-dd */
+  date: string
+  evalKrw: number
+  costKrw: number
+}
+
 /** 금 현물 보유량 (직접 입력). 시세는 서버가 KRX 금시세로 갱신 */
 export interface GoldHolding {
   /** 보유량 (g). 입력 전이면 0 */

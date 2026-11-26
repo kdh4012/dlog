@@ -2,6 +2,7 @@ package com.dlog.asset.sync;
 
 import com.dlog.asset.AssetService;
 import com.dlog.asset.AssetSource;
+import com.dlog.asset.history.AssetHistoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +23,13 @@ public class AssetSyncService {
 
     private final List<HoldingProvider> providers;
     private final AssetService assetService;
+    private final AssetHistoryService historyService;
     private final Map<AssetSource, SyncStatusResponse> statuses = new EnumMap<>(AssetSource.class);
 
-    public AssetSyncService(List<HoldingProvider> providers, AssetService assetService) {
+    public AssetSyncService(List<HoldingProvider> providers, AssetService assetService, AssetHistoryService historyService) {
         this.providers = providers.stream().sorted(Comparator.comparing(HoldingProvider::source)).toList();
         this.assetService = assetService;
+        this.historyService = historyService;
     }
 
     /**
@@ -39,6 +42,7 @@ public class AssetSyncService {
                 statuses.put(provider.source(), sync(provider));
             }
         }
+        recordHistory();
         return getStatuses();
     }
 
@@ -50,6 +54,7 @@ public class AssetSyncService {
                 .orElseThrow(() -> new IllegalArgumentException("동기화 출처가 없습니다: " + source));
         SyncStatusResponse status = sync(provider);
         statuses.put(source, status);
+        recordHistory();
         return status;
     }
 
@@ -73,6 +78,15 @@ public class AssetSyncService {
             // 응답 형식 변경(숫자 파싱 실패 등)·DB 오류도 다른 출처 동기화를 막지 않도록 상태로 기록
             log.error("{} 자산 동기화 중 예기치 않은 오류", source, e);
             return new SyncStatusResponse(source, true, now, false, null, "예기치 않은 오류: " + e.getMessage());
+        }
+    }
+
+    /** 동기화가 끝나면 오늘의 총 자산을 기록한다. 기록 실패가 동기화 결과를 바꾸지 않도록 로그만 남긴다 */
+    private void recordHistory() {
+        try {
+            historyService.recordToday();
+        } catch (RuntimeException e) {
+            log.warn("총 자산 기록 실패: {}", e.getMessage(), e);
         }
     }
 }
