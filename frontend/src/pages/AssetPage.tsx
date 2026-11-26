@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { assetApi } from '../api'
 import type { Asset, Currency, ExchangeRate } from '../api/types'
 import AssetAllocation from '../components/AssetAllocation'
-import AssetHistoryChart from '../components/AssetHistoryChart'
 import AssetSyncPanel from '../components/AssetSyncPanel'
 import GoldEditor from '../components/GoldEditor'
 import { ErrorMessage, Loading } from '../components/Status'
@@ -160,9 +159,6 @@ export default function AssetPage() {
         )}
         {summary.error && <ErrorMessage error={summary.error} />}
       </section>
-
-      {/* 일별 총 자산 추이 */}
-      <AssetHistoryChart key={syncPanelKey} />
 
       {/* 보기 설정: 현재가/평가금, 달러/원 */}
       <div className="invest-controls">

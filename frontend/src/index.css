@@ -1925,6 +1925,20 @@ button.resolution-text.empty:not(:disabled):hover {
   margin-top: 24px;
 }
 
+/* 막대 위 작은 총 자산 한 줄 */
+.alloc-total {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.alloc-total b {
+  margin-left: 4px;
+  color: var(--fg-2);
+  font-weight: 700;
+}
+
 /* 전체를 비중대로 나눈 한 줄 막대 */
 .alloc-bar {
   display: flex;
@@ -2111,117 +2125,5 @@ button.resolution-text.empty:not(:disabled):hover {
 @media (max-width: 640px) {
   .gold-form-fields {
     grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* ---------- 총 자산 추이 ---------- */
-.hist {
-  margin-top: 24px;
-  padding: 18px 20px 14px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: var(--surface);
-}
-
-.hist-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.hist-title {
-  font-weight: 700;
-}
-
-.hist .seg button {
-  padding: 4px 10px;
-  font-size: 0.8rem;
-}
-
-.hist-summary {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 10px;
-  margin-top: 12px;
-  font-variant-numeric: tabular-nums;
-}
-
-.hist-value {
-  font-size: 1.25rem;
-  font-weight: 800;
-}
-
-.hist-summary .muted {
-  font-size: 0.85rem;
-}
-
-.hist-change {
-  margin-left: auto;
-  font-size: 0.88rem;
-  font-weight: 600;
-}
-
-.hist-chart-wrap {
-  position: relative;
-  margin-top: 10px;
-}
-
-.hist-chart {
-  display: block;
-  width: 100%;
-  height: 160px;
-  overflow: visible;
-  touch-action: pan-y;
-  cursor: crosshair;
-}
-
-.hist-eval {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2.2;
-  stroke-linejoin: round;
-}
-
-.hist-cursor {
-  stroke: var(--muted);
-  stroke-width: 1;
-  opacity: 0.5;
-}
-
-.hist-dot {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border: 2px solid var(--accent);
-  border-radius: 50%;
-  background: var(--surface);
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-.hist-axis {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.hist-empty {
-  margin: 14px 0 4px;
-  font-size: 0.9rem;
-}
-
-@media (max-width: 640px) {
-  .hist {
-    padding: 14px 14px 12px;
-  }
-
-  .hist-change {
-    margin-left: 0;
-    width: 100%;
   }
 }
