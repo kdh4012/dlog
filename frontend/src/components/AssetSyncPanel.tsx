@@ -8,7 +8,7 @@ import { useAsync } from '../utils/useAsync'
 const formatDateTime = (iso: string) => `${iso.slice(5, 7)}.${iso.slice(8, 10)} ${iso.slice(11, 16)}`
 
 const statusText = (s: SyncStatus) => {
-  if (!s.configured) return 'API 키 미설정'
+  if (!s.configured) return s.source === 'GOLD' ? '보유량 미입력' : 'API 키 미설정'
   if (!s.lastSyncedAt) return '동기화 대기 중'
   if (!s.success) return '동기화 실패'
   return formatDateTime(s.lastSyncedAt)

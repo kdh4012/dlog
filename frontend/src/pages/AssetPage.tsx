@@ -3,6 +3,7 @@ import { assetApi } from '../api'
 import type { Asset, Currency, ExchangeRate } from '../api/types'
 import AssetAllocation from '../components/AssetAllocation'
 import AssetSyncPanel from '../components/AssetSyncPanel'
+import GoldEditor from '../components/GoldEditor'
 import { ErrorMessage, Loading } from '../components/Status'
 import StockLogo from '../components/StockLogo'
 import { formatNumber, profitClass, type DisplayCurrency } from '../utils/format'
@@ -66,6 +67,7 @@ const groupAssets = (assets: Asset[]): Group[] => {
     ['toss-us', '해외주식', (a) => a.source === 'TOSS' && a.currency !== 'KRW'],
     ['toss-kr', '국내주식', (a) => a.source === 'TOSS' && a.currency === 'KRW'],
     ['upbit', '가상자산', (a) => a.source === 'UPBIT'],
+    ['gold', '금', (a) => a.source === 'GOLD'],
     ['etc', '기타', (a) => a.source === 'MANUAL'],
   ]
   return defs
@@ -77,9 +79,11 @@ const groupAssets = (assets: Asset[]): Group[] => {
     .filter((g) => g.items.length > 0)
 }
 
-/** 주식은 '259주', 코인은 '0.015 BTC' */
-const quantityText = (a: Asset) =>
-  a.assetType === 'CRYPTO' ? `${formatNumber(a.quantity)} ${a.ticker ?? ''}`.trim() : `${formatNumber(a.quantity)}주`
+/** 주식은 '259주', 코인은 '0.015 BTC', 금은 '12.5g' */
+const quantityText = (a: Asset) => {
+  if (a.source === 'GOLD') return `${formatNumber(a.quantity)}g`
+  return a.assetType === 'CRYPTO' ? `${formatNumber(a.quantity)} ${a.ticker ?? ''}`.trim() : `${formatNumber(a.quantity)}주`
+}
 
 export default function AssetPage() {
   const assets = useAsync(() => assetApi.list(), [])
@@ -111,6 +115,9 @@ export default function AssetPage() {
     const c = convert(value, currency, display, rate)
     return formatAmount(c.value, c.currency, signed)
   }
+
+  // 금 보유량을 고치면 동기화 상태 줄도 새로 읽도록 다시 그린다
+  const [syncPanelKey, setSyncPanelKey] = useState(0)
 
   const reloadAll = () => {
     assets.reload()
@@ -230,7 +237,14 @@ export default function AssetPage() {
         )
       })}
 
-      <AssetSyncPanel onSynced={reloadAll} />
+      <GoldEditor
+        onSaved={() => {
+          reloadAll()
+          setSyncPanelKey((k) => k + 1)
+        }}
+      />
+
+      <AssetSyncPanel key={syncPanelKey} onSynced={reloadAll} />
     </div>
   )
 }

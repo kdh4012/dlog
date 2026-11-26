@@ -7,6 +7,7 @@ import type {
   DiaryRequest,
   DiarySummary,
   Goal,
+  GoldHolding,
   Ledger,
   LedgerItem,
   LedgerItemRequest,
@@ -57,6 +58,9 @@ export const assetApi = {
   remove: (id: number) => http.delete(`/assets/${id}`),
   syncStatuses: () => http.get<SyncStatus[]>('/assets/sync'),
   sync: () => http.post<SyncStatus[]>('/assets/sync', {}),
+  gold: () => http.get<GoldHolding>('/assets/gold'),
+  /** 보유량 0 이면 금 자산을 지운다 */
+  saveGold: (grams: number, avgPrice: number) => http.put<GoldHolding>('/assets/gold', { grams, avgPrice }),
 }
 
 export const ledgerApi = {

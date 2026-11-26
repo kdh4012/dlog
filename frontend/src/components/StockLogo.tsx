@@ -19,6 +19,19 @@ const BADGE_COLORS = ['#3451d1', '#0f9d58', '#f59e0b', '#7c3aed', '#e11d48', '#0
 const badgeColor = (key: string) => BADGE_COLORS[[...key].reduce((h, c) => h + c.charCodeAt(0), 0) % BADGE_COLORS.length]
 
 export default function StockLogo({ asset }: { asset: Asset }) {
+  // 금 현물은 로고 대신 금색 배지
+  if (asset.source === 'GOLD') {
+    return (
+      <span className="asset-logo fallback" style={{ background: '#e0a800' }} aria-hidden="true">
+        금
+      </span>
+    )
+  }
+  return <RemoteLogo asset={asset} />
+}
+
+/** 공개 로고 이미지를 차례로 시도하고, 모두 실패하면 이름 첫 글자 배지 */
+function RemoteLogo({ asset }: { asset: Asset }) {
   // 몇 번째 후보 URL 을 보여주는 중인지. 후보를 다 쓰면 글자 배지
   const [index, setIndex] = useState(0)
   const urls = logoUrls(asset)

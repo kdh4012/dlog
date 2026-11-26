@@ -204,6 +204,7 @@ docker compose --profile app up -d --build
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` | 관리자 계정 |
 | `UPBIT_ACCESS_KEY` / `UPBIT_SECRET_KEY` | 업비트 자산 동기화 (선택) |
 | `TOSS_CLIENT_ID` / `TOSS_CLIENT_SECRET` | 토스증권 자산 동기화 (선택) |
+| `GOLD_PRICE_API_KEY` | 금 현물 시세 (공공데이터포털 '금융위원회_일반상품시세정보' 일반 인증키, 선택. 없으면 매입 단가로 평가) |
 | `ASSET_SYNC_INTERVAL` | 자산 동기화 주기 (기본 `PT10M`) |
 
 > `.env` 에 넣는 BCrypt 해시의 `$` 는 `$$` 로 이스케이프해야 합니다.
@@ -227,6 +228,7 @@ cd frontend && npm run lint && npm run build
 | POST/PUT/DELETE | `/api/diary[/{id}]` (`{"entryDate":"yyyy-MM-dd","title","content"}`, title 선택) | 관리자 |
 | GET | `/api/assets`, `/api/assets/summary` (통화별 요약 + `total` 원화·달러 합계·유형별 비중 + `exchangeRate`), `/api/assets/{id}` | 관리자 |
 | POST/PUT/DELETE | `/api/assets[/{id}]` (동기화 자산은 PUT/DELETE 시 409) | 관리자 |
+| GET/PUT | `/api/assets/gold` — 금 현물 보유량(g)·평균 매입 단가(원/g) 입력, 시세는 KRX 금시세로 자동 반영 (`grams` 0 이면 삭제) | 관리자 |
 | GET | `/api/assets/sync` — 출처별 마지막 동기화 상태 | 관리자 |
 | POST | `/api/assets/sync` — 즉시 동기화 | 관리자 |
 | GET | `/api/ledger?month=yyyy-MM` — 그 달 수입·고정지출(빈 달이면 이월 후), 현재 부채, 합계, 최근 12개월 추이 (month 생략 시 이번 달) | 관리자 |

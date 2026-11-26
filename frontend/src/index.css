@@ -2000,3 +2000,88 @@ button.resolution-text.empty:not(:disabled):hover {
     font-size: 1.6rem;
   }
 }
+
+/* ---------- 금 보유량 입력 ---------- */
+.gold-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 14px;
+  margin-top: 24px;
+  font-size: 0.9rem;
+}
+
+.gold-entry button.link {
+  font-weight: 600;
+}
+
+.gold-form {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.gold-form-title {
+  font-weight: 700;
+}
+
+.gold-form-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.gold-form-fields label {
+  display: grid;
+  gap: 4px;
+  color: var(--fg-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.gold-input {
+  position: relative;
+}
+
+.gold-input input {
+  width: 100%;
+  padding: 10px 52px 10px 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 1rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.gold-input span {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.gold-form .muted.small {
+  margin: 10px 0 0;
+}
+
+.gold-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+@media (max-width: 640px) {
+  .gold-form-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

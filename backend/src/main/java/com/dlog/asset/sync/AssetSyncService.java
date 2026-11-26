@@ -42,6 +42,17 @@ public class AssetSyncService {
         return getStatuses();
     }
 
+    /** 한 출처만 바로 동기화 (예: 금 보유량을 고친 직후) */
+    public synchronized SyncStatusResponse sync(AssetSource source) {
+        HoldingProvider provider = providers.stream()
+                .filter(p -> p.source() == source)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("동기화 출처가 없습니다: " + source));
+        SyncStatusResponse status = sync(provider);
+        statuses.put(source, status);
+        return status;
+    }
+
     public synchronized List<SyncStatusResponse> getStatuses() {
         return providers.stream()
                 .map(p -> statuses.getOrDefault(p.source(), SyncStatusResponse.notYet(p.source(), p.isConfigured())))

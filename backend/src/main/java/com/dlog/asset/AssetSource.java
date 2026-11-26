@@ -4,7 +4,9 @@ package com.dlog.asset;
 public enum AssetSource {
     MANUAL,
     UPBIT,
-    TOSS;
+    TOSS,
+    /** 금 현물: 보유량은 직접 입력, 시세만 공공데이터 API 로 갱신 */
+    GOLD;
 
     public boolean isSynced() {
         return this != MANUAL;

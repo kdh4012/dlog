@@ -96,8 +96,23 @@ export const ASSET_SOURCES = {
   MANUAL: '직접 입력',
   UPBIT: '업비트',
   TOSS: '토스증권',
+  GOLD: '금 시세',
 } as const
 export type AssetSource = keyof typeof ASSET_SOURCES
+
+/** 금 현물 보유량 (직접 입력). 시세는 서버가 KRX 금시세로 갱신 */
+export interface GoldHolding {
+  /** 보유량 (g). 입력 전이면 0 */
+  grams: number
+  /** 평균 매입 단가 (원/g) */
+  avgPrice: number
+  /** 평가에 쓰는 시세 (원/g). 시세를 못 받았으면 매입 단가, 입력 전이면 null */
+  currentPrice: number | null
+  /** 시세 기준일 (yyyy-MM-dd). 받은 적 없으면 null */
+  priceDate: string | null
+  /** 시세 API 키가 서버에 설정되어 있는지 */
+  priceApiReady: boolean
+}
 
 export interface SyncStatus {
   source: Exclude<AssetSource, 'MANUAL'>
