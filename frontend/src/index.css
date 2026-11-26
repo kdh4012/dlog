@@ -1925,20 +1925,6 @@ button.resolution-text.empty:not(:disabled):hover {
   margin-top: 24px;
 }
 
-/* 막대 위 작은 총 자산 한 줄 */
-.alloc-total {
-  margin-bottom: 8px;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.alloc-total b {
-  margin-left: 4px;
-  color: var(--fg-2);
-  font-weight: 700;
-}
-
 /* 전체를 비중대로 나눈 한 줄 막대 */
 .alloc-bar {
   display: flex;

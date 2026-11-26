@@ -63,9 +63,6 @@ export default function AssetAllocation({ assets, rate }: { assets: Asset[]; rat
 
   return (
     <section className="alloc" aria-label="자산 비중">
-      <div className="alloc-total">
-        총 자산 <b>{formatNumber(Math.round(total))}원</b>
-      </div>
       <div className="alloc-bar" aria-hidden="true">
         {items.map((c) => (
           <span key={c.key} style={{ width: `${c.share}%`, background: c.color }} />
