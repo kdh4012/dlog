@@ -1991,13 +1991,41 @@ button.resolution-text.empty:not(:disabled):hover {
   font-variant-numeric: tabular-nums;
 }
 
+/* 모바일: 한 줄에 3개씩 나란히 (넘치면 다음 줄), 글자·여백을 줄인다 */
 @media (max-width: 640px) {
   .alloc-cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .alloc-card {
+    padding: 12px 10px;
+    border-radius: 14px;
+  }
+
+  .alloc-name {
+    gap: 5px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .alloc-name i {
+    flex: none;
+    width: 7px;
+    height: 7px;
   }
 
   .alloc-share {
-    font-size: 1.6rem;
+    margin-top: 6px;
+    font-size: 1.35rem;
+  }
+
+  .alloc-share small {
+    font-size: 0.8rem;
+  }
+
+  .alloc-value {
+    font-size: 0.75rem;
   }
 }
 
