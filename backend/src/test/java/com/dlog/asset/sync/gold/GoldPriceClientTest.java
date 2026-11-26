@@ -47,6 +47,17 @@ class GoldPriceClientTest {
     }
 
     @Test
+    void 포털의_Encoding_키를_넣어도_이중_인코딩하지_않는다() {
+        server.route("/getGoldPriceInfo", ex -> Response.ok("""
+                {"response":{"header":{"resultCode":"00","resultMsg":"OK"},
+                 "body":{"items":{"item":{"basDt":"20261125","itmsNm":"금 99.99_1Kg","clpr":"187250"}}}}}"""));
+
+        client(" a%2Bb%2Fc%3D ").latest();
+
+        assertThat(server.requests.get(0)).contains("serviceKey=a%2Bb%2Fc%3D").doesNotContain("%252");
+    }
+
+    @Test
     void 결과가_한_건이면_객체로_와도_읽는다() {
         server.route("/getGoldPriceInfo", ex -> Response.ok("""
                 {"response":{"header":{"resultCode":"00","resultMsg":"OK"},
