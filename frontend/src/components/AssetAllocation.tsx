@@ -39,19 +39,8 @@ const formatShare = (share: number, only: boolean) => {
   return (Math.min(Math.round(share * 10) / 10, 99.9)).toFixed(1)
 }
 
-/**
- * 10만원 단위까지 짧게: 123,456,789 → '1억 2,350만', 3,254,000 → '330만'.
- * 10만원 미만은 그대로 표시
- */
-const shortKrw = (v: number) => {
-  if (v < 100_000) return formatNumber(Math.round(v))
-  // 10만원 단위로 반올림한 뒤 '만' 단위로 나눈다
-  const man = Math.round(v / 100_000) * 10
-  const eok = Math.floor(man / 10_000)
-  const rest = man % 10_000
-  if (eok === 0) return `${formatNumber(rest)}만`
-  return rest === 0 ? `${formatNumber(eok)}억` : `${formatNumber(eok)}억 ${formatNumber(rest)}만`
-}
+/** 10만원 단위로 반올림해 전체 자릿수로 표시: 102,456,789 → '102,500,000' */
+const shortKrw = (v: number) => formatNumber(Math.round(v / 100_000) * 100_000)
 
 /**
  * 자산 종류별(주식·비트코인·금 …) 비중 카드.
