@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { assetApi } from '../api'
 import type { Asset, Currency, ExchangeRate } from '../api/types'
+import AssetAllocation from '../components/AssetAllocation'
 import AssetSyncPanel from '../components/AssetSyncPanel'
 import { ErrorMessage, Loading } from '../components/Status'
 import StockLogo from '../components/StockLogo'
@@ -121,6 +122,9 @@ export default function AssetPage() {
   return (
     <div className="invest">
       <h1>자산 포트폴리오</h1>
+
+      {/* 맨 위: 자산 종류별 비중 카드 */}
+      {assets.data && <AssetAllocation assets={assets.data} rate={rate} />}
 
       {/* 내 투자 합계 */}
       <section className="invest-total">

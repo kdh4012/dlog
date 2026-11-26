@@ -1919,3 +1919,84 @@ button.resolution-text.empty:not(:disabled):hover {
     padding: 22px 18px 20px;
   }
 }
+
+/* ---------- 자산 종류별 비중 카드 ---------- */
+.alloc {
+  margin-top: 24px;
+}
+
+/* 전체를 비중대로 나눈 한 줄 막대 */
+.alloc-bar {
+  display: flex;
+  gap: 3px;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+}
+
+.alloc-bar > span {
+  min-width: 4px;
+  height: 100%;
+}
+
+.alloc-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.alloc-card {
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.alloc-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--fg-2);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.alloc-name i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.alloc-share {
+  margin-top: 8px;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.alloc-share small {
+  margin-left: 2px;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.alloc-value {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .alloc-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .alloc-share {
+    font-size: 1.6rem;
+  }
+}
