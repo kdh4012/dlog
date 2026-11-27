@@ -52,7 +52,7 @@ class GoldPriceClientTest {
                 {"response":{"header":{"resultCode":"00","resultMsg":"OK"},
                  "body":{"items":{"item":{"basDt":"20261125","itmsNm":"금 99.99_1Kg","clpr":"187250"}}}}}"""));
 
-        client(" a%2Bb%2Fc%3D ").latest();
+        client(" a%2Bb %2Fc%3D ").latest();
 
         assertThat(server.requests.get(0)).contains("serviceKey=a%2Bb%2Fc%3D").doesNotContain("%252");
     }

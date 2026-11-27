@@ -19,7 +19,8 @@ public record GoldProperties(
     public GoldProperties {
         // 요청할 때 다시 인코딩하므로, Encoding 키가 들어오면 미리 풀어서 이중 인코딩을 막는다
         if (apiKey != null) {
-            apiKey = apiKey.strip();
+            // 포털에서 두 줄로 보이는 키를 복사하면 중간에 공백이 끼므로 모든 공백을 지운다
+            apiKey = apiKey.replaceAll("\\s+", "");
             if (apiKey.contains("%")) apiKey = URLDecoder.decode(apiKey, StandardCharsets.UTF_8);
         }
     }
