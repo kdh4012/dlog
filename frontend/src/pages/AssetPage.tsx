@@ -5,6 +5,7 @@ import AssetAllocation from '../components/AssetAllocation'
 import AssetSyncPanel from '../components/AssetSyncPanel'
 import GoldEditor from '../components/GoldEditor'
 import { ErrorMessage, Loading } from '../components/Status'
+import StockLogo from '../components/StockLogo'
 import { formatNumber, profitClass, type DisplayCurrency } from '../utils/format'
 import { useAsync } from '../utils/useAsync'
 
@@ -209,6 +210,7 @@ export default function AssetPage() {
               <ul className="invest-list">
                 {g.items.map((a) => (
                   <li key={a.id}>
+                    <StockLogo asset={a} />
                     <div className="invest-name">
                       <div className="name">{a.name}</div>
                       <div className="sub">{quantityText(a)}</div>

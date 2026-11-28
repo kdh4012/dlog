@@ -951,6 +951,26 @@ button.invest-group-head:not(:disabled):hover {
   padding: 14px 0;
 }
 
+.asset-logo {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid var(--border);
+}
+
+.asset-logo.fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 .invest-name {
   flex: 1;
   min-width: 0;
