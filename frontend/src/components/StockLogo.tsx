@@ -23,6 +23,8 @@ const badgeColor = (key: string) => BADGE_COLORS[[...key].reduce((h, c) => h + c
 export default function StockLogo({ asset }: { asset: Asset }) {
   // 금 현물은 금괴 아이콘
   if (asset.source === 'GOLD') return <GoldIcon />
+  // 비트코인은 주황 원 + 기울인 B 아이콘
+  if (asset.assetType === 'CRYPTO' && (asset.ticker ?? '').toUpperCase() === 'BTC') return <BitcoinIcon />
   return <RemoteLogo asset={asset} />
 }
 
@@ -85,6 +87,35 @@ function GoldIcon() {
       {ingot(13, 14)}
       {/* 반짝임 */}
       <path d="M34 6.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" fill="#fff" opacity="0.95" />
+    </svg>
+  )
+}
+
+/** 비트코인 아이콘: 주황 원 위에 세로줄이 위아래로 튀어나온 B 를 오른쪽으로 살짝 기울인다 */
+function BitcoinIcon() {
+  const id = useId()
+  const bg = `${id}-bg`
+  return (
+    <svg className="asset-logo gold-icon" viewBox="0 0 44 44" aria-hidden="true">
+      <defs>
+        <linearGradient id={bg} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffa940" />
+          <stop offset="100%" stopColor="#f2840a" />
+        </linearGradient>
+      </defs>
+      <circle cx="22" cy="22" r="22" fill={`url(#${bg})`} />
+      <g transform="rotate(14 22 22)" fill="#fff">
+        {/* 위아래로 튀어나온 세로줄 두 개 */}
+        <rect x="18" y="9" width="2.4" height="26" rx="1" />
+        <rect x="22.4" y="9" width="2.4" height="26" rx="1" />
+        {/* B: 바깥 윤곽에서 안쪽 두 구멍을 뺀다 (evenodd) */}
+        <path
+          fillRule="evenodd"
+          d="M14 12.5h11.5a5 5 0 0 1 2.6 9.3 5.3 5.3 0 0 1-2.1 10.2H14v-3h2.2V15.5H14z
+             M19.6 15.6v5.1h5.6a2.55 2.55 0 0 0 0-5.1z
+             M19.6 23.6v5.3h6.1a2.65 2.65 0 0 0 0-5.3z"
+        />
+      </g>
     </svg>
   )
 }
