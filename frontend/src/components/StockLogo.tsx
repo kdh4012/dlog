@@ -11,7 +11,9 @@ const logoUrls = (asset: Asset): string[] => {
   if (asset.assetType === 'CRYPTO') return [`https://static.upbit.com/logos/${t}.png`]
   // 국내 주식은 6자리 종목코드
   if (/^\d{6}$/.test(t)) return [`https://file.alphasquare.co.kr/media/images/stock_logo/kr/${t}.png`]
-  return [`https://financialmodelingprep.com/image-stock/${t}.png`, `https://assets.parqet.com/logos/symbol/${t}?format=png`]
+  // financialmodelingprep 은 ETF 등 로고가 없을 때 404 대신 흐릿한 기본 그림을 줘서 글자 배지로 넘어가지 못한다.
+  // 그래서 없는 종목은 404 를 주는 parqet 만 쓰고, 실패하면 글자 배지로 대신한다
+  return [`https://assets.parqet.com/logos/symbol/${t}?format=png`]
 }
 
 /** 글자 배지 배경색: 같은 종목은 항상 같은 색 */
