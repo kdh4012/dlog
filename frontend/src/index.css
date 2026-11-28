@@ -2121,3 +2121,99 @@ button.resolution-text.empty:not(:disabled):hover {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---------- 자산 메모 (제목 옆 말풍선) ---------- */
+.invest-title {
+  /* 말풍선을 제목 줄 기준으로 띄워 모바일에서도 화면 안에 들어오게 한다 */
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.memo-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+}
+
+/* 전역 button hover(검은 배경)보다 우선하도록 button 까지 붙인다 */
+button.memo-btn:not(:disabled):hover {
+  border: none;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.memo-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 메모가 있으면 강조색 + 작은 점 */
+.memo-btn.has {
+  color: var(--accent);
+}
+
+.memo-btn.has::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.memo-pop {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  width: min(320px, calc(100vw - 32px));
+  padding: 14px 16px 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.memo-text {
+  margin: 0;
+  color: var(--fg-2);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.memo-input {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  font: inherit;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.memo-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}

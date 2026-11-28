@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { assetApi } from '../api'
 import type { Asset, Currency, ExchangeRate } from '../api/types'
 import AssetAllocation from '../components/AssetAllocation'
+import AssetMemo from '../components/AssetMemo'
 import AssetSyncPanel from '../components/AssetSyncPanel'
 import GoldEditor from '../components/GoldEditor'
 import { ErrorMessage, Loading } from '../components/Status'
@@ -130,7 +131,10 @@ export default function AssetPage() {
 
   return (
     <div className="invest">
-      <h1>자산 포트폴리오</h1>
+      <div className="invest-title">
+        <h1>자산 포트폴리오</h1>
+        <AssetMemo />
+      </div>
 
       {/* 맨 위: 자산 종류별 비중 카드 */}
       {assets.data && <AssetAllocation assets={assets.data} rate={rate} />}

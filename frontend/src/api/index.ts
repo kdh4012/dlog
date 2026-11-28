@@ -64,6 +64,9 @@ export const assetApi = {
   gold: () => http.get<GoldHolding>('/assets/gold'),
   /** 보유량 0 이면 금 자산을 지운다 */
   saveGold: (grams: number, avgPrice: number) => http.put<GoldHolding>('/assets/gold', { grams, avgPrice }),
+  memo: () => http.get<Resolution>('/assets/memo'),
+  /** 빈 문자열이면 지운다 */
+  saveMemo: (content: string) => http.put<Resolution>('/assets/memo', { content }),
 }
 
 export const ledgerApi = {
