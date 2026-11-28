@@ -96,6 +96,7 @@ export const ASSET_SOURCES = {
   MANUAL: '직접 입력',
   UPBIT: '업비트',
   TOSS: '토스증권',
+  KIS: '한국투자',
   GOLD: '금 시세',
 } as const
 export type AssetSource = keyof typeof ASSET_SOURCES

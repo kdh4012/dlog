@@ -43,6 +43,11 @@ dlog:
   toss:
     client-id: ${TOSS_CLIENT_ID:}
     client-secret: ${TOSS_CLIENT_SECRET:}
+  # 한국투자증권 Open API. 계좌는 '12345678-01,12345678-22' 처럼 쉼표로 구분
+  kis:
+    app-key: ${KIS_APP_KEY:}
+    app-secret: ${KIS_APP_SECRET:}
+    accounts: ${KIS_ACCOUNTS:}
   # 금 현물 시세 (공공데이터포털 '금융위원회_일반상품시세정보' 일반 인증키). 없으면 매입 단가로 평가
   gold:
     api-key: ${GOLD_PRICE_API_KEY:}

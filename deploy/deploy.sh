@@ -7,7 +7,8 @@
 #
 # 선택 환경변수(있으면 서버 /etc/dlog.env 에 반영, 비어 있으면 기존 값 유지):
 #   ADMIN_PASSWORD_HASH  관리자 비밀번호 BCrypt 해시 (최초 배포 시 필수)
-#   ADMIN_USERNAME, UPBIT_ACCESS_KEY, UPBIT_SECRET_KEY, TOSS_CLIENT_ID, TOSS_CLIENT_SECRET, GOLD_PRICE_API_KEY
+#   ADMIN_USERNAME, UPBIT_ACCESS_KEY, UPBIT_SECRET_KEY, TOSS_CLIENT_ID, TOSS_CLIENT_SECRET, GOLD_PRICE_API_KEY,
+#   KIS_APP_KEY, KIS_APP_SECRET, KIS_ACCOUNTS
 #
 # 필요한 것: JDK 17 이상, npm, ssh/scp (Git Bash 에 포함)
 set -euo pipefail
@@ -41,7 +42,7 @@ echo "$SETUP_OUT"
 
 # 비밀값은 명령줄이 아니라 표준입력으로 넘겨 로그·프로세스 목록에 남지 않게 한다.
 # BCrypt 해시의 '$' 가 해석되지 않도록 작은따옴표로 감싸 저장한다(systemd EnvironmentFile 규칙).
-for name in ADMIN_PASSWORD_HASH ADMIN_USERNAME UPBIT_ACCESS_KEY UPBIT_SECRET_KEY TOSS_CLIENT_ID TOSS_CLIENT_SECRET GOLD_PRICE_API_KEY; do
+for name in ADMIN_PASSWORD_HASH ADMIN_USERNAME UPBIT_ACCESS_KEY UPBIT_SECRET_KEY TOSS_CLIENT_ID TOSS_CLIENT_SECRET GOLD_PRICE_API_KEY KIS_APP_KEY KIS_APP_SECRET KIS_ACCOUNTS; do
   value="${!name:-}"
   [ -n "$value" ] || continue
   if [[ "$value" == *"'"* || "$value" == *$'\n'* ]]; then

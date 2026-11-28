@@ -99,13 +99,14 @@ class AssetSyncApiTest {
     void 키가_없으면_동기화하지_않고_미설정_상태를_반환() throws Exception {
         String body = mvc.perform(post("/api/assets/sync"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(3)) // 업비트·토스증권·금
+                .andExpect(jsonPath("$.length()").value(4)) // 업비트·토스증권·한국투자·금
                 .andReturn().getResponse().getContentAsString();
 
         List<Boolean> configured = JsonPath.read(body, "$[*].configured");
         assertThat(configured).containsOnly(false);
         mvc.perform(get("/api/assets/sync"))
                 .andExpect(jsonPath("$[0].source").value("UPBIT"))
-                .andExpect(jsonPath("$[2].source").value("GOLD"));
+                .andExpect(jsonPath("$[2].source").value("KIS"))
+                .andExpect(jsonPath("$[3].source").value("GOLD"));
     }
 }

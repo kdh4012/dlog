@@ -5,6 +5,8 @@ public enum AssetSource {
     MANUAL,
     UPBIT,
     TOSS,
+    /** 한국투자증권 (국내·미국 주식) */
+    KIS,
     /** 금 현물: 보유량은 직접 입력, 시세만 공공데이터 API 로 갱신 */
     GOLD;
 

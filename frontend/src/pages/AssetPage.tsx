@@ -61,11 +61,13 @@ interface Group {
   items: Asset[]
 }
 
-/** 토스 해외·국내 주식, 업비트 가상자산 순으로 묶고 각 묶음은 평가금 큰 순 */
+/** 증권사(토스·한국투자) 주식은 해외·국내로 합쳐 묶고, 업비트 가상자산·금 순. 각 묶음은 평가금 큰 순 */
+const isBroker = (a: Asset) => a.source === 'TOSS' || a.source === 'KIS'
+
 const groupAssets = (assets: Asset[]): Group[] => {
   const defs: [string, string, (a: Asset) => boolean][] = [
-    ['toss-us', '해외주식', (a) => a.source === 'TOSS' && a.currency !== 'KRW'],
-    ['toss-kr', '국내주식', (a) => a.source === 'TOSS' && a.currency === 'KRW'],
+    ['stock-us', '해외주식', (a) => isBroker(a) && a.currency !== 'KRW'],
+    ['stock-kr', '국내주식', (a) => isBroker(a) && a.currency === 'KRW'],
     ['upbit', '가상자산', (a) => a.source === 'UPBIT'],
     ['gold', '금', (a) => a.source === 'GOLD'],
     ['etc', '기타', (a) => a.source === 'MANUAL'],
