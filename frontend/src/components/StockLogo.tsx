@@ -54,56 +54,32 @@ function RemoteLogo({ asset }: { asset: Asset }) {
   )
 }
 
-/** 쌓인 금괴 3개 아이콘. 여러 개 그려도 그라데이션 id 가 겹치지 않도록 useId 를 쓴다 */
+/** 금: 금속 질감의 원 위에 원소기호 Au. 장식 없이 단정하게 */
 function GoldIcon() {
   const id = useId()
   const bg = `${id}-bg`
-  const bar = `${id}-bar`
-
-  // (x, y) 에서 시작하는 금괴 한 개: 앞면 사다리꼴 + 윗면 하이라이트
-  const ingot = (x: number, y: number) => (
-    <g key={`${x}-${y}`}>
-      <path d={`M${x + 3} ${y}H${x + 15}L${x + 18} ${y + 10}H${x}Z`} fill={`url(#${bar})`} />
-      <path d={`M${x + 3} ${y}H${x + 15}L${x + 15.8} ${y + 2.6}H${x + 2.2}Z`} fill="#fff4c2" opacity="0.85" />
-    </g>
-  )
-
   return (
     <svg className="asset-logo gold-icon" viewBox="0 0 44 44" aria-hidden="true">
       <defs>
         <linearGradient id={bg} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#fff8e1" />
-          <stop offset="100%" stopColor="#fde7a6" />
-        </linearGradient>
-        <linearGradient id={bar} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#ffd84d" />
-          <stop offset="55%" stopColor="#f0b400" />
-          <stop offset="100%" stopColor="#c48a00" />
+          <stop offset="0%" stopColor="#e9c46a" />
+          <stop offset="100%" stopColor="#b8862b" />
         </linearGradient>
       </defs>
-      <rect width="44" height="44" rx="14" fill={`url(#${bg})`} />
-      {ingot(3.5, 25)}
-      {ingot(22.5, 25)}
-      {ingot(13, 14)}
-      {/* 반짝임 */}
-      <path d="M34 6.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" fill="#fff" opacity="0.95" />
+      <circle cx="22" cy="22" r="22" fill={`url(#${bg})`} />
+      <text x="22" y="27.5" textAnchor="middle" fill="#fff" fontSize="15" fontWeight="700" letterSpacing="-0.3"
+        fontFamily="system-ui, -apple-system, 'Segoe UI', sans-serif">
+        Au
+      </text>
     </svg>
   )
 }
 
 /** 비트코인 아이콘: 주황 원 위에 세로줄이 위아래로 튀어나온 B 를 오른쪽으로 살짝 기울인다 */
 function BitcoinIcon() {
-  const id = useId()
-  const bg = `${id}-bg`
   return (
     <svg className="asset-logo gold-icon" viewBox="0 0 44 44" aria-hidden="true">
-      <defs>
-        <linearGradient id={bg} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#ffa940" />
-          <stop offset="100%" stopColor="#f2840a" />
-        </linearGradient>
-      </defs>
-      <circle cx="22" cy="22" r="22" fill={`url(#${bg})`} />
+      <circle cx="22" cy="22" r="22" fill="#f7931a" />
       <g transform="rotate(14 22 22)" fill="#fff">
         {/* 위아래로 튀어나온 세로줄 두 개 */}
         <rect x="18" y="9" width="2.4" height="26" rx="1" />
