@@ -54,23 +54,33 @@ function RemoteLogo({ asset }: { asset: Asset }) {
   )
 }
 
-/** 금: 금속 질감의 원 위에 원소기호 Au. 장식 없이 단정하게 */
+/** 금: 금색 원 위에 같은 톤의 금괴 하나 (윗면은 밝게, 앞면은 아래로 갈수록 진하게) */
 function GoldIcon() {
   const id = useId()
   const bg = `${id}-bg`
+  const top = `${id}-top`
+  const front = `${id}-front`
   return (
     <svg className="asset-logo gold-icon" viewBox="0 0 44 44" aria-hidden="true">
       <defs>
         <linearGradient id={bg} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#e9c46a" />
-          <stop offset="100%" stopColor="#b8862b" />
+          <stop offset="0%" stopColor="#f3cf72" />
+          <stop offset="100%" stopColor="#c18f2c" />
+        </linearGradient>
+        <linearGradient id={top} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#fff6d6" />
+          <stop offset="100%" stopColor="#f9dc8a" />
+        </linearGradient>
+        <linearGradient id={front} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#f6d27a" />
+          <stop offset="100%" stopColor="#d9a43e" />
         </linearGradient>
       </defs>
       <circle cx="22" cy="22" r="22" fill={`url(#${bg})`} />
-      <text x="22" y="27.5" textAnchor="middle" fill="#fff" fontSize="15" fontWeight="700" letterSpacing="-0.3"
-        fontFamily="system-ui, -apple-system, 'Segoe UI', sans-serif">
-        Au
-      </text>
+      {/* 앞면 → 윗면 → 모서리 하이라이트 순으로 겹친다 */}
+      <path d="M13.5 20.5H30.5L35 29.5H9Z" fill={`url(#${front})`} />
+      <path d="M15.5 14.5H28.5L30.5 20.5H13.5Z" fill={`url(#${top})`} />
+      <path d="M13.5 20.5H30.5" stroke="#fff3c9" strokeWidth="0.8" />
     </svg>
   )
 }
