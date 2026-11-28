@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
  */
 @ConfigurationProperties("dlog.gold")
 public record GoldProperties(
-        @DefaultValue("https://apis.data.go.kr/1160100/service/GetGeneralProductInfoService") String baseUrl,
+        @DefaultValue("https://apis.data.go.kr/1160100/GetGeneralProductInfoService_V2") String baseUrl,
         String apiKey
 ) {
     public GoldProperties {

@@ -72,7 +72,7 @@ public class GoldPriceClient {
         Envelope body;
         try {
             body = client.get()
-                    .uri(b -> b.path("/getGoldPriceInfo")
+                    .uri(b -> b.path("/getGoldPriceInfo_V2")
                             .queryParam("serviceKey", "{key}")
                             .queryParam("resultType", "json")
                             .queryParam("numOfRows", 50)
