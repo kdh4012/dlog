@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import type { Asset } from '../api/types'
 
 /**
@@ -21,14 +21,8 @@ const BADGE_COLORS = ['#3451d1', '#0f9d58', '#f59e0b', '#7c3aed', '#e11d48', '#0
 const badgeColor = (key: string) => BADGE_COLORS[[...key].reduce((h, c) => h + c.charCodeAt(0), 0) % BADGE_COLORS.length]
 
 export default function StockLogo({ asset }: { asset: Asset }) {
-  // 금 현물은 로고 대신 금색 배지
-  if (asset.source === 'GOLD') {
-    return (
-      <span className="asset-logo fallback" style={{ background: '#e0a800' }} aria-hidden="true">
-        금
-      </span>
-    )
-  }
+  // 금 현물은 금괴 아이콘
+  if (asset.source === 'GOLD') return <GoldIcon />
   return <RemoteLogo asset={asset} />
 }
 
@@ -55,5 +49,42 @@ function RemoteLogo({ asset }: { asset: Asset }) {
       referrerPolicy="no-referrer"
       onError={() => setIndex((i) => i + 1)}
     />
+  )
+}
+
+/** 쌓인 금괴 3개 아이콘. 여러 개 그려도 그라데이션 id 가 겹치지 않도록 useId 를 쓴다 */
+function GoldIcon() {
+  const id = useId()
+  const bg = `${id}-bg`
+  const bar = `${id}-bar`
+
+  // (x, y) 에서 시작하는 금괴 한 개: 앞면 사다리꼴 + 윗면 하이라이트
+  const ingot = (x: number, y: number) => (
+    <g key={`${x}-${y}`}>
+      <path d={`M${x + 3} ${y}H${x + 15}L${x + 18} ${y + 10}H${x}Z`} fill={`url(#${bar})`} />
+      <path d={`M${x + 3} ${y}H${x + 15}L${x + 15.8} ${y + 2.6}H${x + 2.2}Z`} fill="#fff4c2" opacity="0.85" />
+    </g>
+  )
+
+  return (
+    <svg className="asset-logo gold-icon" viewBox="0 0 44 44" aria-hidden="true">
+      <defs>
+        <linearGradient id={bg} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#fff8e1" />
+          <stop offset="100%" stopColor="#fde7a6" />
+        </linearGradient>
+        <linearGradient id={bar} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffd84d" />
+          <stop offset="55%" stopColor="#f0b400" />
+          <stop offset="100%" stopColor="#c48a00" />
+        </linearGradient>
+      </defs>
+      <rect width="44" height="44" rx="14" fill={`url(#${bg})`} />
+      {ingot(3.5, 25)}
+      {ingot(22.5, 25)}
+      {ingot(13, 14)}
+      {/* 반짝임 */}
+      <path d="M34 6.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" fill="#fff" opacity="0.95" />
+    </svg>
   )
 }

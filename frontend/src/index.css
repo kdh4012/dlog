@@ -961,6 +961,11 @@ button.invest-group-head:not(:disabled):hover {
   border: 1px solid var(--border);
 }
 
+.asset-logo.gold-icon {
+  border: none;
+  background: none;
+}
+
 .asset-logo.fallback {
   display: inline-flex;
   align-items: center;
