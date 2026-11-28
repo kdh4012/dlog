@@ -85,12 +85,26 @@ function GoldIcon() {
   )
 }
 
-/** 비트코인 아이콘: 주황 원 위에 세로줄이 위아래로 튀어나온 B 를 오른쪽으로 살짝 기울인다 */
+/** 비트코인: 주황 그라데이션 원 + 안쪽 테두리(동전 느낌) + 같은 톤의 밝은 ₿ */
 function BitcoinIcon() {
+  const id = useId()
+  const bg = `${id}-bg`
+  const glyph = `${id}-glyph`
   return (
     <svg className="asset-logo gold-icon" viewBox="0 0 44 44" aria-hidden="true">
-      <circle cx="22" cy="22" r="22" fill="#f7931a" />
-      <g transform="rotate(14 22 22)" fill="#fff">
+      <defs>
+        <linearGradient id={bg} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffb347" />
+          <stop offset="100%" stopColor="#e2780a" />
+        </linearGradient>
+        <linearGradient id={glyph} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fff8ec" />
+          <stop offset="100%" stopColor="#ffe2b8" />
+        </linearGradient>
+      </defs>
+      <circle cx="22" cy="22" r="22" fill={`url(#${bg})`} />
+      <circle cx="22" cy="22" r="18.5" fill="none" stroke="rgba(255,240,220,0.55)" strokeWidth="1" />
+      <g transform="rotate(14 22 22)" fill={`url(#${glyph})`}>
         {/* 위아래로 튀어나온 세로줄 두 개 */}
         <rect x="18" y="9" width="2.4" height="26" rx="1" />
         <rect x="22.4" y="9" width="2.4" height="26" rx="1" />
