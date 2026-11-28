@@ -39,8 +39,8 @@ const formatShare = (share: number, only: boolean) => {
   return (Math.min(Math.round(share * 10) / 10, 99.9)).toFixed(1)
 }
 
-/** 10만원 단위로 반올림해 전체 자릿수로 표시: 102,456,789 → '102,500,000' */
-const shortKrw = (v: number) => formatNumber(Math.round(v / 100_000) * 100_000)
+/** 원 단위까지 전체 자릿수로 표시: 102,456,789 */
+const wonText = (v: number) => formatNumber(Math.round(v))
 
 /**
  * 자산 종류별(주식·비트코인·금 …) 비중 카드.
@@ -79,7 +79,7 @@ export default function AssetAllocation({ assets, rate }: { assets: Asset[]; rat
               {formatShare(c.share, items.length === 1)}
               <small>%</small>
             </div>
-            <div className="alloc-value">{shortKrw(c.value)}원</div>
+            <div className="alloc-value">{wonText(c.value)}원</div>
           </div>
         ))}
       </div>

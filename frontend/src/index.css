@@ -2024,7 +2024,7 @@ button.resolution-text.empty:not(:disabled):hover {
     font-size: 0.8rem;
   }
 
-  /* '102,500,000원' 이 좁은 카드에서 줄바꿈되지 않도록 */
+  /* '102,456,789원' 이 좁은 카드에서 줄바꿈되지 않도록 */
   .alloc-value {
     font-size: 0.72rem;
     letter-spacing: -0.02em;
